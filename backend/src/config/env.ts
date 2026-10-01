@@ -5,19 +5,20 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   PORT: z.coerce.number().int().positive().default(3001),
-  FRONTEND_URL: z.url().default('http://localhost:3000')
+  FRONTEND_URL: z.url().default('http://localhost:3000'),
+  DATABASE_URL: z.url(),
 });
 
-export type Env = z.infer<typeof envSchema>
+export type Env = z.infer<typeof envSchema>;
 
 export function validateEnv(config: Record<string, unknown>): Env {
-  const result = envSchema.safeParse(config)
+  const result = envSchema.safeParse(config);
 
-   if (!result.success) {
+  if (!result.success) {
     throw new Error(
       `Invalid environment variables:\n${z.prettifyError(result.error)}`,
     );
   }
 
-  return result.data
+  return result.data;
 }

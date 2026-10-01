@@ -9,8 +9,16 @@
 - Frontend (`frontend/`): Claude może edytować pliki bezpośrednio.
 
 ## Struktura repo
-- `backend/` — NestJS (TypeScript)
+- `backend/` — NestJS (TypeScript, ES modules), TypeORM + PostgreSQL
 - `frontend/` — Next.js (App Router, TypeScript, Tailwind)
+
+## Konwencje backendu
+- ORM: TypeORM (nie Prisma).
+- Bez surowego SQL w kodzie aplikacji (`dataSource.query(...)`,
+  `queryRunner.query(...)` itp.) — wszystko przez repozytoria i metody TypeORM.
+  Wyjątek: pliki migracji generowane przez TypeORM.
+- Zmiany struktury bazy tylko przez migracje (`synchronize: false`).
+- Projekt jest ESM — importy własnych plików z końcówką `.js`.
 
 ---
 
