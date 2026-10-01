@@ -1,8 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
+import { ConfigService } from '@nestjs/config';
+import { Env } from './config/env.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  const config = app.get<ConfigService<Env, true>>(ConfigService)
+
+  app.setGlobalPrefix('api')
+  app.enableCors({origin: config.get('FRONTEND_URL', {infer: true})})
+  app.enableShutdownHooks()
+
+  await app.listen(config.get('PORT', {infer: true}))
 }
 await bootstrap();
