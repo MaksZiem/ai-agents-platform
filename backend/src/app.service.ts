@@ -11,3 +11,7 @@ export class AppService {
     return { status: 'ok', database: 'up', agents };
   }
 }
+
+// prodziekan wydzialu do spraw nauczenia krzysiek
+// do spraw studenckich pani agata
+
