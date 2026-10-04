@@ -5,6 +5,7 @@ import { AgentsModule } from './agents/agents.module.js';
 import { validateEnv, type Env } from './config/env.js';
 import { createDataSourceOptions } from './database/database.options.js';
 import { HealthModule } from './health/health.module.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HealthModule } from './health/health.module.js';
     }),
     HealthModule,
     AgentsModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
