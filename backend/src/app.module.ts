@@ -6,6 +6,7 @@ import { validateEnv, type Env } from './config/env.js';
 import { createDataSourceOptions } from './database/database.options.js';
 import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { ToolsModule } from './tools/tools.module.js';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { AuthModule } from './auth/auth.module.js';
     HealthModule,
     AgentsModule,
     AuthModule,
+    ToolsModule,
   ],
 })
 export class AppModule {}
