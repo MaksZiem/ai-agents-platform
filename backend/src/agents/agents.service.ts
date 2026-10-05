@@ -30,11 +30,33 @@ export class AgentsService {
   }
 
   create(dto: CreateAgentDto, userId: string): Promise<Agent> {
-    const agent = this.agentsRepository.create({...dto, userId});
+    const agent = this.agentsRepository.create({ ...dto, userId });
     return this.agentsRepository.save(agent);
   }
 
-  async update(id: string, dto: UpdateAgentDto, userId: string): Promise<Agent> {
+  async duplicate(id: string, userId: string): Promise<Agent> {
+    const source = await this.findOne(id, userId);
+
+    const copy = this.agentsRepository.create({
+      name: `${source.name} (copy)`,
+      description: source.description,
+      instructions: source.instructions,
+      status: source.status,
+      provider: source.provider,
+      model: source.model,
+      temperature: source.temperature,
+      maxOutputTokens: source.maxOutputTokens,
+      userId,
+    });
+
+    return this.agentsRepository.save(copy);
+  }
+
+  async update(
+    id: string,
+    dto: UpdateAgentDto,
+    userId: string,
+  ): Promise<Agent> {
     const agent = await this.findOne(id, userId);
     this.agentsRepository.merge(agent, dto);
     return this.agentsRepository.save(agent);

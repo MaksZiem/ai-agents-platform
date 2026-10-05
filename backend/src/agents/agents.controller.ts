@@ -47,6 +47,14 @@ export class AgentsController {
     return this.agentsService.update(id, dto, user.sub);
   }
 
+  @Post(':id/duplicate')
+  duplicate(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.agentsService.duplicate(id, user.sub);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(
