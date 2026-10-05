@@ -2,9 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity.js';
 
 export enum AgentStatus {
   ACTIVE = 'ACTIVE',
@@ -43,6 +47,14 @@ export class Agent {
 
   @Column({ type: 'int', default: 2048 })
   maxOutputTokens: number;
+
+  @Index()
+  @Column()
+  userId: string;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

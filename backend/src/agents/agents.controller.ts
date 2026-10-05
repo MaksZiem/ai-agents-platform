@@ -10,6 +10,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import type { JwtPayload } from '../auth/jwt-payload.js';
 import { AgentsService } from './agents.service.js';
 import { CreateAgentDto } from './dto/create-agent.dto.js';
 import { UpdateAgentDto } from './dto/update-agent.dto.js';
@@ -19,28 +21,38 @@ export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 
   @Post()
-  create(@Body() dto: CreateAgentDto) {
-    return this.agentsService.create(dto);
+  create(@Body() dto: CreateAgentDto, @CurrentUser() user: JwtPayload) {
+    return this.agentsService.create(dto, user.sub);
   }
 
   @Get()
-  findAll() {
-    return this.agentsService.findAll();
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.agentsService.findAll(user.sub);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.agentsService.findOne(id);
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.agentsService.findOne(id, user.sub);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateAgentDto) {
-    return this.agentsService.update(id, dto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateAgentDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.agentsService.update(id, dto, user.sub);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.agentsService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.agentsService.remove(id, user.sub);
   }
 }
