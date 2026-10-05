@@ -9,8 +9,19 @@ export class UsersService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
+  findById(id: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ id });
+  }
+
   findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOneBy({ email });
+  }
+
+  findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { email },
+      select: { id: true, email: true, name: true, passwordHash: true },
+    });
   }
 
   create(data: Pick<User, 'email' | 'name' | 'passwordHash'>): Promise<User> {
