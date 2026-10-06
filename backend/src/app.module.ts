@@ -7,6 +7,7 @@ import { createDataSourceOptions } from './database/database.options.js';
 import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ToolsModule } from './tools/tools.module.js';
+import { ExecutionsModule } from './executions/executions.module.js';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ToolsModule } from './tools/tools.module.js';
     AgentsModule,
     AuthModule,
     ToolsModule,
+    ExecutionsModule,
   ],
 })
 export class AppModule {}

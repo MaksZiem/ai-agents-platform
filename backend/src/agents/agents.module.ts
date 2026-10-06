@@ -22,5 +22,6 @@ import { Agent } from './entities/agent.entity.js';
     AgentPermissionsController,
   ],
   providers: [AgentsService, AgentToolsService, AgentPermissionsService],
+  exports: [AgentsService],
 })
 export class AgentsModule {}
