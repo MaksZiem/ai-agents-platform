@@ -14,6 +14,10 @@ import {
   isTerminal,
 } from './execution-status.js';
 
+type TransitionChanges = Partial<
+  Pick<Execution, 'result' | 'error' | 'startedAt' | 'finishedAt'>
+>;
+
 @Injectable()
 export class ExecutionsService {
   constructor(
@@ -54,7 +58,8 @@ export class ExecutionsService {
   async findOne(id: string, userId: string): Promise<Execution> {
     const execution = await this.executionsRepository.findOne({
       where: { id, userId },
-      relations: { agent: true },
+      relations: { agent: true, steps: true },
+      order: { steps: { position: 'ASC' } },
     });
 
     if (!execution) {
@@ -81,7 +86,7 @@ export class ExecutionsService {
   private async transition(
     execution: Execution,
     to: ExecutionStatus,
-    changes: Partial<Execution> = {},
+    changes: TransitionChanges = {},
   ): Promise<void> {
     if (!canTransition(execution.status, to)) {
       throw new ConflictException(

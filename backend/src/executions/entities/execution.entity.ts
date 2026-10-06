@@ -5,12 +5,15 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  type Relation,
   UpdateDateColumn,
 } from 'typeorm';
 import { Agent } from '../../agents/entities/agent.entity.js';
 import { User } from '../../users/entities/user.entity.js';
 import { ExecutionStatus } from '../execution-status.js';
+import { ExecutionStep } from './execution-step.entity.js';
 
 @Entity('executions')
 export class Execution {
@@ -54,6 +57,9 @@ export class Execution {
 
   @Column({ type: 'timestamptz', nullable: true })
   finishedAt: Date | null;
+
+  @OneToMany(() => ExecutionStep, (step) => step.execution)
+  steps: Relation<ExecutionStep[]>;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;

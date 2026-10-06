@@ -1,0 +1,14 @@
+export enum StepType {
+  PLAN = 'PLAN',
+  TOOL_CALL = 'TOOL_CALL',
+  FINAL_ANSWER = 'FINAL_ANSWER',
+}
+
+export enum StepStatus {
+  PENDING = 'PENDING',
+  RUNNING = 'RUNNING',
+  WAITING_FOR_APPROVAL = 'WAITING_FOR_APPROVAL',
+  COMPLETED = 'COMPLETED',
+  FAILED = 'FAILED',
+  SKIPPED = 'SKIPPED',
+}
