@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { AgentPermission } from './entities/agent-permission.entity.js';
+import { AgentTool } from './entities/agent-tool.entity.js';
 import { Agent } from './entities/agent.entity.js';
 import { CreateAgentDto } from './dto/create-agent.dto.js';
 import { UpdateAgentDto } from './dto/update-agent.dto.js';
@@ -10,6 +12,7 @@ export class AgentsService {
   constructor(
     @InjectRepository(Agent)
     private readonly agentsRepository: Repository<Agent>,
+    private readonly dataSource: DataSource,
   ) {}
 
   findAll(userId: string): Promise<Agent[]> {
@@ -37,19 +40,51 @@ export class AgentsService {
   async duplicate(id: string, userId: string): Promise<Agent> {
     const source = await this.findOne(id, userId);
 
-    const copy = this.agentsRepository.create({
-      name: `${source.name} (copy)`,
-      description: source.description,
-      instructions: source.instructions,
-      status: source.status,
-      provider: source.provider,
-      model: source.model,
-      temperature: source.temperature,
-      maxOutputTokens: source.maxOutputTokens,
-      userId,
-    });
+    return this.dataSource.transaction(async (manager) => {
+      const copy = await manager.save(
+        manager.create(Agent, {
+          name: `${source.name} (copy)`,
+          description: source.description,
+          instructions: source.instructions,
+          status: source.status,
+          provider: source.provider,
+          model: source.model,
+          temperature: source.temperature,
+          maxOutputTokens: source.maxOutputTokens,
+          userId,
+        }),
+      );
 
-    return this.agentsRepository.save(copy);
+      const sourceTools = await manager.findBy(AgentTool, {
+        agentId: source.id,
+      });
+
+      await manager.save(
+        sourceTools.map((tool) =>
+          manager.create(AgentTool, {
+            agentId: copy.id,
+            toolName: tool.toolName,
+            requiresApproval: tool.requiresApproval,
+          }),
+        ),
+      );
+
+      const sourcePermissions = await manager.findBy(AgentPermission, {
+        agentId: source.id,
+      });
+
+      await manager.save(
+        sourcePermissions.map((permission) =>
+          manager.create(AgentPermission, {
+            agentId: copy.id,
+            resource: permission.resource,
+            action: permission.action,
+          }),
+        ),
+      );
+
+      return copy;
+    });
   }
 
   async update(
