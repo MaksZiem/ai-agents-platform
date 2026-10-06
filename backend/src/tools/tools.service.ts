@@ -17,8 +17,12 @@ export class ToolsService {
     return this.toPublic(this.get(name));
   }
 
+  find(name: string): ToolDefinition | undefined {
+    return this.tools.get(name);
+  }
+
   get(name: string): ToolDefinition {
-    const tool = this.tools.get(name);
+    const tool = this.find(name);
 
     if (!tool) {
       throw new NotFoundException(`Tool ${name} not found`);
