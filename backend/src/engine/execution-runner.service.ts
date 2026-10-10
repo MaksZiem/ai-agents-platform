@@ -2,6 +2,8 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Agent } from '../agents/entities/agent.entity.js';
+import { AgentTool } from '../agents/entities/agent-tool.entity.js';
 import { ApprovalStatus } from '../approvals/approval-status.js';
 import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
@@ -9,9 +11,14 @@ import { ExecutionStatus } from '../executions/execution-status.js';
 import { StepStatus, StepType } from '../executions/execution-step-enums.js';
 import { ApprovalManager } from './approval-manager.service.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
-import { MockPlanner, type PlannedToolCall } from './mock-planner.service.js';
+import {
+  Planner,
+  type PlannedToolCall,
+  type PlanningContext,
+} from './planner.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 import { ToolExecutor } from './tool-executor.service.js';
+import { ToolsService } from '../tools/tools.service.js';
 
 type ToolCallOutcome = 'completed' | 'paused' | 'failed' | 'cancelled';
 
@@ -27,10 +34,15 @@ export class ExecutionRunner {
     private readonly executionsRepository: Repository<Execution>,
     @InjectRepository(ExecutionStep)
     private readonly stepsRepository: Repository<ExecutionStep>,
+    @InjectRepository(Agent)
+    private readonly agentsRepository: Repository<Agent>,
+    @InjectRepository(AgentTool)
+    private readonly agentToolsRepository: Repository<AgentTool>,
     private readonly state: ExecutionStateManager,
     private readonly approvals: ApprovalManager,
-    private readonly planner: MockPlanner,
+    private readonly planner: Planner,
     private readonly toolExecutor: ToolExecutor,
+    private readonly toolsService: ToolsService,
   ) {}
 
   async run(executionId: string): Promise<void> {
@@ -72,7 +84,24 @@ export class ExecutionRunner {
     }
 
     const planStep = await this.state.startStep(execution.id, 0, StepType.PLAN);
-    const toolCalls = this.planner.plan(execution.task);
+    let toolCalls: PlannedToolCall[];
+
+    try {
+      toolCalls = await this.planner.plan(
+        await this.buildPlanningContext(execution),
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await this.state.finishStep(planStep, StepStatus.FAILED, {
+        error: `Planning failed: ${message}`,
+      });
+      await this.state.transition(execution, ExecutionStatus.FAILED, {
+        error: 'Planning failed',
+        finishedAt: new Date(),
+      });
+      return;
+    }
+
     await this.state.finishStep(planStep, StepStatus.COMPLETED, {
       output: { toolCalls },
     });
@@ -129,6 +158,23 @@ export class ExecutionRunner {
     }
 
     await this.executeFrom(execution, toolCalls, toolIndex + 1);
+  }
+
+  private async buildPlanningContext(
+    execution: Execution,
+  ): Promise<PlanningContext> {
+    const agent = await this.agentsRepository.findOneByOrFail({
+      id: execution.agentId,
+    });
+    const agentTools = await this.agentToolsRepository.findBy({
+      agentId: execution.agentId,
+    });
+    const tools = agentTools.flatMap((agentTool) => {
+      const tool = this.toolsService.find(agentTool.toolName);
+      return tool ? [tool] : [];
+    });
+
+    return { task: execution.task, agent, tools };
   }
 
   private async executeFrom(

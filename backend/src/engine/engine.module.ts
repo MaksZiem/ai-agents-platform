@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Agent } from '../agents/entities/agent.entity.js';
 import { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import { AgentTool } from '../agents/entities/agent-tool.entity.js';
 import { Approval } from '../approvals/entities/approval.entity.js';
@@ -13,12 +14,14 @@ import { ExecutionRunner } from './execution-runner.service.js';
 import { ExecutionScheduler } from './execution-scheduler.service.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
 import { ExecutionsProcessor } from './executions.processor.js';
-import { MockPlanner } from './mock-planner.service.js';
+import { GeminiPlanner } from './gemini-planner.service.js';
+import { Planner } from './planner.js';
 import { ToolExecutor } from './tool-executor.service.js';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Agent,
       AgentTool,
       AgentPermission,
       Execution,
@@ -31,7 +34,7 @@ import { ToolExecutor } from './tool-executor.service.js';
   providers: [
     ToolExecutor,
     ExecutionStateManager,
-    MockPlanner,
+    { provide: Planner, useClass: GeminiPlanner },
     ExecutionRunner,
     ExecutionScheduler,
     ExecutionsProcessor,

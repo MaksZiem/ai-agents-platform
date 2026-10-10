@@ -10,6 +10,7 @@ const envSchema = z.object({
   REDIS_URL: z.url().default('redis://localhost:6379'),
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(3600),
+  GEMINI_API_KEY: z.string().min(1),
 });
 
 export type Env = z.infer<typeof envSchema>;

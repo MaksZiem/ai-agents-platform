@@ -7,7 +7,7 @@ import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
-import type { PlannedToolCall } from './mock-planner.service.js';
+import type { PlannedToolCall } from './planner.js';
 
 @Injectable()
 export class ApprovalManager {

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import {
+  Planner,
+  type PlannedToolCall,
+  type PlanningContext,
+} from './planner.js';
 
-export interface PlannedToolCall {
-  toolName: string;
-  input: Record<string, unknown>;
-}
-
-// Deterministic stand-in for the LLM planner. Gemini replaces it later.
+// Deterministic stand-in for the LLM planner, useful without a Gemini key.
 @Injectable()
-export class MockPlanner {
-  plan(task: string): PlannedToolCall[] {
+export class MockPlanner extends Planner {
+  plan({ task }: PlanningContext): Promise<PlannedToolCall[]> {
     const toolCalls: PlannedToolCall[] = [
       {
         toolName: 'getTransactions',
@@ -31,6 +31,6 @@ export class MockPlanner {
       });
     }
 
-    return toolCalls;
+    return Promise.resolve(toolCalls);
   }
 }
