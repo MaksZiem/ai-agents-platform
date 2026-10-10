@@ -11,6 +11,7 @@ const ALLOWED_TRANSITIONS: Record<ExecutionStatus, readonly ExecutionStatus[]> =
   {
     [ExecutionStatus.QUEUED]: [
       ExecutionStatus.RUNNING,
+      ExecutionStatus.FAILED,
       ExecutionStatus.CANCELLED,
     ],
     [ExecutionStatus.RUNNING]: [

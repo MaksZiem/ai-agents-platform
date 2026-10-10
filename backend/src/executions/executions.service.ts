@@ -1,28 +1,26 @@
 import {
   ConflictException,
   Injectable,
-  Logger,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AgentsService } from '../agents/agents.service.js';
 import { AgentStatus } from '../agents/entities/agent.entity.js';
-import { ExecutionRunner } from '../engine/execution-runner.service.js';
+import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
 import { ExecutionStateManager } from '../engine/execution-state-manager.service.js';
 import { Execution } from './entities/execution.entity.js';
 import { ExecutionStatus, isTerminal } from './execution-status.js';
 
 @Injectable()
 export class ExecutionsService {
-  private readonly logger = new Logger(ExecutionsService.name);
-
   constructor(
     @InjectRepository(Execution)
     private readonly executionsRepository: Repository<Execution>,
     private readonly agentsService: AgentsService,
     private readonly state: ExecutionStateManager,
-    private readonly runner: ExecutionRunner,
+    private readonly scheduler: ExecutionScheduler,
   ) {}
 
   async create(agentId: string, task: string, userId: string) {
@@ -36,11 +34,15 @@ export class ExecutionsService {
       this.executionsRepository.create({ agentId, userId, task }),
     );
 
-    this.runner
-      .run(execution.id)
-      .catch((error: unknown) =>
-        this.logger.error(`Failed to run execution ${execution.id}`, error),
-      );
+    try {
+      await this.scheduler.schedule(execution.id);
+    } catch {
+      await this.state.transition(execution, ExecutionStatus.FAILED, {
+        error: 'Could not schedule execution',
+        finishedAt: new Date(),
+      });
+      throw new ServiceUnavailableException('Could not schedule execution');
+    }
 
     return execution;
   }

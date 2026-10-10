@@ -1,8 +1,10 @@
+import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgentsModule } from './agents/agents.module.js';
 import { validateEnv, type Env } from './config/env.js';
+import { parseRedisUrl } from './config/redis.js';
 import { createDataSourceOptions } from './database/database.options.js';
 import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
@@ -19,6 +21,12 @@ import { ExecutionsModule } from './executions/executions.module.js';
       inject: [ConfigService],
       useFactory: (config: ConfigService<Env, true>) =>
         createDataSourceOptions(config.get('DATABASE_URL', { infer: true })),
+    }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<Env, true>) => ({
+        connection: parseRedisUrl(config.get('REDIS_URL', { infer: true })),
+      }),
     }),
     HealthModule,
     AgentsModule,
