@@ -6,9 +6,14 @@ import { ExecutionsController } from './executions.controller.js';
 import { AgentExecutionsController } from './agent-executions.controller.js';
 import { ExecutionsService } from './executions.service.js';
 import { AgentsModule } from '../agents/agents.module.js';
+import { EngineModule } from '../engine/engine.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Execution, ExecutionStep]), AgentsModule],
+  imports: [
+    TypeOrmModule.forFeature([Execution, ExecutionStep]),
+    AgentsModule,
+    EngineModule,
+  ],
   controllers: [ExecutionsController, AgentExecutionsController],
   providers: [ExecutionsService],
 })
