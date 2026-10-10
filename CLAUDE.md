@@ -6,7 +6,11 @@
 - Dzielimy pracę na małe kroki, jeden plik lub koncept na raz.
 - Gdy poproszę o review, Claude czyta moje pliki i wskazuje błędy,
   ale ich nie poprawia.
-- Frontend (`frontend/`): Claude może edytować pliki bezpośrednio.
+- Frontend (`frontend/`): piszę SAMODZIELNIE w celach nauki.
+  CLAUDE pokazuje kod do przepisania, ze ścieżką pliku i krótkim wyjaśnieniem
+  co i dlaczego.
+- CLAUDE sam edytuje pliki na frontendzie tak samo jak na backendzie tylko jesli ja go poprosze
+- Nie dodawaj komentarzy do kodu
 
 ## Struktura repo
 - `backend/` — NestJS (TypeScript, ES modules), TypeORM + PostgreSQL
@@ -19,6 +23,13 @@
   Wyjątek: pliki migracji generowane przez TypeORM.
 - Zmiany struktury bazy tylko przez migracje (`synchronize: false`).
 - Projekt jest ESM — importy własnych plików z końcówką `.js`.
+
+## Konwencje frontendu
+- Design system: `frontend/DESIGN.md` (kontekst produktu: `PRODUCT.md`).
+  Każdy kod frontendu, który pokazuje Claude, musi być z nim zgodny:
+  tokeny kolorów, typografia (Geist / Geist Mono), spacing, radiusy,
+  komponenty i kolory stanów egzekucji.
+- Zatwierdzony szkic widoku egzekucji: `.impeccable/mocks/decision/canon.html`.
 
 ---
 
