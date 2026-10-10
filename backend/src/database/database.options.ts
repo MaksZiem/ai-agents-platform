@@ -7,6 +7,9 @@ import { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import { AgentTool } from '../agents/entities/agent-tool.entity.js';
 import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
+import { AgentDocument } from '../knowledge/entities/agent-document.entity.js';
+import { DocumentChunk } from '../knowledge/entities/document-chunk.entity.js';
+import { KnowledgeDocument } from '../knowledge/entities/knowledge-document.entity.js';
 
 export function createDataSourceOptions(url: string): DataSourceOptions {
   return {
@@ -20,6 +23,9 @@ export function createDataSourceOptions(url: string): DataSourceOptions {
       ExecutionStep,
       Approval,
       User,
+      KnowledgeDocument,
+      DocumentChunk,
+      AgentDocument,
     ],
     migrations: [join(import.meta.dirname, 'migrations', '*.js')],
     synchronize: false,

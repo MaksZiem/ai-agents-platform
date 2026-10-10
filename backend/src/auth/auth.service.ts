@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -10,6 +11,7 @@ import * as argon2 from 'argon2';
 import type { JwtPayload } from './jwt-payload.js';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 export interface AuthResponse {
   accessToken: string;
@@ -59,6 +61,24 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
+    const user = await this.usersService.findByIdWithPassword(userId);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    // 400, not 401: the session is fine, only the typed password is wrong.
+    if (!(await argon2.verify(user.passwordHash, dto.currentPassword))) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    await this.usersService.updatePasswordHash(
+      userId,
+      await argon2.hash(dto.newPassword),
+    );
   }
 
   private async createAuthResponse(user: User): Promise<AuthResponse> {

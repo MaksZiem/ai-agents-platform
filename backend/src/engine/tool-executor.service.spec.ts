@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Repository } from 'typeorm';
 import type { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import type { AgentTool } from '../agents/entities/agent-tool.entity.js';
+import type { KnowledgeService } from '../knowledge/knowledge.service.js';
 import type { ToolsService } from '../tools/tools.service.js';
 import { defineTool } from '../tools/tool-definition.js';
 import { ToolExecutionError } from './tool-execution.error.js';
@@ -32,10 +33,15 @@ function createExecutor({
     existsBy: async () => hasPermission,
   } as unknown as Repository<AgentPermission>;
 
+  const knowledgeService = {
+    search: async () => [],
+  } as unknown as KnowledgeService;
+
   return new ToolExecutor(
     agentToolsRepository,
     agentPermissionsRepository,
     toolsService,
+    knowledgeService,
   );
 }
 

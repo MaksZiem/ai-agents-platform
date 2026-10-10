@@ -3,6 +3,7 @@ import type { ToolAction, ToolResource } from './tool-definition.js';
 export const RESOURCE_ACTIONS: Record<ToolResource, readonly ToolAction[]> = {
   financial_data: ['read', 'modify', 'delete'],
   documents: ['read', 'search', 'delete'],
+  reports: ['create'],
   email: ['send'],
 };
 

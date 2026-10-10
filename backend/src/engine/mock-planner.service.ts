@@ -1,18 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import {
-  type AnswerContext,
-  type AnswerResult,
+  type ModelToolCall,
+  type ModelTurn,
   Planner,
-  type PlannedToolCall,
-  type PlanningContext,
-  type PlanResult,
+  type TurnContext,
 } from './planner.js';
 
 // Deterministic stand-in for the LLM planner, useful without a Gemini key.
+// Asks for all its tools on the first turn and answers on the second.
 @Injectable()
 export class MockPlanner extends Planner {
-  plan({ task }: PlanningContext): Promise<PlanResult> {
-    const toolCalls: PlannedToolCall[] = [
+  next({ task, history }: TurnContext): Promise<ModelTurn> {
+    if (history.some((entry) => entry.kind === 'model')) {
+      const toolResults = history.filter((entry) => entry.kind === 'tool');
+
+      return Promise.resolve({
+        text: `Completed ${toolResults.length} tool calls.`,
+        toolCalls: [],
+        raw: null,
+        usage: null,
+      });
+    }
+
+    const toolCalls: ModelToolCall[] = [
       {
         toolName: 'getTransactions',
         input: { from: '2025-10-01', to: '2025-12-31' },
@@ -34,13 +44,6 @@ export class MockPlanner extends Planner {
       });
     }
 
-    return Promise.resolve({ toolCalls, usage: null });
-  }
-
-  answer({ results }: AnswerContext): Promise<AnswerResult> {
-    return Promise.resolve({
-      answer: `Completed ${results.length} tool calls.`,
-      usage: null,
-    });
+    return Promise.resolve({ text: null, toolCalls, raw: null, usage: null });
   }
 }

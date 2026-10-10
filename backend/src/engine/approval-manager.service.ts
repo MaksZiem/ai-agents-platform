@@ -7,7 +7,12 @@ import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
-import type { PlannedToolCall } from './planner.js';
+
+export interface ApprovalRequest {
+  toolName: string;
+  input: Record<string, unknown>;
+  reason: string | null;
+}
 
 @Injectable()
 export class ApprovalManager {
@@ -21,7 +26,7 @@ export class ApprovalManager {
   request(
     execution: Execution,
     step: ExecutionStep,
-    toolCall: PlannedToolCall,
+    request: ApprovalRequest,
   ): Promise<boolean> {
     return this.dataSource.transaction(async (manager) => {
       const paused = await this.state.transition(
@@ -41,8 +46,9 @@ export class ApprovalManager {
           executionId: execution.id,
           stepId: step.id,
           userId: execution.userId,
-          toolName: toolCall.toolName,
-          input: toolCall.input,
+          toolName: request.toolName,
+          input: request.input,
+          reason: request.reason,
         }),
       );
 
@@ -52,6 +58,10 @@ export class ApprovalManager {
 
   findForStep(stepId: string): Promise<Approval | null> {
     return this.approvalsRepository.findOneBy({ stepId });
+  }
+
+  countForExecution(executionId: string): Promise<number> {
+    return this.approvalsRepository.countBy({ executionId });
   }
 
   async cancelPending(executionId: string): Promise<void> {

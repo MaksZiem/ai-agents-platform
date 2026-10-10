@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { z } from 'zod';
 import { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import { AgentTool } from '../agents/entities/agent-tool.entity.js';
+import { KnowledgeService } from '../knowledge/knowledge.service.js';
+import type { ToolContext } from '../tools/tool-definition.js';
 import { ToolsService } from '../tools/tools.service.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 
@@ -26,6 +28,7 @@ export class ToolExecutor {
     @InjectRepository(AgentPermission)
     private readonly agentPermissionsRepository: Repository<AgentPermission>,
     private readonly toolsService: ToolsService,
+    private readonly knowledgeService: KnowledgeService,
   ) {}
 
   async execute({
@@ -85,7 +88,10 @@ export class ToolExecutor {
     let output: unknown;
 
     try {
-      output = await tool.execute(parsedInput.data);
+      output = await tool.execute(
+        parsedInput.data,
+        this.createContext(agentId),
+      );
     } catch (error) {
       throw new ToolExecutionError(
         'EXECUTION_FAILED',
@@ -104,5 +110,13 @@ export class ToolExecutor {
     }
 
     return { status: 'completed', output: parsedOutput.data };
+  }
+
+  private createContext(agentId: string): ToolContext {
+    return {
+      agentId,
+      searchDocuments: (query, limit) =>
+        this.knowledgeService.search(agentId, query, limit),
+    };
   }
 }

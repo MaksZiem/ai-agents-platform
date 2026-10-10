@@ -30,6 +30,10 @@ export class Agent {
   @Column({ type: 'text', nullable: true })
   description: string | null;
 
+  // An emoji or icon name chosen in the UI.
+  @Column({ type: 'varchar', length: 32, nullable: true })
+  icon: string | null;
+
   @Column({ type: 'text' })
   instructions: string;
 

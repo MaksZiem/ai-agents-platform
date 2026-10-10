@@ -22,6 +22,11 @@ export class CreateAgentDto {
   @MaxLength(500)
   description?: string;
 
+  @IsOptional()
+  @IsString()
+  @MaxLength(32)
+  icon?: string;
+
   @IsString()
   @IsNotEmpty()
   instructions: string;

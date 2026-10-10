@@ -5,13 +5,14 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { type FindOptionsWhere, Repository } from 'typeorm';
 import { AgentsService } from '../agents/agents.service.js';
 import { AgentStatus } from '../agents/entities/agent.entity.js';
 import { ApprovalManager } from '../engine/approval-manager.service.js';
 import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
 import { ExecutionStateManager } from '../engine/execution-state-manager.service.js';
 import { Execution } from './entities/execution.entity.js';
+import { computeMetrics } from './execution-metrics.js';
 import { ExecutionStatus, isTerminal } from './execution-status.js';
 
 @Injectable()
@@ -54,9 +55,22 @@ export class ExecutionsService {
     return execution;
   }
 
-  findAll(userId: string, agentId?: string): Promise<Execution[]> {
+  findAll(
+    userId: string,
+    filters: { agentId?: string; status?: ExecutionStatus } = {},
+  ): Promise<Execution[]> {
+    const where: FindOptionsWhere<Execution> = { userId };
+
+    if (filters.agentId) {
+      where.agentId = filters.agentId;
+    }
+
+    if (filters.status) {
+      where.status = filters.status;
+    }
+
     return this.executionsRepository.find({
-      where: agentId ? { userId, agentId } : { userId },
+      where,
       relations: { agent: true },
       order: { createdAt: 'DESC' },
     });
@@ -64,10 +78,20 @@ export class ExecutionsService {
 
   async findAllForAgent(agentId: string, userId: string) {
     await this.agentsService.findOne(agentId, userId);
-    return this.findAll(userId, agentId);
+    return this.findAll(userId, { agentId });
   }
 
-  async findOne(id: string, userId: string): Promise<Execution> {
+  async findOne(id: string, userId: string) {
+    const execution = await this.findExecution(id, userId);
+    const approvalRequests = await this.approvals.countForExecution(id);
+
+    return {
+      ...execution,
+      metrics: computeMetrics(execution, execution.steps, approvalRequests),
+    };
+  }
+
+  private async findExecution(id: string, userId: string): Promise<Execution> {
     const execution = await this.executionsRepository.findOne({
       where: { id, userId },
       relations: { agent: true, steps: true },
@@ -81,8 +105,8 @@ export class ExecutionsService {
     return execution;
   }
 
-  async cancel(id: string, userId: string): Promise<Execution> {
-    const execution = await this.findOne(id, userId);
+  async cancel(id: string, userId: string) {
+    const execution = await this.findExecution(id, userId);
 
     if (isTerminal(execution.status)) {
       throw new ConflictException(`Execution is already ${execution.status}`);

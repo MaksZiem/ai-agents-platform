@@ -21,7 +21,7 @@ type TransitionChanges = Partial<
   Pick<Execution, 'result' | 'error' | 'startedAt' | 'finishedAt'>
 >;
 
-type StepResult = Partial<Pick<ExecutionStep, 'output' | 'error'>>;
+type StepResult = Partial<Pick<ExecutionStep, 'output' | 'error' | 'type'>>;
 
 @Injectable()
 export class ExecutionStateManager {
@@ -131,6 +131,19 @@ export class ExecutionStateManager {
         usage.outputTokens,
       );
     });
+  }
+
+  async interruptRunningSteps(executionId: string): Promise<void> {
+    const steps = await this.stepsRepository.findBy({
+      executionId,
+      status: StepStatus.RUNNING,
+    });
+
+    for (const step of steps) {
+      await this.finishStep(step, StepStatus.FAILED, {
+        error: 'Interrupted: the worker stopped while this step was running',
+      });
+    }
   }
 
   async skipUnfinishedSteps(executionId: string): Promise<void> {

@@ -9,6 +9,7 @@ import {
 import { AuthService } from './auth.service.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
 import { Public } from './decorators/public.decorator.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import type { JwtPayload } from './jwt-payload.js';
@@ -33,5 +34,14 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: JwtPayload) {
     return this.authService.getProfile(user.sub);
+  }
+
+  @Post('change-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  changePassword(
+    @Body() dto: ChangePasswordDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.authService.changePassword(user.sub, dto);
   }
 }
