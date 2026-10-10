@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import type { DataSourceOptions } from 'typeorm';
 import { Agent } from '../agents/entities/agent.entity.js';
+import { Approval } from '../approvals/entities/approval.entity.js';
 import { User } from '../users/entities/user.entity.js';
 import { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import { AgentTool } from '../agents/entities/agent-tool.entity.js';
@@ -17,6 +18,7 @@ export function createDataSourceOptions(url: string): DataSourceOptions {
       AgentPermission,
       Execution,
       ExecutionStep,
+      Approval,
       User,
     ],
     migrations: [join(import.meta.dirname, 'migrations', '*.js')],

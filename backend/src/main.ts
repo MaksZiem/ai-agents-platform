@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module.js';
 import type { Env } from './config/env.js';
+import { SocketIoAdapter } from './realtime/socket-io.adapter.js';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -11,6 +12,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.enableCors({ origin: config.get('FRONTEND_URL', { infer: true }) });
   app.enableShutdownHooks();
+  app.useWebSocketAdapter(
+    new SocketIoAdapter(app, config.get('FRONTEND_URL', { infer: true })),
+  );
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

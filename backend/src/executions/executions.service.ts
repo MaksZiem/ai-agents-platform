@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AgentsService } from '../agents/agents.service.js';
 import { AgentStatus } from '../agents/entities/agent.entity.js';
+import { ApprovalManager } from '../engine/approval-manager.service.js';
 import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
 import { ExecutionStateManager } from '../engine/execution-state-manager.service.js';
 import { Execution } from './entities/execution.entity.js';
@@ -21,6 +22,7 @@ export class ExecutionsService {
     private readonly agentsService: AgentsService,
     private readonly state: ExecutionStateManager,
     private readonly scheduler: ExecutionScheduler,
+    private readonly approvals: ApprovalManager,
   ) {}
 
   async create(agentId: string, task: string, userId: string) {
@@ -94,6 +96,7 @@ export class ExecutionsService {
     }
 
     await this.state.skipUnfinishedSteps(id);
+    await this.approvals.cancelPending(id);
 
     return this.findOne(id, userId);
   }

@@ -47,6 +47,9 @@ export class ExecutionStep {
   @Column({ type: 'text', nullable: true })
   error: string | null;
 
+  @Column({ type: 'int', default: 1 })
+  attempt: number;
+
   @Column({ type: 'timestamptz', nullable: true })
   startedAt: Date | null;
 

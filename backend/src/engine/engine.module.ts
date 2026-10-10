@@ -3,9 +3,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import { AgentTool } from '../agents/entities/agent-tool.entity.js';
+import { Approval } from '../approvals/entities/approval.entity.js';
 import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ToolsModule } from '../tools/tools.module.js';
+import { ApprovalManager } from './approval-manager.service.js';
 import { EXECUTIONS_QUEUE } from './execution-queue.js';
 import { ExecutionRunner } from './execution-runner.service.js';
 import { ExecutionScheduler } from './execution-scheduler.service.js';
@@ -21,6 +23,7 @@ import { ToolExecutor } from './tool-executor.service.js';
       AgentPermission,
       Execution,
       ExecutionStep,
+      Approval,
     ]),
     BullModule.registerQueue({ name: EXECUTIONS_QUEUE }),
     ToolsModule,
@@ -32,7 +35,8 @@ import { ToolExecutor } from './tool-executor.service.js';
     ExecutionRunner,
     ExecutionScheduler,
     ExecutionsProcessor,
+    ApprovalManager,
   ],
-  exports: [ExecutionStateManager, ExecutionScheduler],
+  exports: [ExecutionStateManager, ExecutionScheduler, ApprovalManager],
 })
 export class EngineModule {}

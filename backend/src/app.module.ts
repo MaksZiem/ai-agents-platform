@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgentsModule } from './agents/agents.module.js';
 import { validateEnv, type Env } from './config/env.js';
@@ -10,6 +11,9 @@ import { HealthModule } from './health/health.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { ToolsModule } from './tools/tools.module.js';
 import { ExecutionsModule } from './executions/executions.module.js';
+import { ApprovalsModule } from './approvals/approvals.module.js';
+import { RealtimeModule } from './realtime/realtime.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 @Module({
   imports: [
@@ -28,11 +32,15 @@ import { ExecutionsModule } from './executions/executions.module.js';
         connection: parseRedisUrl(config.get('REDIS_URL', { infer: true })),
       }),
     }),
+    EventEmitterModule.forRoot(),
     HealthModule,
     AgentsModule,
     AuthModule,
     ToolsModule,
     ExecutionsModule,
+    ApprovalsModule,
+    RealtimeModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
