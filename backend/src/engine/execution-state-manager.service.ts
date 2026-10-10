@@ -15,6 +15,7 @@ import {
   STEP_UPDATED,
   type StepUpdatedEvent,
 } from './execution-events.js';
+import type { LlmUsage } from './planner.js';
 
 type TransitionChanges = Partial<
   Pick<Execution, 'result' | 'error' | 'startedAt' | 'finishedAt'>
@@ -111,6 +112,25 @@ export class ExecutionStateManager {
     step.error = error;
     await this.stepsRepository.save(step);
     this.emitStep(step);
+  }
+
+  async recordLlmUsage(executionId: string, usage: LlmUsage): Promise<void> {
+    await this.executionsRepository.manager.transaction(async (manager) => {
+      const where = { id: executionId };
+      await manager.increment(Execution, where, 'llmCalls', 1);
+      await manager.increment(
+        Execution,
+        where,
+        'inputTokens',
+        usage.inputTokens,
+      );
+      await manager.increment(
+        Execution,
+        where,
+        'outputTokens',
+        usage.outputTokens,
+      );
+    });
   }
 
   async skipUnfinishedSteps(executionId: string): Promise<void> {

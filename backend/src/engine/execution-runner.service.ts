@@ -12,9 +12,12 @@ import { StepStatus, StepType } from '../executions/execution-step-enums.js';
 import { ApprovalManager } from './approval-manager.service.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
 import {
+  type AnswerContext,
+  type AnswerResult,
   Planner,
   type PlannedToolCall,
   type PlanningContext,
+  type PlanResult,
 } from './planner.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 import { ToolExecutor } from './tool-executor.service.js';
@@ -84,29 +87,26 @@ export class ExecutionRunner {
     }
 
     const planStep = await this.state.startStep(execution.id, 0, StepType.PLAN);
-    let toolCalls: PlannedToolCall[];
+    let plan: PlanResult;
 
     try {
-      toolCalls = await this.planner.plan(
+      plan = await this.planner.plan(
         await this.buildPlanningContext(execution),
       );
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await this.state.finishStep(planStep, StepStatus.FAILED, {
-        error: `Planning failed: ${message}`,
-      });
-      await this.state.transition(execution, ExecutionStatus.FAILED, {
-        error: 'Planning failed',
-        finishedAt: new Date(),
-      });
+      await this.failModelStep(execution, planStep, 'Planning failed', error);
       return;
     }
 
+    if (plan.usage) {
+      await this.state.recordLlmUsage(execution.id, plan.usage);
+    }
+
     await this.state.finishStep(planStep, StepStatus.COMPLETED, {
-      output: { toolCalls },
+      output: { toolCalls: plan.toolCalls, usage: plan.usage },
     });
 
-    await this.executeFrom(execution, toolCalls, 0);
+    await this.executeFrom(execution, plan.toolCalls, 0);
   }
 
   private async resume(execution: Execution): Promise<void> {
@@ -163,9 +163,7 @@ export class ExecutionRunner {
   private async buildPlanningContext(
     execution: Execution,
   ): Promise<PlanningContext> {
-    const agent = await this.agentsRepository.findOneByOrFail({
-      id: execution.agentId,
-    });
+    const agent = await this.loadAgent(execution);
     const agentTools = await this.agentToolsRepository.findBy({
       agentId: execution.agentId,
     });
@@ -175,6 +173,29 @@ export class ExecutionRunner {
     });
 
     return { task: execution.task, agent, tools };
+  }
+
+  private async buildAnswerContext(
+    execution: Execution,
+  ): Promise<AnswerContext> {
+    const agent = await this.loadAgent(execution);
+    const toolSteps = await this.stepsRepository.find({
+      where: { executionId: execution.id, type: StepType.TOOL_CALL },
+      order: { position: 'ASC' },
+    });
+    const results = toolSteps.map((step) => ({
+      toolName: step.toolName ?? '',
+      input: step.input,
+      status: step.status,
+      output: step.output,
+      error: step.error,
+    }));
+
+    return { task: execution.task, agent, results };
+  }
+
+  private loadAgent(execution: Execution): Promise<Agent> {
+    return this.agentsRepository.findOneByOrFail({ id: execution.agentId });
   }
 
   private async executeFrom(
@@ -209,17 +230,65 @@ export class ExecutionRunner {
       return;
     }
 
-    const result = `Completed ${toolCalls.length} tool calls.`;
+    await this.finish(execution, toolCalls.length + 1);
+  }
+
+  private async finish(execution: Execution, position: number): Promise<void> {
     const finalStep = await this.state.startStep(
       execution.id,
-      toolCalls.length + 1,
+      position,
       StepType.FINAL_ANSWER,
     );
+
+    let answer: AnswerResult;
+
+    try {
+      answer = await this.planner.answer(
+        await this.buildAnswerContext(execution),
+      );
+    } catch (error) {
+      await this.failModelStep(
+        execution,
+        finalStep,
+        'Final answer failed',
+        error,
+      );
+      return;
+    }
+
+    if (answer.usage) {
+      await this.state.recordLlmUsage(execution.id, answer.usage);
+    }
+
+    // The user may have cancelled while the model was writing the answer.
+    if (!(await this.isStillRunning(execution))) {
+      await this.state.finishStep(finalStep, StepStatus.SKIPPED);
+      return;
+    }
+
     await this.state.finishStep(finalStep, StepStatus.COMPLETED, {
-      output: { result },
+      output: { result: answer.answer, usage: answer.usage },
     });
     await this.state.transition(execution, ExecutionStatus.COMPLETED, {
-      result,
+      result: answer.answer,
+      finishedAt: new Date(),
+    });
+  }
+
+  // Model errors (timeout, bad key, quota, unknown model) are expected,
+  // so they fail the step with a clear reason instead of crashing the engine.
+  private async failModelStep(
+    execution: Execution,
+    step: ExecutionStep,
+    reason: string,
+    error: unknown,
+  ): Promise<void> {
+    const message = error instanceof Error ? error.message : String(error);
+    await this.state.finishStep(step, StepStatus.FAILED, {
+      error: `${reason}: ${message}`,
+    });
+    await this.state.transition(execution, ExecutionStatus.FAILED, {
+      error: reason,
       finishedAt: new Date(),
     });
   }

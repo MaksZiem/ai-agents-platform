@@ -33,7 +33,12 @@ export class ExecutionsService {
     }
 
     const execution = await this.executionsRepository.save(
-      this.executionsRepository.create({ agentId, userId, task }),
+      this.executionsRepository.create({
+        agentId,
+        userId,
+        task,
+        model: agent.model,
+      }),
     );
 
     try {

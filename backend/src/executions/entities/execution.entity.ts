@@ -52,6 +52,18 @@ export class Execution {
   @Column({ type: 'text', nullable: true })
   error: string | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  model: string | null;
+
+  @Column({ type: 'int', default: 0 })
+  llmCalls: number;
+
+  @Column({ type: 'int', default: 0 })
+  inputTokens: number;
+
+  @Column({ type: 'int', default: 0 })
+  outputTokens: number;
+
   @Column({ type: 'timestamptz', nullable: true })
   startedAt: Date | null;
 
