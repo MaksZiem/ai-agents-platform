@@ -1,3 +1,6 @@
+import type { ExecutionStep } from "@/lib/types";
+
+
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
   minute: "2-digit",
@@ -18,3 +21,21 @@ export function formatExecutionDate(iso: string, now = new Date()) {
 
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
+
+export function formatDuration(ms: number) {
+  if (ms < 1000) return `${ms}ms`;
+
+  const seconds = ms / 1000;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}m ${Math.round(seconds % 60)}s`;
+}
+
+export function getStepDurationMs(
+  step: Pick<ExecutionStep, "startedAt" | "finishedAt">,
+) {
+  if (!step.startedAt || !step.finishedAt) return null;
+  return new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime();
+}
+

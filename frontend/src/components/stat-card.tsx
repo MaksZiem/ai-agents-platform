@@ -10,12 +10,17 @@ const TONE_CLASSES: Record<StatTone, string> = {
 
 type StatCardProps = {
   label: string;
-  value: number;
+  value: number | string;
   href?: string;
   tone?: StatTone;
 };
 
-export function StatCard({ label, value, href, tone = "default" }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  href,
+  tone = "default",
+}: StatCardProps) {
   const baseClasses =
     "flex flex-col gap-1 rounded-lg border border-border bg-surface px-3 py-2.5";
 
@@ -25,7 +30,7 @@ export function StatCard({ label, value, href, tone = "default" }: StatCardProps
       <span
         className={`font-mono text-lg font-medium tabular-nums ${TONE_CLASSES[tone]}`}
       >
-        {value.toLocaleString("en-US")}
+        {typeof value === "number" ? value.toLocaleString("en-US") : value}
       </span>
     </>
   );
