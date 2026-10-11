@@ -90,3 +90,17 @@ export type ExecutionDetail = ExecutionWithAgent & {
   metrics: ExecutionMetrics;
 };
 
+export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
+
+export type Approval = {
+  id: string;
+  executionId: string;
+  stepId: string;
+  toolName: string;
+  input: Record<string, unknown>;
+  reason: string | null;
+  status: ApprovalStatus;
+  decidedAt: string | null;
+  createdAt: string;
+};
+

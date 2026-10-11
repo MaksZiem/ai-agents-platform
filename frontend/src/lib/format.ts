@@ -39,3 +39,11 @@ export function getStepDurationMs(
   return new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime();
 }
 
+export function formatValue(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value === null || value === undefined) return "—";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+

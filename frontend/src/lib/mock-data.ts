@@ -1,4 +1,4 @@
-import type { ExecutionDetail, ExecutionStep } from "@/lib/types";
+import type { Approval, ExecutionDetail, ExecutionStep } from "@/lib/types";
 
 const EXECUTION_ID = "1";
 
@@ -124,5 +124,25 @@ export function getMockExecution(id: string): ExecutionDetail | null {
       outputTokens: 2211,
       totalTokens: 8421,
     },
+  };
+}
+
+export function getMockPendingApproval(executionId: string): Approval | null {
+  if (executionId !== EXECUTION_ID) return null;
+
+  return {
+    id: "approval-1",
+    executionId: EXECUTION_ID,
+    stepId: "step-7",
+    toolName: "sendEmail",
+    input: {
+      to: "accountant@company.com",
+      subject: "Q1 Financial Report",
+      attachment: "Q1 Financial Report.pdf",
+    },
+    reason: "The user asked for the completed report to be sent to the accountant.",
+    status: "PENDING",
+    decidedAt: null,
+    createdAt: new Date(Date.now() - 2 * 60_000).toISOString(),
   };
 }
