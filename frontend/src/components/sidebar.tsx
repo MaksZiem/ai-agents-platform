@@ -10,8 +10,11 @@ import {
   Wrench,
   ShieldCheck,
   Settings,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
+import { logout } from "@/lib/auth-actions";
+import type { User } from "@/lib/types";
 
 type NavItem = {
   href: string;
@@ -34,7 +37,11 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar() {
+type SidebarProps = {
+  user: User;
+};
+
+export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -65,6 +72,22 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      <div className="mt-auto flex items-center gap-2 border-t border-border px-2.5 pt-3">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[13px] font-medium">{user.name}</p>
+          <p className="truncate text-xs text-fg-muted">{user.email}</p>
+        </div>
+        <form action={logout}>
+          <button
+            type="submit"
+            aria-label="Sign out"
+            className="flex size-8 items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            <LogOut className="size-4" strokeWidth={1.75} aria-hidden />
+          </button>
+        </form>
+      </div>
     </aside>
   );
 }

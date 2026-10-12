@@ -1,19 +1,43 @@
 import { notFound } from "next/navigation";
 import { ApprovalCard } from "@/components/approval-card";
-import { Button } from "@/components/button";
+import { ExecutionLiveUpdates } from "@/components/execution-live-updates";
 import { ExecutionMetricsRow } from "@/components/execution-metrics";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
 import { StepDetails } from "@/components/step-details";
 import { StepTimeline } from "@/components/step-timeline";
-import { getMockExecution, getMockPendingApproval } from "@/lib/mock-data";
-import type { ExecutionStatus, ExecutionStep } from "@/lib/types";
+import { SubmitButton } from "@/components/submit-button";
+import { ApiError, apiFetch } from "@/lib/api";
+import { cancelExecution } from "@/lib/execution-actions";
+import { getAccessToken } from "@/lib/session";
+import type {
+  Approval,
+  ExecutionDetail,
+  ExecutionStatus,
+  ExecutionStep,
+} from "@/lib/types";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = [
   "QUEUED",
   "RUNNING",
   "WAITING_FOR_APPROVAL",
 ];
+
+async function getExecution(id: string) {
+  try {
+    return await apiFetch<ExecutionDetail>(`/executions/${id}`);
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+      notFound();
+    }
+    throw error;
+  }
+}
+
+async function getPendingApproval(executionId: string) {
+  const approvals = await apiFetch<Approval[]>("/approvals?status=PENDING");
+  return approvals.find((approval) => approval.executionId === executionId) ?? null;
+}
 
 function pickDefaultStep(steps: ExecutionStep[]) {
   return (
@@ -34,11 +58,13 @@ export default async function ExecutionPage({
 }: PageProps<"/executions/[id]">) {
   const { id } = await params;
   const { step: stepParam } = await searchParams;
-  const execution = getMockExecution(id);
 
-  if (!execution) notFound();
+  const [execution, approval, token] = await Promise.all([
+    getExecution(id),
+    getPendingApproval(id),
+    getAccessToken(),
+  ]);
 
-  const approval = getMockPendingApproval(execution.id);
   const isActive = ACTIVE_STATUSES.includes(execution.status);
   const selectedStep =
     execution.steps.find((step) => step.id === stepParam) ??
@@ -51,8 +77,15 @@ export default async function ExecutionPage({
         description={execution.task}
         actions={
           <>
+            {isActive && token && (
+              <ExecutionLiveUpdates executionId={execution.id} token={token} />
+            )}
             <StatusBadge status={execution.status} />
-            {isActive && <Button>Cancel</Button>}
+            {isActive && (
+              <form action={cancelExecution.bind(null, execution.id)}>
+                <SubmitButton pendingLabel="Cancelling…">Cancel</SubmitButton>
+              </form>
+            )}
           </>
         }
       />

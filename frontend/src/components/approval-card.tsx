@@ -1,5 +1,6 @@
-import { Button } from "@/components/button";
 import { StatusBadge } from "@/components/status-badge";
+import { SubmitButton } from "@/components/submit-button";
+import { approveApproval, rejectApproval } from "@/lib/execution-actions";
 import { formatValue } from "@/lib/format";
 import type { Approval } from "@/lib/types";
 
@@ -37,8 +38,16 @@ export function ApprovalCard({ approval }: ApprovalCardProps) {
       </dl>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button>Reject</Button>
-        <Button variant="primary">Approve</Button>
+        <form action={rejectApproval.bind(null, approval.id)}>
+          <SubmitButton pendingLabel="Rejecting…" className="w-full">
+            Reject
+          </SubmitButton>
+        </form>
+        <form action={approveApproval.bind(null, approval.id)}>
+          <SubmitButton variant="primary" pendingLabel="Approving…" className="w-full">
+            Approve
+          </SubmitButton>
+        </form>
       </div>
     </section>
   );
