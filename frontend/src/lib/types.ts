@@ -33,11 +33,7 @@ export type Execution = {
   updatedAt: string;
 };
 
-export type AgentSummary = {
-  id: string;
-  name: string;
-  icon: string | null;
-};
+export type AgentSummary = Pick<Agent, "id" | "name" | "icon">;
 
 export type ExecutionWithAgent = Execution & {
   agent: AgentSummary;
@@ -114,3 +110,22 @@ export type AuthResponse = {
   accessToken: string;
   user: User;
 }
+
+export type AgentStatus = "ACTIVE" | "INACTIVE";
+
+export type LlmProvider = "GEMINI";
+
+export type Agent = {
+  id: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  instructions: string;
+  status: AgentStatus;
+  provider: LlmProvider;
+  model: string;
+  temperature: number;
+  maxOutputTokens: number;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -46,4 +46,12 @@ export function formatValue(value: unknown) {
   return String(value);
 }
 
+export function formatShortDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 
