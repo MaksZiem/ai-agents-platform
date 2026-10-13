@@ -44,4 +44,10 @@ export class AuthController {
   ) {
     return this.authService.changePassword(user.sub, dto);
   }
+
+  @Post('socket-token')
+  @HttpCode(HttpStatus.OK)
+  socketToken(@CurrentUser() user: JwtPayload) {
+    return this.authService.createSocketToken(user);
+  }
 }

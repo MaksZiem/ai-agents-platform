@@ -13,6 +13,8 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 
+const SOCKET_TOKEN_TTL_SECONDS = 60;
+
 export interface AuthResponse {
   accessToken: string;
   user: User;
@@ -82,9 +84,26 @@ export class AuthService {
   }
 
   private async createAuthResponse(user: User): Promise<AuthResponse> {
-    const payload: JwtPayload = { sub: user.id, email: user.email };
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      type: 'access',
+    };
     const accessToken = await this.jwtService.signAsync(payload);
 
     return { accessToken, user };
+  }
+
+  async createSocketToken(user: JwtPayload): Promise<{ token: string }> {
+    const payload: JwtPayload = {
+      sub: user.sub,
+      email: user.email,
+      type: 'socket',
+    };
+    const token = await this.jwtService.signAsync(payload, {
+      expiresIn: SOCKET_TOKEN_TTL_SECONDS,
+    });
+
+    return { token };
   }
 }

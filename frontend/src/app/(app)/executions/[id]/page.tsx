@@ -9,7 +9,6 @@ import { StepTimeline } from "@/components/step-timeline";
 import { SubmitButton } from "@/components/submit-button";
 import { ApiError, apiFetch } from "@/lib/api";
 import { cancelExecution } from "@/lib/execution-actions";
-import { getAccessToken } from "@/lib/session";
 import type {
   Approval,
   ExecutionDetail,
@@ -59,10 +58,9 @@ export default async function ExecutionPage({
   const { id } = await params;
   const { step: stepParam } = await searchParams;
 
-  const [execution, approval, token] = await Promise.all([
+  const [execution, approval] = await Promise.all([
     getExecution(id),
     getPendingApproval(id),
-    getAccessToken(),
   ]);
 
   const isActive = ACTIVE_STATUSES.includes(execution.status);
@@ -77,9 +75,7 @@ export default async function ExecutionPage({
         description={execution.task}
         actions={
           <>
-            {isActive && token && (
-              <ExecutionLiveUpdates executionId={execution.id} token={token} />
-            )}
+            {isActive && <ExecutionLiveUpdates executionId={execution.id} />}
             <StatusBadge status={execution.status} />
             {isActive && (
               <form action={cancelExecution.bind(null, execution.id)}>

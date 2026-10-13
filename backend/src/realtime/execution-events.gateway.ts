@@ -45,6 +45,10 @@ export class ExecutionEventsGateway implements OnGatewayInit {
       this.jwtService
         .verifyAsync<JwtPayload>(token)
         .then((user) => {
+          if (user.type !== 'socket') {
+            next(new Error('Unauthorized'));
+            return;
+          }
           socket.data.user = user;
           next();
         })

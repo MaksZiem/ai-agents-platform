@@ -3,24 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { io } from "socket.io-client";
+import { getSocketToken } from "@/lib/socket-actions";
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001";
 const REFRESH_DELAY_MS = 250;
 
 type ExecutionLiveUpdatesProps = {
   executionId: string;
-  token: string;
 };
 
-export function ExecutionLiveUpdates({
-  executionId,
-  token,
-}: ExecutionLiveUpdatesProps) {
+export function ExecutionLiveUpdates({ executionId }: ExecutionLiveUpdatesProps) {
   const router = useRouter();
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    const socket = io(`${WS_URL}/executions`, { auth: { token } });
+    const socket = io(`${WS_URL}/executions`, {
+      auth: (sendAuth) => {
+        getSocketToken()
+          .then((token) => sendAuth({ token }))
+          .catch(() => sendAuth({}));
+      },
+    });
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
     function scheduleRefresh() {
@@ -40,9 +43,9 @@ export function ExecutionLiveUpdates({
       clearTimeout(refreshTimer);
       socket.disconnect();
     };
-  }, [executionId, token, router]);
+  }, [executionId, router]);
 
-  if(!connected) return null
+  if (!connected) return null;
 
   return (
     <span className="inline-flex items-center gap-1.5 text-xs text-fg-muted">
