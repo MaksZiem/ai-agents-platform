@@ -1,6 +1,5 @@
 import type { ExecutionStep } from "@/lib/types";
 
-
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
   minute: "2-digit",
@@ -36,7 +35,9 @@ export function getStepDurationMs(
   step: Pick<ExecutionStep, "startedAt" | "finishedAt">,
 ) {
   if (!step.startedAt || !step.finishedAt) return null;
-  return new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime();
+  return (
+    new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime()
+  );
 }
 
 export function formatValue(value: unknown) {
@@ -54,4 +55,8 @@ export function formatShortDate(iso: string) {
   });
 }
 
-
+export function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}

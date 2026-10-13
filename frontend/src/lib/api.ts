@@ -47,21 +47,29 @@ export async function apiFetch<T>(
   const response = await fetch(`${API_URL}${path}`, {
     ...init,
     headers: {
-      "Content-Type": "application/json",
+      ...(body instanceof FormData
+        ? {}
+        : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body === undefined ? undefined : JSON.stringify(body),
-    cache: "no-store"
+    body: serializeBody(body),
+    cache: "no-store",
   });
 
-  if(auth && response.status === 401) redirect("/login")
+  if (auth && response.status === 401) redirect("/login");
 
-  if(!response.ok) {
-    throw new ApiError(response.status, await readErrorMessage(response))
+  if (!response.ok) {
+    throw new ApiError(response.status, await readErrorMessage(response));
   }
 
   if (response.status === 204) return undefined as T;
 
-  return response.json() as Promise<T>
+  return response.json() as Promise<T>;
+}
+
+function serializeBody(body: unknown) {
+  if (body === undefined) return undefined;
+  if (body instanceof FormData) return body;
+  return JSON.stringify(body);
 }

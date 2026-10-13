@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AgentKnowledge } from "@/components/agent-knowledge";
 import { AgentPermissions } from "@/components/agent-permissions";
 import { AgentStatusBadge } from "@/components/agent-status-badge";
 import { AgentTools } from "@/components/agent-tools";
@@ -6,31 +7,36 @@ import { buttonClasses } from "@/components/button";
 import { DeleteAgentButton } from "@/components/delete-agent-button";
 import { PageHeader } from "@/components/page-header";
 import { RecentExecutions } from "@/components/recent-executions";
+import { RunTaskForm } from "@/components/run-task-form";
 import { SubmitButton } from "@/components/submit-button";
 import { duplicateAgent, setAgentStatus } from "@/lib/agent-actions";
 import { getAgent } from "@/lib/agents";
 import { apiFetch } from "@/lib/api";
+import { runTask } from "@/lib/execution-actions";
 import { formatShortDate } from "@/lib/format";
 import type {
+  AgentDocument,
   AgentTool,
   ExecutionWithAgent,
+  KnowledgeDocument,
   ResourcePermissions,
   Tool,
 } from "@/lib/types";
-import { RunTaskForm } from "@/components/run-task-form";
-import { runTask } from "@/lib/execution-actions";
 
 const CARD_CLASSES = "rounded-xl border border-border bg-surface p-[18px]";
 
 export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
   const { id } = await params;
   const agent = await getAgent(id);
-  const [executions, tools, agentTools, permissions] = await Promise.all([
-    apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`),
-    apiFetch<Tool[]>("/tools"),
-    apiFetch<AgentTool[]>(`/agents/${agent.id}/tools`),
-    apiFetch<ResourcePermissions[]>(`/agents/${agent.id}/permissions`),
-  ]);
+  const [executions, tools, agentTools, permissions, agentDocuments, library] =
+    await Promise.all([
+      apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`),
+      apiFetch<Tool[]>("/tools"),
+      apiFetch<AgentTool[]>(`/agents/${agent.id}/tools`),
+      apiFetch<ResourcePermissions[]>(`/agents/${agent.id}/permissions`),
+      apiFetch<AgentDocument[]>(`/agents/${agent.id}/knowledge`),
+      apiFetch<KnowledgeDocument[]>("/knowledge"),
+    ]);
 
   const isActive = agent.status === "ACTIVE";
 
@@ -90,6 +96,11 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
           />
 
           <AgentPermissions agentId={agent.id} permissions={permissions} />
+          <AgentKnowledge
+            agentId={agent.id}
+            attached={agentDocuments}
+            library={library}
+          />
 
           <RecentExecutions
             title="Execution history"
