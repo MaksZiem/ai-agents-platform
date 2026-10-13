@@ -113,3 +113,19 @@ export async function disableTool(agentId: string, toolName: string) {
   }
   refresh();
 }
+
+export async function savePermissions(agentId: string, formData: FormData) {
+  const permissions = formData
+    .getAll("permission")
+    .map(String)
+    .map((value) => {
+      const [resource, action] = value.split(":");
+      return { resource, action };
+    });
+
+  await apiFetch(`/agents/${agentId}/permissions`, {
+    method: "PUT",
+    body: { permissions },
+  });
+  refresh();
+}

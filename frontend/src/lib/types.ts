@@ -155,3 +155,8 @@ export type AgentTool = {
   requiresApproval: boolean;
   enabledAt: string;
 };
+
+export type ResourcePermissions = {
+  resource: ToolResource;
+  actions: { action: ToolAction; granted: boolean }[];
+};

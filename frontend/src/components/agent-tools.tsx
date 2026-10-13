@@ -1,13 +1,7 @@
 import { SubmitSwitch } from "@/components/submit-switch";
 import { disableTool, enableTool } from "@/lib/agent-actions";
-import type { AgentTool, Tool, ToolResource } from "@/lib/types";
-
-const RESOURCE_LABELS: Record<ToolResource, string> = {
-  financial_data: "Financial data",
-  documents: "Documents",
-  reports: "Reports",
-  email: "Email",
-};
+import { RESOURCE_LABELS } from "@/lib/tools";
+import type { AgentTool, Tool } from "@/lib/types";
 
 type AgentToolsProps = {
   agentId: string;
