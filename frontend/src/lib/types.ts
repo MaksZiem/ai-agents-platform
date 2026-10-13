@@ -160,3 +160,7 @@ export type ResourcePermissions = {
   resource: ToolResource;
   actions: { action: ToolAction; granted: boolean }[];
 };
+
+export type ApprovalWithExecution = Approval & {
+  execution: ExecutionWithAgent;
+};

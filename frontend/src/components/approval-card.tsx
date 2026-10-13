@@ -1,22 +1,34 @@
+import Link from "next/link";
 import { StatusBadge } from "@/components/status-badge";
 import { SubmitButton } from "@/components/submit-button";
 import { approveApproval, rejectApproval } from "@/lib/execution-actions";
 import { formatValue } from "@/lib/format";
-import type { Approval } from "@/lib/types";
+import type { Approval, ExecutionWithAgent } from "@/lib/types";
 
 type ApprovalCardProps = {
   approval: Approval;
+  execution?: ExecutionWithAgent;
 };
 
-export function ApprovalCard({ approval }: ApprovalCardProps) {
+export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
+  const titleId = `approval-${approval.id}`;
+
   return (
     <section
-      aria-labelledby="approval-title"
+      aria-labelledby={titleId}
       className="flex flex-col gap-4 rounded-xl border border-warning/30 bg-surface p-[18px]"
     >
       <div className="flex flex-col gap-2">
+        {execution && (
+          <Link
+            href={`/executions/${execution.id}`}
+            className="truncate text-[13px] text-fg-muted transition-colors hover:text-fg"
+          >
+            {execution.agent.name} · {execution.task}
+          </Link>
+        )}
         <StatusBadge status="WAITING_FOR_APPROVAL" />
-        <h2 id="approval-title" className="text-base font-semibold">
+        <h2 id={titleId} className="text-base font-semibold">
           The agent wants to run{" "}
           <span className="font-mono">{approval.toolName}</span>
         </h2>

@@ -39,9 +39,10 @@ function isActive(pathname: string, href: string) {
 
 type SidebarProps = {
   user: User;
+  pendingApprovals: number;
 };
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user, pendingApprovals }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -54,6 +55,7 @@ export function Sidebar({ user }: SidebarProps) {
       <nav className="flex flex-col gap-0.5">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = isActive(pathname, href);
+          const count = href === "/approvals" ? pendingApprovals : 0;
 
           return (
             <Link
@@ -68,6 +70,11 @@ export function Sidebar({ user }: SidebarProps) {
             >
               <Icon className="size-4" strokeWidth={1.75} aria-hidden />
               {label}
+              {count > 0 && (
+                <span className="ml-auto rounded-full bg-accent px-1.5 font-mono text-[11px] text-white">
+                  {count}
+                </span>
+              )}
             </Link>
           );
         })}
