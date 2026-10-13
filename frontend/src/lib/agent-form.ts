@@ -28,8 +28,8 @@ export type AgentPayload = Pick<
   Agent,
   "name" | "model" | "instructions" | "temperature" | "maxOutputTokens"
 > & {
-  description?: string;
-  icon?: string;
+  description: string | null;
+  icon: string | null;
 };
 
 export const EMPTY_AGENT_FORM: AgentFormValues = {
@@ -107,8 +107,20 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
       instructions: values.instructions,
       temperature,
       maxOutputTokens,
-      description: values.description || undefined,
-      icon: values.icon || undefined,
+      description: values.description || null,
+      icon: values.icon || null,
     },
+  };
+}
+
+export function agentToFormValues(agent: Agent): AgentFormValues {
+  return {
+    name: agent.name,
+    description: agent.description ?? "",
+    icon: agent.icon ?? "",
+    model: agent.model,
+    temperature: String(agent.temperature),
+    maxOutputTokens: String(agent.maxOutputTokens),
+    instructions: agent.instructions,
   };
 }
