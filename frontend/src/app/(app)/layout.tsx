@@ -19,7 +19,7 @@ export default async function AppLayout({ children }: AppLayoutProps) {
   ]);
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-col md:flex-row">
       <Sidebar user={user} pendingApprovals={pendingApprovals.length} />
       <main className="min-w-0 flex-1 overflow-y-auto">{children}</main>
     </div>
