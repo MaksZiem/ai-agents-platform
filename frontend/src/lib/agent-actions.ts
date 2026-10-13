@@ -90,3 +90,26 @@ export async function deleteAgent(agentId: string) {
   await apiFetch(`/agents/${agentId}`, { method: "DELETE" });
   redirect("/agents");
 }
+
+export async function enableTool(
+  agentId: string,
+  toolName: string,
+  requiresApproval: boolean,
+) {
+  await apiFetch(`/agents/${agentId}/tools/${encodeURIComponent(toolName)}`, {
+    method: "PUT",
+    body: { requiresApproval },
+  });
+  refresh();
+}
+
+export async function disableTool(agentId: string, toolName: string) {
+  try {
+    await apiFetch(`/agents/${agentId}/tools/${encodeURIComponent(toolName)}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    if (!(error instanceof ApiError && error.status === 404)) throw error;
+  }
+  refresh();
+}

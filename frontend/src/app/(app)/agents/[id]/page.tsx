@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AgentStatusBadge } from "@/components/agent-status-badge";
+import { AgentTools } from "@/components/agent-tools";
 import { buttonClasses } from "@/components/button";
 import { DeleteAgentButton } from "@/components/delete-agent-button";
 import { PageHeader } from "@/components/page-header";
@@ -9,14 +10,18 @@ import { duplicateAgent, setAgentStatus } from "@/lib/agent-actions";
 import { getAgent } from "@/lib/agents";
 import { apiFetch } from "@/lib/api";
 import { formatShortDate } from "@/lib/format";
-import type { ExecutionWithAgent } from "@/lib/types";
+import type { AgentTool, ExecutionWithAgent, Tool } from "@/lib/types";
 
 const CARD_CLASSES = "rounded-xl border border-border bg-surface p-[18px]";
 
 export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
   const { id } = await params;
   const agent = await getAgent(id);
-  const executions = await apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`);
+  const [executions, tools, agentTools] = await Promise.all([
+    apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`),
+    apiFetch<Tool[]>("/tools"),
+    apiFetch<AgentTool[]>(`/agents/${agent.id}/tools`),
+  ]);
 
   const isActive = agent.status === "ACTIVE";
 
@@ -51,6 +56,8 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
               {agent.instructions}
             </pre>
           </section>
+
+          <AgentTools agentId={agent.id} tools={tools} enabledTools={agentTools} />
 
           <RecentExecutions title="Execution history" executions={executions.slice(0, 10)} />
         </div>
