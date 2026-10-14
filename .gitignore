@@ -18,3 +18,6 @@ coverage/
 
 # TypeScript build cache
 *.tsbuildinfo
+
+# Local agent skills
+frontend/.agents/
