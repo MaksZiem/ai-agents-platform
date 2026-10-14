@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { ApprovalCard } from "@/components/approval-card";
-import { ApprovalHistory } from "@/components/approval-history";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader } from "@/components/ui/page-header";
+import { ApprovalCard } from "@/features/approvals/components/approval-card";
+import { ApprovalHistory } from "@/features/approvals/components/approval-history";
 import { apiFetch } from "@/lib/api";
-import type { ApprovalWithExecution } from "@/lib/types";
+import type { ApprovalWithExecution } from "@/features/approvals/types";
 
 export const metadata: Metadata = {
   title: "Approvals",

@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { ApiError, apiFetch } from "@/lib/api";
 import { setAccessToken } from "@/lib/session";
-import type { AuthResponse } from "@/lib/types";
+import type { AuthResponse } from "@/features/auth/types";
 
 export type LoginState = {
   error: string | null;

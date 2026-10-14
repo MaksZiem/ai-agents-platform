@@ -1,27 +1,23 @@
 import Link from "next/link";
-import { AgentKnowledge } from "@/components/agent-knowledge";
-import { AgentPermissions } from "@/components/agent-permissions";
-import { AgentStatusBadge } from "@/components/agent-status-badge";
-import { AgentTools } from "@/components/agent-tools";
-import { buttonClasses } from "@/components/button";
-import { DeleteAgentButton } from "@/components/delete-agent-button";
-import { PageHeader } from "@/components/page-header";
-import { RecentExecutions } from "@/components/recent-executions";
-import { RunTaskForm } from "@/components/run-task-form";
-import { SubmitButton } from "@/components/submit-button";
-import { duplicateAgent, setAgentStatus } from "@/lib/agent-actions";
-import { getAgent } from "@/lib/agents";
+import { buttonClasses } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { duplicateAgent, setAgentStatus } from "@/features/agents/actions";
+import { AgentKnowledge } from "@/features/agents/components/agent-knowledge";
+import { AgentPermissions } from "@/features/agents/components/agent-permissions";
+import { AgentStatusBadge } from "@/features/agents/components/agent-status-badge";
+import { AgentTools } from "@/features/agents/components/agent-tools";
+import { DeleteAgentButton } from "@/features/agents/components/delete-agent-button";
+import { getAgent } from "@/features/agents/queries";
+import { runTask } from "@/features/executions/actions";
+import { RecentExecutions } from "@/features/executions/components/recent-executions";
+import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import { apiFetch } from "@/lib/api";
-import { runTask } from "@/lib/execution-actions";
 import { formatShortDate } from "@/lib/format";
-import type {
-  AgentDocument,
-  AgentTool,
-  ExecutionWithAgent,
-  KnowledgeDocument,
-  ResourcePermissions,
-  Tool,
-} from "@/lib/types";
+import type { AgentTool, ResourcePermissions } from "@/features/agents/types";
+import type { ExecutionWithAgent } from "@/features/executions/types";
+import type { AgentDocument, KnowledgeDocument } from "@/features/knowledge/types";
+import type { Tool } from "@/features/tools/types";
 
 const CARD_CLASSES = "rounded-xl border border-border bg-surface p-[18px]";
 

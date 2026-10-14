@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { AgentForm } from "@/components/agent-form";
-import { PageHeader } from "@/components/page-header";
-import { createAgent } from "@/lib/agent-actions";
-import { EMPTY_AGENT_FORM } from "@/lib/agent-form";
+import { PageHeader } from "@/components/ui/page-header";
+import { createAgent } from "@/features/agents/actions";
+import { AgentForm } from "@/features/agents/components/agent-form";
+import { EMPTY_AGENT_FORM } from "@/features/agents/form";
 
 export const metadata: Metadata = {
   title: "New agent",

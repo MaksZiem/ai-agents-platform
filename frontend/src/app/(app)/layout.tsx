@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
-import { Sidebar } from "@/components/sidebar";
+import { Sidebar } from "@/components/layout/sidebar";
 import { apiFetch } from "@/lib/api";
 import { getAccessToken } from "@/lib/session";
-import type { Approval, User } from "@/lib/types";
+import type { Approval } from "@/features/approvals/types";
+import type { User } from "@/features/auth/types";
 
 type AppLayoutProps = {
   children: ReactNode;

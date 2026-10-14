@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { login, type LoginState } from "./actions";
 
 const INITIAL_STATE: LoginState = { error: null, email: "" };

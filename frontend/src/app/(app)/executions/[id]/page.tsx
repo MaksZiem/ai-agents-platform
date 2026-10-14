@@ -1,20 +1,16 @@
 import { notFound } from "next/navigation";
-import { ApprovalCard } from "@/components/approval-card";
-import { ExecutionLiveUpdates } from "@/components/execution-live-updates";
-import { ExecutionMetricsRow } from "@/components/execution-metrics";
-import { PageHeader } from "@/components/page-header";
-import { StatusBadge } from "@/components/status-badge";
-import { StepDetails } from "@/components/step-details";
-import { StepTimeline } from "@/components/step-timeline";
-import { SubmitButton } from "@/components/submit-button";
+import { PageHeader } from "@/components/ui/page-header";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { ApprovalCard } from "@/features/approvals/components/approval-card";
+import { cancelExecution } from "@/features/executions/actions";
+import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
+import { ExecutionMetricsRow } from "@/features/executions/components/execution-metrics";
+import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
+import { StepDetails } from "@/features/executions/components/step-details";
+import { StepTimeline } from "@/features/executions/components/step-timeline";
 import { ApiError, apiFetch } from "@/lib/api";
-import { cancelExecution } from "@/lib/execution-actions";
-import type {
-  Approval,
-  ExecutionDetail,
-  ExecutionStatus,
-  ExecutionStep,
-} from "@/lib/types";
+import type { Approval } from "@/features/approvals/types";
+import type { ExecutionDetail, ExecutionStatus, ExecutionStep } from "@/features/executions/types";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = [
   "QUEUED",
@@ -76,7 +72,7 @@ export default async function ExecutionPage({
         actions={
           <>
             {isActive && <ExecutionLiveUpdates executionId={execution.id} />}
-            <StatusBadge status={execution.status} />
+            <ExecutionStatusBadge status={execution.status} />
             {isActive && (
               <form action={cancelExecution.bind(null, execution.id)}>
                 <SubmitButton pendingLabel="Cancelling…">Cancel</SubmitButton>

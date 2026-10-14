@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { FormField } from "@/components/form-field";
-import { Input } from "@/components/input";
-import { SubmitButton } from "@/components/submit-button";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { changePassword, type ChangePasswordState } from "./actions";
 
 const INITIAL_STATE: ChangePasswordState = { error: null, success: false };

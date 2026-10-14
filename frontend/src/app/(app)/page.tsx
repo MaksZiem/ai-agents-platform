@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { buttonClasses } from "@/components/button";
-import { PageHeader } from "@/components/page-header";
-import { RecentExecutions } from "@/components/recent-executions";
-import { StatCard } from "@/components/stat-card";
+import { buttonClasses } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { StatCard } from "@/components/ui/stat-card";
+import { RecentExecutions } from "@/features/executions/components/recent-executions";
 import { apiFetch } from "@/lib/api";
-import type { DashboardSummary } from "@/lib/types";
+import type { DashboardSummary } from "@/features/dashboard/types";
 
 export default async function DashboardPage() {
   const summary = await apiFetch<DashboardSummary>("/dashboard");

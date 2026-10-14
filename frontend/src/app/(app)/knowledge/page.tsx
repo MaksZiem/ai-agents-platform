@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { DocumentLibrary } from "@/components/document-library";
-import { PageHeader } from "@/components/page-header";
-import { UploadDocumentForm } from "@/components/upload-document-form";
+import { PageHeader } from "@/components/ui/page-header";
+import { DocumentLibrary } from "@/features/knowledge/components/document-library";
+import { UploadDocumentForm } from "@/features/knowledge/components/upload-document-form";
 import { apiFetch } from "@/lib/api";
-import type { LibraryDocument } from "@/lib/types";
+import type { LibraryDocument } from "@/features/knowledge/types";
 
 export const metadata: Metadata = {
   title: "Knowledge",

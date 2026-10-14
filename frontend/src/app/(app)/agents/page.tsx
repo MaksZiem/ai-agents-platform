@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AgentList } from "@/components/agent-list";
-import { buttonClasses } from "@/components/button";
-import { PageHeader } from "@/components/page-header";
+import { buttonClasses } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { AgentList } from "@/features/agents/components/agent-list";
 import { apiFetch } from "@/lib/api";
-import type { Agent } from "@/lib/types";
+import type { Agent } from "@/features/agents/types";
 
 export const metadata: Metadata = {
   title: "Agents",

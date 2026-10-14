@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/page-header";
-import { ToolCard } from "@/components/tool-card";
+import { PageHeader } from "@/components/ui/page-header";
+import { ToolCard } from "@/features/tools/components/tool-card";
+import { RESOURCE_LABELS } from "@/features/tools/labels";
 import { apiFetch } from "@/lib/api";
-import { RESOURCE_LABELS } from "@/lib/tools";
-import type { Tool, ToolResource } from "@/lib/types";
+import type { Tool, ToolResource } from "@/features/tools/types";
 
 export const metadata: Metadata = {
   title: "Tools",

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { ExecutionStatusFilter } from "@/components/execution-status-filter";
-import { ExecutionTable } from "@/components/execution-table";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader } from "@/components/ui/page-header";
+import { ExecutionStatusFilter } from "@/features/executions/components/execution-status-filter";
+import { ExecutionTable } from "@/features/executions/components/execution-table";
+import { EXECUTION_STATUS_LABELS, isExecutionStatus } from "@/features/executions/labels";
 import { apiFetch } from "@/lib/api";
-import { EXECUTION_STATUS_LABELS, isExecutionStatus } from "@/lib/executions";
-import type { ExecutionWithAgent } from "@/lib/types";
+import type { ExecutionWithAgent } from "@/features/executions/types";
 
 export const metadata: Metadata = {
   title: "Executions",

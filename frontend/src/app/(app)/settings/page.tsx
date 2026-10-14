@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@/components/page-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { apiFetch } from "@/lib/api";
-import type { User } from "@/lib/types";
 import { ChangePasswordForm } from "./change-password-form";
+import type { User } from "@/features/auth/types";
 
 export const metadata: Metadata = {
   title: "Settings",

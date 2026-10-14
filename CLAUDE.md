@@ -30,6 +30,18 @@
   tokeny kolorów, typografia (Geist / Geist Mono), spacing, radiusy,
   komponenty i kolory stanów egzekucji.
 - Zatwierdzony szkic widoku egzekucji: `.impeccable/mocks/decision/canon.html`.
+- Struktura `frontend/src/` (grupowanie po domenie):
+  - `app/` — tylko trasy (page, layout, error, loading, not-found) i rzeczy
+    używane przez jedną stronę (np. `settings/actions.ts`).
+  - `components/ui/` — design system bez wiedzy o domenie (Button, Input...).
+    Nie importuje nic z `features/`.
+  - `components/layout/` — powłoka aplikacji (sidebar).
+  - `features/<domena>/` — `agents`, `executions`, `approvals`, `knowledge`,
+    `tools`, `auth`, `dashboard`. W środku: `components/`, `actions.ts`
+    (Server Actions), `types.ts`, helpery domeny.
+  - `lib/` — infrastruktura bez domeny (`api.ts`, `session.ts`, `format.ts`).
+    Nie importuje nic z `features/`.
+  - Importy bezpośrednio do pliku, bez `index.ts` (barrel).
 
 ---
 

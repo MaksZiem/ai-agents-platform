@@ -1,8 +1,8 @@
-import { AgentForm } from "@/components/agent-form";
-import { PageHeader } from "@/components/page-header";
-import { updateAgent } from "@/lib/agent-actions";
-import { agentToFormValues } from "@/lib/agent-form";
-import { getAgent } from "@/lib/agents";
+import { PageHeader } from "@/components/ui/page-header";
+import { updateAgent } from "@/features/agents/actions";
+import { AgentForm } from "@/features/agents/components/agent-form";
+import { agentToFormValues } from "@/features/agents/form";
+import { getAgent } from "@/features/agents/queries";
 
 export default async function EditAgentPage({ params }: PageProps<"/agents/[id]/edit">) {
   const { id } = await params;

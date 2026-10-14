@@ -1,5 +1,3 @@
-import type { ExecutionStep } from "@/lib/types";
-
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour: "2-digit",
   minute: "2-digit",
@@ -31,13 +29,14 @@ export function formatDuration(ms: number) {
   return `${minutes}m ${Math.round(seconds % 60)}s`;
 }
 
-export function getStepDurationMs(
-  step: Pick<ExecutionStep, "startedAt" | "finishedAt">,
-) {
-  if (!step.startedAt || !step.finishedAt) return null;
-  return (
-    new Date(step.finishedAt).getTime() - new Date(step.startedAt).getTime()
-  );
+type TimeRange = {
+  startedAt: string | null;
+  finishedAt: string | null;
+};
+
+export function getDurationMs({ startedAt, finishedAt }: TimeRange) {
+  if (!startedAt || !finishedAt) return null;
+  return new Date(finishedAt).getTime() - new Date(startedAt).getTime();
 }
 
 export function formatValue(value: unknown) {
