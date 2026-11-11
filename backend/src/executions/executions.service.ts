@@ -129,4 +129,21 @@ export class ExecutionsService {
 
     return this.findOne(id, userId);
   }
+
+  async remove(id: string, userId: string): Promise<void> {
+    const execution = await this.executionsRepository.findOneBy({
+      id,
+      userId,
+    });
+
+    if (!execution) {
+      throw new NotFoundException(`Execution ${id} not found`);
+    }
+
+    if (!isTerminal(execution.status)) {
+      throw new ConflictException('Stop the execution before deleting it');
+    }
+
+    await this.executionsRepository.remove(execution);
+  }
 }

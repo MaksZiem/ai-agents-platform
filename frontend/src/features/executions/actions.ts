@@ -14,6 +14,19 @@ export async function cancelExecution(executionId: string) {
   refresh();
 }
 
+export async function deleteExecution(
+  executionId: string,
+  redirectTo: string | null,
+) {
+  try {
+    await apiFetch(`/executions/${executionId}`, { method: "DELETE" });
+  } catch (error) {
+    if (!(error instanceof ApiError && error.status === 404)) throw error;
+  }
+  if (redirectTo) redirect(redirectTo);
+  refresh();
+}
+
 export type RunTaskState = {
   error: string | null;
   task: string;

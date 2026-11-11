@@ -62,7 +62,9 @@ export function FileList({ files }: FileListProps) {
             </a>
             <ConfirmForm
               action={deleteFile.bind(null, file.id)}
-              message={`Delete "${file.name}"?`}
+              title={`Delete "${file.name}"?`}
+              message="The file is removed permanently and can no longer be downloaded."
+              confirmLabel="Delete file"
             >
               <SubmitButton
                 variant="ghost"

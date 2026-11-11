@@ -48,7 +48,9 @@ export function DocumentLibrary({ documents }: DocumentLibraryProps) {
 
           <ConfirmForm
             action={deleteDocument.bind(null, document.id)}
-            message={`Delete "${document.name}"? Agents using it will lose access.`}
+            title={`Delete "${document.name}"?`}
+            message="Agents using this document will lose access to it. This cannot be undone."
+            confirmLabel="Delete document"
           >
             <SubmitButton
               variant="ghost"

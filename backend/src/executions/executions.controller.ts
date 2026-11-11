@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -42,5 +43,14 @@ export class ExecutionsController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.executionsService.cancel(id, user.sub);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<void> {
+    await this.executionsService.remove(id, user.sub);
   }
 }

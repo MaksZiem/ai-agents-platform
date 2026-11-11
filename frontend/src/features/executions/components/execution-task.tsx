@@ -25,7 +25,7 @@ export function ExecutionTask({
   return (
     <>
       <section className="rounded-xl border border-border bg-surface p-[18px]">
-        <div className="mb-2 flex items-center justify-between gap-3">
+        <div className="mb-6 flex items-center justify-between gap-3">
           <h2 className="text-xs font-medium uppercase tracking-wide text-fg-muted">
             Task
           </h2>

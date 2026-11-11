@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
-import { Square } from "lucide-react";
+import { Square, Trash2 } from "lucide-react";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ApprovalCard } from "@/features/approvals/components/approval-card";
-import { cancelExecution, runTask } from "@/features/executions/actions";
+import {
+  cancelExecution,
+  deleteExecution,
+  runTask,
+} from "@/features/executions/actions";
 import { ExecutionDetails } from "@/features/executions/components/execution-details";
 import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
 import { ExecutionTask } from "@/features/executions/components/execution-task";
@@ -16,13 +20,8 @@ import { ExecutionFiles } from "@/features/files/components/execution-files";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { Approval } from "@/features/approvals/types";
 import type { GeneratedFile } from "@/features/files/types";
-import type { ExecutionDetail, ExecutionStatus, ExecutionStep } from "@/features/executions/types";
-
-const ACTIVE_STATUSES: ExecutionStatus[] = [
-  "QUEUED",
-  "RUNNING",
-  "WAITING_FOR_APPROVAL",
-];
+import { isActiveStatus } from "@/features/executions/labels";
+import type { ExecutionDetail, ExecutionStep } from "@/features/executions/types";
 
 async function getExecution(id: string) {
   try {
@@ -66,7 +65,7 @@ export default async function ExecutionPage({
     apiFetch<GeneratedFile[]>(`/files?executionId=${execution.id}`),
   ]);
 
-  const isActive = ACTIVE_STATUSES.includes(execution.status);
+  const isActive = isActiveStatus(execution.status);
   const selectedStep =
     execution.steps.find((step) => step.id === stepParam) ??
     pickDefaultStep(execution.steps);
@@ -79,10 +78,25 @@ export default async function ExecutionPage({
           <>
             {isActive && <ExecutionLiveUpdates executionId={execution.id} />}
             <ExecutionStatusBadge status={execution.status} />
+            {!isActive && (
+              <ConfirmForm
+                action={deleteExecution.bind(null, execution.id, "/executions")}
+                title="Delete this execution?"
+                message="Its steps, approvals and the files it created are deleted too. This cannot be undone."
+                confirmLabel="Delete execution"
+              >
+                <SubmitButton variant="danger" pendingLabel="Deleting…">
+                  <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                  Delete
+                </SubmitButton>
+              </ConfirmForm>
+            )}
             {isActive && (
               <ConfirmForm
                 action={cancelExecution.bind(null, execution.id)}
-                message="Stop this execution? The agent stops immediately and no further steps will run."
+                title="Stop this execution?"
+                message="The agent stops immediately and no further steps will run."
+                confirmLabel="Stop execution"
               >
                 <SubmitButton variant="danger" pendingLabel="Stopping…">
                   <Square

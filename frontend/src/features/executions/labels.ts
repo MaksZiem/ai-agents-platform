@@ -15,3 +15,13 @@ export function isExecutionStatus(value: unknown): value is ExecutionStatus {
     (EXECUTION_STATUSES as readonly string[]).includes(value)
   );
 }
+
+const ACTIVE_STATUSES: readonly ExecutionStatus[] = [
+  "QUEUED",
+  "RUNNING",
+  "WAITING_FOR_APPROVAL",
+];
+
+export function isActiveStatus(status: ExecutionStatus) {
+  return ACTIVE_STATUSES.includes(status);
+}
