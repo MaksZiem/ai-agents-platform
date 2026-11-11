@@ -6,12 +6,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, ILike, In, Repository } from 'typeorm';
 import { AgentsService } from '../agents/agents.service.js';
-import { chunkText } from './chunking.js';
+import { chunkText, mergeChunks } from './chunking.js';
 import { AgentDocument } from './entities/agent-document.entity.js';
 import { DocumentChunk } from './entities/document-chunk.entity.js';
 import { KnowledgeDocument } from './entities/knowledge-document.entity.js';
 import {
   type DocumentSearchHit,
+  type DocumentText,
   rankChunks,
   searchTerms,
 } from './knowledge-search.js';
@@ -19,6 +20,7 @@ import { extractDocumentText } from './text-extraction.js';
 
 // Upper bound of candidate chunks loaded for ranking in a single search.
 const MAX_SEARCH_CANDIDATES = 200;
+const MAX_DOCUMENT_CHARACTERS = 30_000;
 
 export interface UploadedDocumentFile {
   originalname: string;
@@ -201,6 +203,42 @@ export class KnowledgeService {
     });
 
     return rankChunks(chunks, terms, limit);
+  }
+
+  async readForAgent(
+    agentId: string,
+    documentId?: string,
+  ): Promise<DocumentText[]> {
+    const links = await this.agentDocumentsRepository.find({
+      where: { agentId, ...(documentId && { documentId }) },
+      relations: { document: true },
+      order: { createdAt: 'ASC' },
+    });
+
+    if (links.length === 0) {
+      return [];
+    }
+
+    const chunks = await this.chunksRepository.find({
+      where: { documentId: In(links.map((link) => link.documentId)) },
+      order: { position: 'ASC' },
+    });
+
+    return links.map(({ document }) => {
+      const text = mergeChunks(
+        chunks
+          .filter((chunk) => chunk.documentId === document.id)
+          .map((chunk) => chunk.content),
+      );
+      const truncated = text.length > MAX_DOCUMENT_CHARACTERS;
+
+      return {
+        documentId: document.id,
+        documentName: document.name,
+        content: truncated ? text.slice(0, MAX_DOCUMENT_CHARACTERS) : text,
+        truncated,
+      };
+    });
   }
 
   private async findDocument(

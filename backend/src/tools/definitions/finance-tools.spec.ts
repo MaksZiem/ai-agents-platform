@@ -3,50 +3,111 @@ import { analyzeTransactionsTool } from './analyze-transactions.tool.js';
 import { comparePeriodsTool } from './compare-periods.tool.js';
 
 const context = {} as ToolContext;
-const q1 = { from: '2026-01-01', to: '2026-03-31' };
-const q4 = { from: '2025-10-01', to: '2025-12-31' };
+
+const transactions = [
+  {
+    date: '2026-01-03',
+    description: 'Office rent',
+    category: 'rent',
+    amount: 4500,
+  },
+  {
+    date: '2026-02-03',
+    description: 'Office rent',
+    category: 'rent',
+    amount: 4500,
+  },
+  {
+    date: '2026-01-12',
+    description: 'AWS',
+    category: 'software',
+    amount: 1300,
+  },
+  {
+    date: '2026-02-12',
+    description: 'AWS',
+    category: 'software',
+    amount: 1250,
+  },
+  {
+    date: '2026-03-12',
+    description: 'AWS',
+    category: 'software',
+    amount: 4870,
+  },
+  {
+    date: '2026-02-27',
+    description: 'Laptop purchase',
+    category: 'equipment',
+    amount: 9800,
+  },
+];
 
 describe('analyzeTransactions', () => {
-  it('totals spending per category and flags unusual expenses', async () => {
-    const result = await analyzeTransactionsTool.execute(q1, context);
+  it('totals the given transactions per category and flags unusual ones', async () => {
+    const result = await analyzeTransactionsTool.execute(
+      { transactions },
+      context,
+    );
 
-    expect(result.total).toBe(32_265);
+    expect(result.total).toBe(26_220);
     expect(result.categories[0]).toMatchObject({
-      category: 'rent',
-      total: 13_500,
+      category: 'equipment',
+      total: 9_800,
     });
     expect(result.largest[0].description).toBe('Laptop purchase');
     expect(
       result.anomalies.map((anomaly) => anomaly.transaction.description),
-    ).toEqual(['Laptop purchase', 'AWS']);
+    ).toEqual(['AWS', 'Laptop purchase']);
     expect(analyzeTransactionsTool.outputSchema.parse(result)).toEqual(result);
-  });
-
-  it('handles a period without transactions', async () => {
-    const result = await analyzeTransactionsTool.execute(
-      { from: '2020-01-01', to: '2020-12-31' },
-      context,
-    );
-
-    expect(result).toMatchObject({ count: 0, total: 0, anomalies: [] });
   });
 });
 
 describe('comparePeriods', () => {
-  it('reports overall and per-category change', async () => {
+  it('reports the change between consecutive periods and overall', async () => {
     const result = await comparePeriodsTool.execute(
-      { current: q1, previous: q4 },
+      {
+        metric: 'Revenue (kEUR)',
+        periods: [
+          { label: 'Q2 2026', value: 400 },
+          { label: 'Q3 2026', value: 500 },
+          { label: 'Q4 2026', value: 450 },
+        ],
+      },
       context,
     );
 
-    expect(result).toMatchObject({ change: 13_015, changePercent: 67.6 });
-    expect(result.categories).toContainEqual({
-      category: 'equipment',
-      current: 9_800,
-      previous: 0,
-      change: 9_800,
+    expect(result.periods.map((period) => period.changePercent)).toEqual([
+      null,
+      25,
+      -10,
+    ]);
+    expect(result.overall).toEqual({
+      from: 'Q2 2026',
+      to: 'Q4 2026',
+      change: 50,
+      changePercent: 12.5,
+    });
+    expect(result.averageChange).toBe(25);
+    expect(result.averageChangePercent).toBe(7.5);
+    expect(comparePeriodsTool.outputSchema.parse(result)).toEqual(result);
+  });
+
+  it('returns no percentage when the previous value is zero', async () => {
+    const result = await comparePeriodsTool.execute(
+      {
+        periods: [
+          { label: 'Jan', value: 0 },
+          { label: 'Feb', value: 120 },
+        ],
+      },
+      context,
+    );
+
+    expect(result.periods[1]).toMatchObject({
+      change: 120,
       changePercent: null,
     });
-    expect(comparePeriodsTool.outputSchema.parse(result)).toEqual(result);
+    expect(result.averageChangePercent).toBeNull();
   });
 });

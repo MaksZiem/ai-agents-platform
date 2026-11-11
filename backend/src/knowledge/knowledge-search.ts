@@ -8,6 +8,13 @@ export interface DocumentSearchHit {
   score: number;
 }
 
+export interface DocumentText {
+  documentId: string;
+  documentName: string;
+  content: string;
+  truncated: boolean;
+}
+
 const MIN_TERM_LENGTH = 3;
 const MAX_TERMS = 8;
 

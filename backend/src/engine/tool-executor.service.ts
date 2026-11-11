@@ -138,6 +138,8 @@ export class ToolExecutor {
       executionId,
       searchDocuments: (query, limit) =>
         this.knowledgeService.search(agentId, query, limit),
+      readDocuments: (documentId) =>
+        this.knowledgeService.readForAgent(agentId, documentId),
       saveFile: async (file) => {
         const saved = await this.filesService.create({
           ...file,

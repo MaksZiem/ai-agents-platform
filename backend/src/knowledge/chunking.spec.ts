@@ -1,4 +1,4 @@
-import { chunkText } from './chunking.js';
+import { chunkText, mergeChunks } from './chunking.js';
 
 describe('chunkText', () => {
   it('returns short text as a single chunk', () => {
@@ -37,5 +37,26 @@ describe('chunkText', () => {
     const chunks = chunkText('x'.repeat(450), { size: 200, overlap: 50 });
 
     expect(chunks.map((chunk) => chunk.length)).toEqual([200, 200, 150]);
+  });
+});
+
+describe('mergeChunks', () => {
+  it('rebuilds the original text from overlapping chunks', () => {
+    const text = Array.from(
+      { length: 80 },
+      (_, index) =>
+        `Line ${index}: revenue ${index * 10} kEUR.${index % 7 === 0 ? '\n\n' : ' '}`,
+    )
+      .join('')
+      .trim();
+
+    expect(mergeChunks(chunkText(text))).toBe(text);
+  });
+
+  it('joins chunks that share no text with a paragraph break', () => {
+    const first = 'a'.repeat(120);
+    const second = 'b'.repeat(120);
+
+    expect(mergeChunks([first, second])).toBe(`${first}\n\n${second}`);
   });
 });

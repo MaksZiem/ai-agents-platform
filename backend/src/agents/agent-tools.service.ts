@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AgentTool } from './entities/agent-tool.entity.js';
 import { Repository } from 'typeorm';
 import { AgentsService } from './agents.service.js';
+import type { ToolDefinition } from '../tools/tool-definition.js';
 import { ToolsService } from '../tools/tools.service.js';
 import { EnableAgentToolDto } from './dto/enable-agent-tool.dto.js';
 
@@ -23,7 +24,10 @@ export class AgentToolsService {
       order: { createdAt: 'ASC' },
     });
 
-    return agentTools.map((agentTool) => this.toResponse(agentTool));
+    return agentTools.flatMap((agentTool) => {
+      const tool = this.toolsService.find(agentTool.toolName);
+      return tool ? [this.toResponse(agentTool, tool)] : [];
+    });
   }
 
   async enable(
@@ -33,7 +37,7 @@ export class AgentToolsService {
     userId: string,
   ) {
     await this.agentsService.findOne(agentId, userId);
-    this.toolsService.get(toolName);
+    const tool = this.toolsService.get(toolName);
 
     const agentTool =
       (await this.agentToolsRepository.findOneBy({ agentId, toolName })) ??
@@ -41,7 +45,10 @@ export class AgentToolsService {
 
     agentTool.requiresApproval = dto.requiresApproval ?? false;
 
-    return this.toResponse(await this.agentToolsRepository.save(agentTool));
+    return this.toResponse(
+      await this.agentToolsRepository.save(agentTool),
+      tool,
+    );
   }
 
   async disable(agentId: string, toolName: string, userId: string) {
@@ -61,9 +68,7 @@ export class AgentToolsService {
     await this.agentToolsRepository.remove(agentTool);
   }
 
-  private toResponse(agentTool: AgentTool) {
-    const tool = this.toolsService.get(agentTool.toolName);
-
+  private toResponse(agentTool: AgentTool, tool: ToolDefinition) {
     return {
       toolName: tool.name,
       description: tool.description,

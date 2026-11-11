@@ -1,88 +1,72 @@
 import { z } from 'zod';
-import {
-  percentChange,
-  roundMoney,
-  sumAmounts,
-  totalsByCategory,
-  transactionsBetween,
-} from '../mock/finance.js';
+import { percentChange, roundMoney } from '../finance.js';
 import { defineTool } from '../tool-definition.js';
-import { periodSchema } from './schemas.js';
-
-const periodTotalsSchema = z.object({
-  from: z.iso.date(),
-  to: z.iso.date(),
-  total: z.number(),
-  count: z.number().int(),
-});
+import { periodValueSchema } from './schemas.js';
 
 export const comparePeriodsTool = defineTool({
   name: 'comparePeriods',
   description:
-    'Compares spending between two periods (dates inclusive, YYYY-MM-DD): totals, absolute and percentage change, overall and per category.',
+    'Calculates how a metric changes over consecutive periods. Pass the values you found in the data (e.g. quarterly revenue read from a document), oldest first. Returns the absolute and percentage change between each pair of periods, the overall change and the average change per period. Use it instead of calculating changes yourself.',
   inputSchema: z.object({
-    current: periodSchema,
-    previous: periodSchema,
+    metric: z.string().min(1).max(100).optional(),
+    periods: z.array(periodValueSchema).min(2).max(60),
   }),
   outputSchema: z.object({
-    current: periodTotalsSchema,
-    previous: periodTotalsSchema,
-    change: z.number(),
-    changePercent: z.number().nullable(),
-    categories: z.array(
-      z.object({
-        category: z.string(),
-        current: z.number(),
-        previous: z.number(),
-        change: z.number(),
+    metric: z.string().nullable(),
+    periods: z.array(
+      periodValueSchema.extend({
+        change: z.number().nullable(),
         changePercent: z.number().nullable(),
       }),
     ),
+    overall: z.object({
+      from: z.string(),
+      to: z.string(),
+      change: z.number(),
+      changePercent: z.number().nullable(),
+    }),
+    averageChange: z.number(),
+    averageChangePercent: z.number().nullable(),
   }),
   permission: { resource: 'financial_data', action: 'read' },
   requiresApproval: false,
-  execute: async ({ current, previous }) => {
-    const currentTransactions = transactionsBetween(current);
-    const previousTransactions = transactionsBetween(previous);
-    const currentTotal = sumAmounts(currentTransactions);
-    const previousTotal = sumAmounts(previousTransactions);
-    const currentByCategory = totalsByCategory(currentTransactions);
-    const previousByCategory = totalsByCategory(previousTransactions);
-    const categoryNames = new Set([
-      ...currentByCategory.keys(),
-      ...previousByCategory.keys(),
-    ]);
-    const categories = [...categoryNames]
-      .map((category) => {
-        const currentAmount = sumAmounts(currentByCategory.get(category) ?? []);
-        const previousAmount = sumAmounts(
-          previousByCategory.get(category) ?? [],
-        );
+  execute: async ({ metric, periods }) => {
+    const rows = periods.map((period, index) => {
+      const previous = periods[index - 1];
 
-        return {
-          category,
-          current: currentAmount,
-          previous: previousAmount,
-          change: roundMoney(currentAmount - previousAmount),
-          changePercent: percentChange(currentAmount, previousAmount),
-        };
-      })
-      .sort((a, b) => Math.abs(b.change) - Math.abs(a.change));
+      return {
+        ...period,
+        change: previous ? roundMoney(period.value - previous.value) : null,
+        changePercent: previous
+          ? percentChange(period.value, previous.value)
+          : null,
+      };
+    });
+    const first = periods[0];
+    const last = periods[periods.length - 1];
+    const steps = rows.slice(1);
+    const percents = steps.flatMap((row) =>
+      row.changePercent === null ? [] : [row.changePercent],
+    );
 
     return {
-      current: {
-        ...current,
-        total: currentTotal,
-        count: currentTransactions.length,
+      metric: metric ?? null,
+      periods: rows,
+      overall: {
+        from: first.label,
+        to: last.label,
+        change: roundMoney(last.value - first.value),
+        changePercent: percentChange(last.value, first.value),
       },
-      previous: {
-        ...previous,
-        total: previousTotal,
-        count: previousTransactions.length,
-      },
-      change: roundMoney(currentTotal - previousTotal),
-      changePercent: percentChange(currentTotal, previousTotal),
-      categories,
+      averageChange: roundMoney((last.value - first.value) / steps.length),
+      averageChangePercent:
+        percents.length === 0
+          ? null
+          : Math.round(
+              (percents.reduce((total, value) => total + value, 0) /
+                percents.length) *
+                10,
+            ) / 10,
     };
   },
 });

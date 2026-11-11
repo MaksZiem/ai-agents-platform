@@ -24,7 +24,8 @@ export function AgentKnowledge({
       <div className="border-b border-border px-[18px] py-3">
         <h2 className="text-base font-semibold">Knowledge</h2>
         <p className="text-[13px] text-fg-muted">
-          Documents this agent can read with the searchDocuments tool.
+          Documents this agent can read with the readDocument and
+          searchDocuments tools.
         </p>
       </div>
 

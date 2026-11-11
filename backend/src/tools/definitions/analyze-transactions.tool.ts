@@ -1,24 +1,20 @@
 import { z } from 'zod';
-import {
-  roundMoney,
-  sumAmounts,
-  totalsByCategory,
-  transactionsBetween,
-} from '../mock/finance.js';
-import { MOCK_TRANSACTIONS, type Transaction } from '../mock/transactions.js';
+import { groupBy, roundMoney, sumAmounts } from '../finance.js';
 import { defineTool } from '../tool-definition.js';
-import { periodSchema, transactionSchema } from './schemas.js';
+import { transactionSchema } from './schemas.js';
 
-// A transaction this many times above its category's usual amount is unusual.
+type Transaction = z.infer<typeof transactionSchema>;
+
 const ANOMALY_FACTOR = 1.5;
-// A first-ever expense in a category is unusual from this amount up.
 const NEW_CATEGORY_THRESHOLD = 5_000;
 
 export const analyzeTransactionsTool = defineTool({
   name: 'analyzeTransactions',
   description:
-    'Analyzes spending between two dates (inclusive, YYYY-MM-DD): total, totals per category, largest expenses and unusual transactions. Use it instead of adding up amounts yourself.',
-  inputSchema: periodSchema,
+    'Analyzes a list of transactions you pass in (e.g. rows read from an uploaded CSV or document): total, totals per category, largest items and unusual transactions compared with the rest of their category. Use it instead of adding up amounts yourself.',
+  inputSchema: z.object({
+    transactions: z.array(transactionSchema).min(1).max(2_000),
+  }),
   outputSchema: z.object({
     count: z.number().int(),
     total: z.number(),
@@ -37,10 +33,10 @@ export const analyzeTransactionsTool = defineTool({
   }),
   permission: { resource: 'financial_data', action: 'read' },
   requiresApproval: false,
-  execute: async (period) => {
-    const transactions = transactionsBetween(period);
+  execute: async ({ transactions }) => {
     const total = sumAmounts(transactions);
-    const categories = [...totalsByCategory(transactions)]
+    const byCategory = groupBy(transactions, (item) => item.category);
+    const categories = [...byCategory]
       .map(([category, items]) => {
         const categoryTotal = sumAmounts(items);
 
@@ -57,7 +53,12 @@ export const analyzeTransactionsTool = defineTool({
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
     const anomalies = transactions.flatMap((transaction) => {
-      const reason = findAnomaly(transaction);
+      const reason = findAnomaly(
+        transaction,
+        (byCategory.get(transaction.category) ?? []).filter(
+          (other) => other !== transaction,
+        ),
+      );
       return reason ? [{ transaction, reason }] : [];
     });
 
@@ -71,22 +72,19 @@ export const analyzeTransactionsTool = defineTool({
   },
 });
 
-// Compares a transaction with the rest of its category's history.
-function findAnomaly(transaction: Transaction): string | null {
-  const others = MOCK_TRANSACTIONS.filter(
-    (other) =>
-      other.category === transaction.category && other.id !== transaction.id,
-  );
-
+function findAnomaly(
+  transaction: Transaction,
+  others: Transaction[],
+): string | null {
   if (others.length === 0) {
     return transaction.amount >= NEW_CATEGORY_THRESHOLD
-      ? `First expense in category "${transaction.category}"`
+      ? `Only expense in category "${transaction.category}"`
       : null;
   }
 
   const average = sumAmounts(others) / others.length;
 
-  if (transaction.amount > average * ANOMALY_FACTOR) {
+  if (average > 0 && transaction.amount > average * ANOMALY_FACTOR) {
     const times = roundMoney(transaction.amount / average);
     return `${times}x the usual "${transaction.category}" amount of ${roundMoney(average)}`;
   }

@@ -1,5 +1,8 @@
 import type { z } from 'zod';
-import type { DocumentSearchHit } from '../knowledge/knowledge-search.js';
+import type {
+  DocumentSearchHit,
+  DocumentText,
+} from '../knowledge/knowledge-search.js';
 
 export type ToolResource = 'financial_data' | 'documents' | 'reports' | 'email';
 
@@ -36,6 +39,7 @@ export interface ToolContext {
   agentId: string;
   executionId: string;
   searchDocuments(query: string, limit: number): Promise<DocumentSearchHit[]>;
+  readDocuments(documentId?: string): Promise<DocumentText[]>;
   saveFile(file: ToolFileInput): Promise<SavedToolFile>;
   sendEmail(
     email: ToolEmail,
