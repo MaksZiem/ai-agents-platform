@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, type KeyboardEvent, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import type { RunTaskState } from "@/features/executions/actions";
@@ -14,6 +15,8 @@ type RunTaskFormProps = {
   description?: string;
   submitLabel?: string;
   icon?: ReactNode;
+  onCancel?: () => void;
+  autoFocus?: boolean;
 };
 
 function submitOnCmdEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -32,6 +35,8 @@ export function RunTaskForm({
   description,
   submitLabel = "Run agent",
   icon,
+  onCancel,
+  autoFocus = false,
 }: RunTaskFormProps) {
   const [state, formAction] = useActionState(action, {
     error: null,
@@ -60,6 +65,7 @@ export function RunTaskForm({
               defaultValue={state.task}
               placeholder="Analyze our Q1 spending and compare it with Q4. Find unusual expenses and create a report."
               onKeyDown={submitOnCmdEnter}
+              autoFocus={autoFocus}
               aria-invalid={Boolean(state.error)}
             />
           </label>
@@ -75,6 +81,11 @@ export function RunTaskForm({
               <p className="mr-auto text-xs text-fg-muted">
                 Activate this agent to run tasks.
               </p>
+            )}
+            {onCancel && (
+              <Button variant="ghost" onClick={onCancel}>
+                Cancel
+              </Button>
             )}
             <SubmitButton variant="primary" pendingLabel="Starting…">
               {icon}

@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
-import { RotateCcw, Square } from "lucide-react";
+import { Square } from "lucide-react";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ApprovalCard } from "@/features/approvals/components/approval-card";
 import { cancelExecution, runTask } from "@/features/executions/actions";
-import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import { ExecutionDetails } from "@/features/executions/components/execution-details";
 import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
+import { ExecutionTask } from "@/features/executions/components/execution-task";
 import { ExecutionMetricsRow } from "@/features/executions/components/execution-metrics";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
 import { StepDetails } from "@/features/executions/components/step-details";
@@ -99,14 +99,12 @@ export default async function ExecutionPage({
       />
 
       <div className="flex flex-col gap-6 p-6">
-        <section className="rounded-xl border border-border bg-surface p-[18px]">
-          <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-fg-muted">
-            Task
-          </h2>
-          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">
-            {execution.task}
-          </p>
-        </section>
+        <ExecutionTask
+          task={execution.task}
+          agentName={execution.agent.name}
+          canRetry={!isActive}
+          retryAction={runTask.bind(null, execution.agentId)}
+        />
 
         {execution.status === "FAILED" && execution.error && (
           <section
@@ -128,19 +126,6 @@ export default async function ExecutionPage({
           finishedAt={execution.finishedAt}
           running={isActive}
         />
-
-        {!isActive && (
-          <RunTaskForm
-            action={runTask.bind(null, execution.agentId)}
-            agentName={execution.agent.name}
-            disabled={false}
-            initialTask={execution.task}
-            title="Retry this execution"
-            description={`Starts a new execution of ${execution.agent.name} with the task below and the agent's current configuration. Edit the task first if you want to change it. This execution stays in the history.`}
-            submitLabel="Retry execution"
-            icon={<RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />}
-          />
-        )}
 
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_400px]">
           <section className="rounded-xl border border-border bg-surface px-2.5 py-3">
