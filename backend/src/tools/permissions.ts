@@ -5,6 +5,8 @@ export const RESOURCE_ACTIONS: Record<ToolResource, readonly ToolAction[]> = {
   documents: ['read', 'search', 'delete'],
   reports: ['create'],
   email: ['send'],
+  web: ['search', 'read'],
+  connections: ['read', 'modify'],
 };
 
 export function isSupportedPermission(

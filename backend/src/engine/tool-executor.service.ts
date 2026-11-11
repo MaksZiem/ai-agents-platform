@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { z } from 'zod';
@@ -10,6 +10,9 @@ import { FilesService } from '../files/files.service.js';
 import { KnowledgeService } from '../knowledge/knowledge.service.js';
 import type { ToolContext } from '../tools/tool-definition.js';
 import { ToolsService } from '../tools/tools.service.js';
+import { ConnectionsService } from '../connections/connections.service.js';
+import { SafeFetchError } from '../web/safe-fetch.js';
+import { WebService } from '../web/web.service.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 
 export interface ToolExecutionRequest {
@@ -36,6 +39,8 @@ export class ToolExecutor {
     private readonly knowledgeService: KnowledgeService,
     private readonly filesService: FilesService,
     private readonly emailService: EmailService,
+    private readonly webService: WebService,
+    private readonly connectionsService: ConnectionsService,
   ) {}
 
   async execute({
@@ -67,7 +72,17 @@ export class ToolExecutor {
       );
     }
 
-    const { resource, action } = tool.permission;
+    const parsedInput = tool.inputSchema.safeParse(input);
+
+    if (!parsedInput.success) {
+      throw new ToolExecutionError(
+        'INVALID_INPUT',
+        z.prettifyError(parsedInput.error),
+      );
+    }
+
+    const { resource, action } =
+      tool.permissionFor?.(parsedInput.data) ?? tool.permission;
     const hasPermission = await this.agentPermissionsRepository.existsBy({
       agentId,
       resource,
@@ -81,16 +96,12 @@ export class ToolExecutor {
       );
     }
 
-    const parsedInput = tool.inputSchema.safeParse(input);
+    const needsApproval =
+      tool.requiresApproval ||
+      agentTool.requiresApproval ||
+      (tool.needsApproval?.(parsedInput.data) ?? false);
 
-    if (!parsedInput.success) {
-      throw new ToolExecutionError(
-        'INVALID_INPUT',
-        z.prettifyError(parsedInput.error),
-      );
-    }
-
-    if ((tool.requiresApproval || agentTool.requiresApproval) && !approved) {
+    if (needsApproval && !approved) {
       return { status: 'approval_required', input: parsedInput.data };
     }
 
@@ -104,6 +115,18 @@ export class ToolExecutor {
     } catch (error) {
       if (error instanceof ToolExecutionError) {
         throw error;
+      }
+
+      if (error instanceof SafeFetchError) {
+        throw new ToolExecutionError(
+          'EXECUTION_FAILED',
+          error.message,
+          error.retryable,
+        );
+      }
+
+      if (error instanceof HttpException) {
+        throw new ToolExecutionError('INVALID_INPUT', error.message);
       }
 
       throw new ToolExecutionError(
@@ -182,6 +205,11 @@ export class ToolExecutor {
 
         return { messageId: id, attachment: attachment?.file.name ?? null };
       },
+      webSearch: (query, maxResults) =>
+        this.webService.search(query, maxResults),
+      fetchUrl: (url) => this.webService.fetchPage(url),
+      httpRequest: (request) =>
+        this.connectionsService.request(agentId, request),
     };
   }
 }

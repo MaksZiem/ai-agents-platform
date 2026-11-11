@@ -7,10 +7,12 @@ import { AgentTool } from '../agents/entities/agent-tool.entity.js';
 import { Approval } from '../approvals/entities/approval.entity.js';
 import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
+import { ConnectionsModule } from '../connections/connections.module.js';
 import { EmailModule } from '../email/email.module.js';
 import { FilesModule } from '../files/files.module.js';
 import { KnowledgeModule } from '../knowledge/knowledge.module.js';
 import { ToolsModule } from '../tools/tools.module.js';
+import { WebModule } from '../web/web.module.js';
 import { ApprovalManager } from './approval-manager.service.js';
 import { CancellationRegistry } from './cancellation-registry.service.js';
 import { EXECUTIONS_QUEUE } from './execution-queue.js';
@@ -37,6 +39,8 @@ import { ToolExecutor } from './tool-executor.service.js';
     KnowledgeModule,
     FilesModule,
     EmailModule,
+    WebModule,
+    ConnectionsModule,
   ],
   providers: [
     ToolExecutor,

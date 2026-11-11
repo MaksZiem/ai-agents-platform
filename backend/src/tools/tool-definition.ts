@@ -1,10 +1,16 @@
 import type { z } from 'zod';
 import type {
+  ConnectionRequest,
+  ConnectionResponse,
+} from '../connections/connections.service.js';
+import type {
   DocumentSearchHit,
   DocumentText,
 } from '../knowledge/knowledge-search.js';
+import type { WebPage, WebSearchResult } from '../web/web.service.js';
 
-export type ToolResource = 'financial_data' | 'documents' | 'reports' | 'email';
+export type ToolResource =
+  'financial_data' | 'documents' | 'reports' | 'email' | 'web' | 'connections';
 
 export type ToolAction =
   'read' | 'search' | 'modify' | 'delete' | 'create' | 'send';
@@ -44,6 +50,9 @@ export interface ToolContext {
   sendEmail(
     email: ToolEmail,
   ): Promise<{ messageId: string; attachment: string | null }>;
+  webSearch(query: string, maxResults: number): Promise<WebSearchResult[]>;
+  fetchUrl(url: string): Promise<WebPage>;
+  httpRequest(request: ConnectionRequest): Promise<ConnectionResponse>;
 }
 
 export interface ToolDefinition<
@@ -55,7 +64,9 @@ export interface ToolDefinition<
   inputSchema: TInput;
   outputSchema: TOutput;
   permission: ToolPermission;
+  permissionFor?(input: z.infer<TInput>): ToolPermission;
   requiresApproval: boolean;
+  needsApproval?(input: z.infer<TInput>): boolean;
   execute(
     input: z.infer<TInput>,
     context: ToolContext,

@@ -43,6 +43,7 @@ export interface TurnContext {
     'instructions' | 'model' | 'temperature' | 'maxOutputTokens'
   >;
   tools: ToolDefinition[];
+  notes?: string[];
   history: HistoryEntry[];
   signal?: AbortSignal;
 }

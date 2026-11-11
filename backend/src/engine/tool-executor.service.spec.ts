@@ -5,8 +5,10 @@ import type { AgentTool } from '../agents/entities/agent-tool.entity.js';
 import type { EmailService } from '../email/email.service.js';
 import type { FilesService } from '../files/files.service.js';
 import type { KnowledgeService } from '../knowledge/knowledge.service.js';
+import type { ConnectionsService } from '../connections/connections.service.js';
 import type { ToolsService } from '../tools/tools.service.js';
-import { defineTool } from '../tools/tool-definition.js';
+import type { WebService } from '../web/web.service.js';
+import { defineTool, type ToolDefinition } from '../tools/tool-definition.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 import { ToolExecutor } from './tool-executor.service.js';
 
@@ -21,9 +23,9 @@ const echoTool = defineTool({
 });
 
 function createExecutor({
-  tool = echoTool,
+  tool = echoTool as ToolDefinition,
   agentTool = { requiresApproval: false } as AgentTool | null,
-  hasPermission = true,
+  hasPermission = true as boolean | ((action: string) => boolean),
 } = {}) {
   const toolsService = {
     find: (name: string) => (name === tool.name ? tool : undefined),
@@ -32,7 +34,10 @@ function createExecutor({
     findOneBy: async () => agentTool,
   } as unknown as Repository<AgentTool>;
   const agentPermissionsRepository = {
-    existsBy: async () => hasPermission,
+    existsBy: async ({ action }: { action: string }) =>
+      typeof hasPermission === 'function'
+        ? hasPermission(action)
+        : hasPermission,
   } as unknown as Repository<AgentPermission>;
 
   const knowledgeService = {
@@ -46,6 +51,8 @@ function createExecutor({
     knowledgeService,
     {} as FilesService,
     {} as EmailService,
+    {} as WebService,
+    {} as ConnectionsService,
   );
 }
 
@@ -150,5 +157,54 @@ describe('ToolExecutor', () => {
       createExecutor({ tool }).execute(request),
       'INVALID_OUTPUT',
     );
+  });
+
+  describe('input-dependent permission and approval', () => {
+    const writeTool = defineTool({
+      name: 'echo',
+      description: 'Reads or writes.',
+      inputSchema: z.object({ text: z.string(), write: z.boolean() }),
+      outputSchema: z.object({ text: z.string() }),
+      permission: { resource: 'connections', action: 'read' },
+      permissionFor: ({ write }) => ({
+        resource: 'connections',
+        action: write ? 'modify' : 'read',
+      }),
+      requiresApproval: false,
+      needsApproval: ({ write }) => write,
+      execute: async ({ text }) => ({ text }),
+    });
+    const readOnly = (action: string) => action === 'read';
+
+    it('runs a read without approval', async () => {
+      const result = await createExecutor({
+        tool: writeTool,
+        hasPermission: readOnly,
+      }).execute({ ...request, input: { text: 'hi', write: false } });
+
+      expect(result).toEqual({ status: 'completed', output: { text: 'hi' } });
+    });
+
+    it('checks the permission for the requested action', async () => {
+      await expectToolError(
+        createExecutor({ tool: writeTool, hasPermission: readOnly }).execute({
+          ...request,
+          input: { text: 'hi', write: true },
+        }),
+        'PERMISSION_DENIED',
+      );
+    });
+
+    it('asks for approval when the input needs it', async () => {
+      const result = await createExecutor({ tool: writeTool }).execute({
+        ...request,
+        input: { text: 'hi', write: true },
+      });
+
+      expect(result).toEqual({
+        status: 'approval_required',
+        input: { text: 'hi', write: true },
+      });
+    });
   });
 });

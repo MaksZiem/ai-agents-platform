@@ -9,6 +9,7 @@ import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
 import { StepStatus, StepType } from '../executions/execution-step-enums.js';
+import { ConnectionsService } from '../connections/connections.service.js';
 import { ToolsService } from '../tools/tools.service.js';
 import { ApprovalManager } from './approval-manager.service.js';
 import { CancellationRegistry } from './cancellation-registry.service.js';
@@ -64,6 +65,7 @@ export class ExecutionRunner {
     private readonly toolExecutor: ToolExecutor,
     private readonly toolsService: ToolsService,
     private readonly cancellation: CancellationRegistry,
+    private readonly connectionsService: ConnectionsService,
   ) {}
 
   async run(executionId: string): Promise<void> {
@@ -451,8 +453,29 @@ export class ExecutionRunner {
       const tool = this.toolsService.find(agentTool.toolName);
       return tool ? [tool] : [];
     });
+    const notes = tools.some((tool) => tool.name === 'httpRequest')
+      ? await this.connectionNotes(execution.agentId)
+      : [];
 
-    return { task: execution.task, agent, tools };
+    return { task: execution.task, agent, tools, notes };
+  }
+
+  private async connectionNotes(agentId: string): Promise<string[]> {
+    const connections = await this.connectionsService.forAgent(agentId);
+
+    if (connections.length === 0) {
+      return [
+        'No connections are attached to this agent, so httpRequest cannot be used.',
+      ];
+    }
+
+    return [
+      'Connections available to httpRequest:',
+      ...connections.map(
+        (connection) =>
+          `- ${connection.name}: ${connection.baseUrl} (methods: ${connection.allowedMethods.join(', ')})${connection.description ? ` — ${connection.description}` : ''}`,
+      ),
+    ];
   }
 
   private async isStillRunning(execution: Execution): Promise<boolean> {
