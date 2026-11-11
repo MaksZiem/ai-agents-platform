@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { ApprovalCard } from "@/features/approvals/components/approval-card";
 import { cancelExecution, runTask } from "@/features/executions/actions";
 import { RunTaskForm } from "@/features/executions/components/run-task-form";
+import { ExecutionDetails } from "@/features/executions/components/execution-details";
 import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
 import { ExecutionMetricsRow } from "@/features/executions/components/execution-metrics";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
@@ -74,7 +75,6 @@ export default async function ExecutionPage({
     <div>
       <PageHeader
         title={`${execution.agent.name} · ${execution.id.slice(0, 8)}`}
-        description={execution.task}
         actions={
           <>
             {isActive && <ExecutionLiveUpdates executionId={execution.id} />}
@@ -99,6 +99,15 @@ export default async function ExecutionPage({
       />
 
       <div className="flex flex-col gap-6 p-6">
+        <section className="rounded-xl border border-border bg-surface p-[18px]">
+          <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-fg-muted">
+            Task
+          </h2>
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">
+            {execution.task}
+          </p>
+        </section>
+
         {execution.status === "FAILED" && execution.error && (
           <section
             role="alert"
@@ -144,6 +153,7 @@ export default async function ExecutionPage({
 
           <aside className="flex flex-col gap-6 lg:sticky lg:top-6">
             {approval && <ApprovalCard approval={approval} />}
+            <ExecutionDetails execution={execution} />
             <ExecutionFiles files={files} />
             {selectedStep && <StepDetails step={selectedStep} />}
           </aside>

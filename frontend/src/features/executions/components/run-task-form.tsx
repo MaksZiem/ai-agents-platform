@@ -70,12 +70,12 @@ export function RunTaskForm({
             </p>
           )}
 
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-fg-muted">
-              {disabled
-                ? "Activate this agent to run tasks."
-                : "The agent plans the steps itself. ⌘ Enter to run."}
-            </p>
+          <div className="flex items-center justify-end gap-3">
+            {disabled && (
+              <p className="mr-auto text-xs text-fg-muted">
+                Activate this agent to run tasks.
+              </p>
+            )}
             <SubmitButton variant="primary" pendingLabel="Starting…">
               {icon}
               {submitLabel}
