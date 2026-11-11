@@ -20,14 +20,3 @@ export function groupBy<T>(
 
   return groups;
 }
-
-export function percentChange(
-  current: number,
-  previous: number,
-): number | null {
-  if (previous === 0) {
-    return null;
-  }
-
-  return Math.round(((current - previous) / Math.abs(previous)) * 1000) / 10;
-}

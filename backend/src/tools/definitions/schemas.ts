@@ -6,8 +6,3 @@ export const transactionSchema = z.object({
   category: z.string().min(1).max(100),
   amount: z.number(),
 });
-
-export const periodValueSchema = z.object({
-  label: z.string().min(1).max(100),
-  value: z.number(),
-});
