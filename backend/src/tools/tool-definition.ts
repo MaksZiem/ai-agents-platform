@@ -13,9 +13,33 @@ export interface ToolPermission {
 
 // What a tool may use besides its input. Built by the ToolExecutor for one
 // agent, so a tool can never reach another agent's data.
+export interface ToolFileInput {
+  name: string;
+  mimeType: string;
+  content: string;
+}
+
+export interface SavedToolFile {
+  id: string;
+  name: string;
+  sizeBytes: number;
+}
+
+export interface ToolEmail {
+  to: string;
+  subject: string;
+  body: string;
+  attachmentFileId?: string;
+}
+
 export interface ToolContext {
   agentId: string;
+  executionId: string;
   searchDocuments(query: string, limit: number): Promise<DocumentSearchHit[]>;
+  saveFile(file: ToolFileInput): Promise<SavedToolFile>;
+  sendEmail(
+    email: ToolEmail,
+  ): Promise<{ messageId: string; attachment: string | null }>;
 }
 
 export interface ToolDefinition<

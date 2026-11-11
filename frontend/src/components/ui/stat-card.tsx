@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 type StatTone = "default" | "accent" | "warning";
 
@@ -10,7 +11,7 @@ const TONE_CLASSES: Record<StatTone, string> = {
 
 type StatCardProps = {
   label: string;
-  value: number | string;
+  value: ReactNode;
   href?: string;
   tone?: StatTone;
 };

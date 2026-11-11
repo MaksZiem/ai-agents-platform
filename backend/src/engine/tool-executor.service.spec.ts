@@ -2,6 +2,8 @@ import { z } from 'zod';
 import type { Repository } from 'typeorm';
 import type { AgentPermission } from '../agents/entities/agent-permission.entity.js';
 import type { AgentTool } from '../agents/entities/agent-tool.entity.js';
+import type { EmailService } from '../email/email.service.js';
+import type { FilesService } from '../files/files.service.js';
 import type { KnowledgeService } from '../knowledge/knowledge.service.js';
 import type { ToolsService } from '../tools/tools.service.js';
 import { defineTool } from '../tools/tool-definition.js';
@@ -42,6 +44,8 @@ function createExecutor({
     agentPermissionsRepository,
     toolsService,
     knowledgeService,
+    {} as FilesService,
+    {} as EmailService,
   );
 }
 
@@ -50,7 +54,13 @@ async function expectToolError(promise: Promise<unknown>, code: string) {
   await expect(promise).rejects.toMatchObject({ code });
 }
 
-const request = { agentId: 'agent-1', toolName: 'echo', input: { text: 'hi' } };
+const request = {
+  agentId: 'agent-1',
+  executionId: 'execution-1',
+  userId: 'user-1',
+  toolName: 'echo',
+  input: { text: 'hi' },
+};
 
 describe('ToolExecutor', () => {
   it('executes an enabled and permitted tool', async () => {

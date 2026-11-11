@@ -15,6 +15,7 @@ import { ApprovalsModule } from './approvals/approvals.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { DashboardModule } from './dashboard/dashboard.module.js';
 import { KnowledgeModule } from './knowledge/knowledge.module.js';
+import { FilesModule } from './files/files.module.js';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { KnowledgeModule } from './knowledge/knowledge.module.js';
     RealtimeModule,
     DashboardModule,
     KnowledgeModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

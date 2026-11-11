@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Check, Clock, Loader2, Minus, X, type LucideIcon } from "lucide-react";
 import { getStepTitle } from "@/features/executions/steps";
-import { formatDuration, getDurationMs } from "@/lib/format";
+import { LiveDuration } from "@/features/executions/components/live-duration";
 import type { ExecutionStep, StepStatus } from "@/features/executions/types";
 
 const STEP_STATUS_CONFIG: Record<
@@ -69,8 +69,6 @@ function StepRow({ step, isLast, isSelected }: StepRowProps) {
     circle,
     iconClass,
   } = STEP_STATUS_CONFIG[step.status];
-  const durationMs = getDurationMs(step);
-
   return (
     <li className="relative">
       {!isLast && (
@@ -114,7 +112,11 @@ function StepRow({ step, isLast, isSelected }: StepRowProps) {
         </div>
 
         <span className="font-mono text-xs text-fg-muted">
-          {durationMs === null ? "—" : formatDuration(durationMs)}
+          <LiveDuration
+            startedAt={step.startedAt}
+            finishedAt={step.finishedAt}
+            running={step.status === "RUNNING"}
+          />
         </span>
       </Link>
     </li>

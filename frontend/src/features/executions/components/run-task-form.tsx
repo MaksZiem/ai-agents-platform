@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, type KeyboardEvent } from "react";
+import { useActionState, type KeyboardEvent, type ReactNode } from "react";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import type { RunTaskState } from "@/features/executions/actions";
@@ -9,9 +9,12 @@ type RunTaskFormProps = {
   action: (state: RunTaskState, formData: FormData) => Promise<RunTaskState>;
   agentName: string;
   disabled: boolean;
+  initialTask?: string;
+  title?: string;
+  description?: string;
+  submitLabel?: string;
+  icon?: ReactNode;
 };
-
-const INITIAL_STATE: RunTaskState = { error: null, task: "" };
 
 function submitOnCmdEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
   if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
@@ -20,8 +23,20 @@ function submitOnCmdEnter(event: KeyboardEvent<HTMLTextAreaElement>) {
   }
 }
 
-export function RunTaskForm({ action, agentName, disabled }: RunTaskFormProps) {
-  const [state, formAction] = useActionState(action, INITIAL_STATE);
+export function RunTaskForm({
+  action,
+  agentName,
+  disabled,
+  initialTask = "",
+  title = `What would you like ${agentName} to do?`,
+  description,
+  submitLabel = "Run agent",
+  icon,
+}: RunTaskFormProps) {
+  const [state, formAction] = useActionState(action, {
+    error: null,
+    task: initialTask,
+  });
 
   return (
     <section className="rounded-xl border border-border bg-surface p-[18px]">
@@ -31,8 +46,11 @@ export function RunTaskForm({ action, agentName, disabled }: RunTaskFormProps) {
           className="flex flex-col gap-3 disabled:opacity-60"
         >
           <label className="flex flex-col gap-2">
-            <span className="text-base font-semibold">
-              What would you like {agentName} to do?
+            <span className="flex flex-col gap-0.5">
+              <span className="text-base font-semibold">{title}</span>
+              {description && (
+                <span className="text-[13px] text-fg-muted">{description}</span>
+              )}
             </span>
             <Textarea
               name="task"
@@ -59,7 +77,8 @@ export function RunTaskForm({ action, agentName, disabled }: RunTaskFormProps) {
                 : "The agent plans the steps itself. ⌘ Enter to run."}
             </p>
             <SubmitButton variant="primary" pendingLabel="Starting…">
-              Run agent
+              {icon}
+              {submitLabel}
             </SubmitButton>
           </div>
         </fieldset>

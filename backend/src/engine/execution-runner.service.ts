@@ -11,6 +11,7 @@ import { ExecutionStatus } from '../executions/execution-status.js';
 import { StepStatus, StepType } from '../executions/execution-step-enums.js';
 import { ToolsService } from '../tools/tools.service.js';
 import { ApprovalManager } from './approval-manager.service.js';
+import { CancellationRegistry } from './cancellation-registry.service.js';
 import { ExecutionStateManager } from './execution-state-manager.service.js';
 import { ModelCallError } from './model-call.error.js';
 import {
@@ -62,6 +63,7 @@ export class ExecutionRunner {
     private readonly planner: Planner,
     private readonly toolExecutor: ToolExecutor,
     private readonly toolsService: ToolsService,
+    private readonly cancellation: CancellationRegistry,
   ) {}
 
   async run(executionId: string): Promise<void> {
@@ -72,6 +74,8 @@ export class ExecutionRunner {
     if (!execution) {
       return;
     }
+
+    const signal = this.cancellation.register(execution.id);
 
     try {
       if (await this.prepare(execution)) {
@@ -86,6 +90,8 @@ export class ExecutionRunner {
         error: 'Unexpected engine error',
         finishedAt: new Date(),
       });
+    } finally {
+      this.cancellation.release(execution.id, signal);
     }
   }
 
@@ -216,7 +222,11 @@ export class ExecutionRunner {
       StepType.PLAN,
     );
     const result = await this.withRetries(execution, step, () =>
-      this.planner.next({ ...context, history: this.buildHistory(steps) }),
+      this.planner.next({
+        ...context,
+        history: this.buildHistory(steps),
+        signal: this.cancellation.signalFor(execution.id),
+      }),
     );
 
     if (result.kind === 'cancelled') {
@@ -228,7 +238,7 @@ export class ExecutionRunner {
         error: result.reason,
       });
       await this.state.transition(execution, ExecutionStatus.FAILED, {
-        error: 'Model call failed',
+        error: `Model call failed. ${result.reason}`,
         finishedAt: new Date(),
       });
       return true;
@@ -279,6 +289,8 @@ export class ExecutionRunner {
     const result = await this.withRetries(execution, step, () =>
       this.toolExecutor.execute({
         agentId: execution.agentId,
+        executionId: execution.id,
+        userId: execution.userId,
         toolName: call.toolName,
         input: call.input,
         approved,
@@ -323,6 +335,13 @@ export class ExecutionRunner {
       try {
         return { kind: 'ok', value: await call() };
       } catch (error) {
+        if (this.cancellation.isCancelled(execution.id)) {
+          await this.state.finishStep(step, StepStatus.SKIPPED, {
+            error: 'Cancelled by user',
+          });
+          return { kind: 'cancelled' };
+        }
+
         if (
           !(error instanceof ToolExecutionError) &&
           !(error instanceof ModelCallError)
@@ -347,7 +366,9 @@ export class ExecutionRunner {
           attempt + 1,
           `Attempt ${attempt} failed: ${reason}`,
         );
-        await sleep(RETRY_DELAY_MS * attempt);
+        await sleep(RETRY_DELAY_MS * attempt, undefined, {
+          signal: this.cancellation.signalFor(execution.id),
+        }).catch(() => undefined);
 
         if (!(await this.isStillRunning(execution))) {
           await this.state.finishStep(step, StepStatus.SKIPPED);

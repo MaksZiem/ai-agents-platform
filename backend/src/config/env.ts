@@ -11,6 +11,11 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(3600),
   GEMINI_API_KEY: z.string().min(1),
+  RESEND_API_KEY: z.string().min(1),
+  EMAIL_FROM: z
+    .string()
+    .min(1)
+    .default('AI Agent Platform <onboarding@resend.dev>'),
 });
 
 export type Env = z.infer<typeof envSchema>;

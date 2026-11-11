@@ -1,15 +1,20 @@
 import { notFound } from "next/navigation";
+import { RotateCcw, Square } from "lucide-react";
+import { ConfirmForm } from "@/components/ui/confirm-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { ApprovalCard } from "@/features/approvals/components/approval-card";
-import { cancelExecution } from "@/features/executions/actions";
+import { cancelExecution, runTask } from "@/features/executions/actions";
+import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
 import { ExecutionMetricsRow } from "@/features/executions/components/execution-metrics";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
 import { StepDetails } from "@/features/executions/components/step-details";
 import { StepTimeline } from "@/features/executions/components/step-timeline";
+import { ExecutionFiles } from "@/features/files/components/execution-files";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { Approval } from "@/features/approvals/types";
+import type { GeneratedFile } from "@/features/files/types";
 import type { ExecutionDetail, ExecutionStatus, ExecutionStep } from "@/features/executions/types";
 
 const ACTIVE_STATUSES: ExecutionStatus[] = [
@@ -54,9 +59,10 @@ export default async function ExecutionPage({
   const { id } = await params;
   const { step: stepParam } = await searchParams;
 
-  const [execution, approval] = await Promise.all([
-    getExecution(id),
+  const execution = await getExecution(id);
+  const [approval, files] = await Promise.all([
     getPendingApproval(id),
+    apiFetch<GeneratedFile[]>(`/files?executionId=${execution.id}`),
   ]);
 
   const isActive = ACTIVE_STATUSES.includes(execution.status);
@@ -74,16 +80,58 @@ export default async function ExecutionPage({
             {isActive && <ExecutionLiveUpdates executionId={execution.id} />}
             <ExecutionStatusBadge status={execution.status} />
             {isActive && (
-              <form action={cancelExecution.bind(null, execution.id)}>
-                <SubmitButton pendingLabel="Cancelling…">Cancel</SubmitButton>
-              </form>
+              <ConfirmForm
+                action={cancelExecution.bind(null, execution.id)}
+                message="Stop this execution? The agent stops immediately and no further steps will run."
+              >
+                <SubmitButton variant="danger" pendingLabel="Stopping…">
+                  <Square
+                    className="size-3.5 fill-current"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                  Stop execution
+                </SubmitButton>
+              </ConfirmForm>
             )}
           </>
         }
       />
 
       <div className="flex flex-col gap-6 p-6">
-        <ExecutionMetricsRow metrics={execution.metrics} />
+        {execution.status === "FAILED" && execution.error && (
+          <section
+            role="alert"
+            className="flex flex-col gap-1 rounded-xl border border-danger/30 bg-danger/10 p-[18px]"
+          >
+            <h2 className="text-base font-semibold text-danger">
+              Execution failed
+            </h2>
+            <p className="whitespace-pre-wrap break-words font-mono text-[13px] text-danger">
+              {execution.error}
+            </p>
+          </section>
+        )}
+
+        <ExecutionMetricsRow
+          metrics={execution.metrics}
+          startedAt={execution.startedAt}
+          finishedAt={execution.finishedAt}
+          running={isActive}
+        />
+
+        {!isActive && (
+          <RunTaskForm
+            action={runTask.bind(null, execution.agentId)}
+            agentName={execution.agent.name}
+            disabled={false}
+            initialTask={execution.task}
+            title="Retry this execution"
+            description={`Starts a new execution of ${execution.agent.name} with the task below and the agent's current configuration. Edit the task first if you want to change it. This execution stays in the history.`}
+            submitLabel="Retry execution"
+            icon={<RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />}
+          />
+        )}
 
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_400px]">
           <section className="rounded-xl border border-border bg-surface px-2.5 py-3">
@@ -96,6 +144,7 @@ export default async function ExecutionPage({
 
           <aside className="flex flex-col gap-6 lg:sticky lg:top-6">
             {approval && <ApprovalCard approval={approval} />}
+            <ExecutionFiles files={files} />
             {selectedStep && <StepDetails step={selectedStep} />}
           </aside>
         </div>

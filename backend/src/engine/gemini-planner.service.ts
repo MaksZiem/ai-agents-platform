@@ -29,6 +29,7 @@ const MAX_RATE_LIMIT_WAIT_SECONDS = 60;
 interface GeminiErrorBody {
   error?: {
     message?: string;
+    status?: string;
     details?: { retryDelay?: string }[];
   };
 }
@@ -45,7 +46,13 @@ export class GeminiPlanner extends Planner {
     });
   }
 
-  async next({ task, agent, tools, history }: TurnContext): Promise<ModelTurn> {
+  async next({
+    task,
+    agent,
+    tools,
+    history,
+    signal,
+  }: TurnContext): Promise<ModelTurn> {
     let response: GenerateContentResponse;
 
     try {
@@ -56,6 +63,7 @@ export class GeminiPlanner extends Planner {
           systemInstruction: this.buildInstruction(agent.instructions),
           temperature: agent.temperature,
           maxOutputTokens: agent.maxOutputTokens,
+          abortSignal: signal,
           ...(tools.length > 0 && {
             tools: [
               {
@@ -71,7 +79,7 @@ export class GeminiPlanner extends Planner {
         },
       });
     } catch (error) {
-      throw this.toModelError(error);
+      throw this.toModelError(error, agent.model);
     }
 
     const content = response.candidates?.[0]?.content;
@@ -210,9 +218,11 @@ export class GeminiPlanner extends Planner {
     };
   }
 
-  private toModelError(error: unknown): ModelCallError {
+  private toModelError(error: unknown, agentModel: string): ModelCallError {
     if (error instanceof ApiError) {
-      const { message, retryDelaySeconds } = this.parseApiError(error);
+      const parsed = this.parseApiError(error);
+      const { retryDelaySeconds } = parsed;
+      const message = `Gemini API ${error.status}${parsed.status ? ` ${parsed.status}` : ''} (${agentModel}): ${parsed.message}`;
 
       if (error.status === 429) {
         // Per-minute limits clear quickly; a daily quota does not.
@@ -228,7 +238,7 @@ export class GeminiPlanner extends Planner {
     // Network errors and timeouts.
     return new ModelCallError(
       'MODEL_UNAVAILABLE',
-      error instanceof Error ? error.message : String(error),
+      `Gemini (${agentModel}) did not respond: ${error instanceof Error ? error.message : String(error)}`,
       true,
     );
   }
@@ -236,6 +246,7 @@ export class GeminiPlanner extends Planner {
   // The SDK puts the whole JSON error body into the message.
   private parseApiError(error: ApiError): {
     message: string;
+    status: string | null;
     retryDelaySeconds: number | null;
   } {
     const body = this.parseJson(error.message);
@@ -246,6 +257,7 @@ export class GeminiPlanner extends Planner {
 
     return {
       message,
+      status: body?.error?.status ?? null,
       retryDelaySeconds: retryDelay ? Number.parseFloat(retryDelay) : null,
     };
   }

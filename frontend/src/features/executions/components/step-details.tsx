@@ -1,6 +1,6 @@
 import { JsonBlock } from "@/components/ui/json-block";
 import { getStepTitle } from "@/features/executions/steps";
-import { formatDuration, getDurationMs } from "@/lib/format";
+import { LiveDuration } from "@/features/executions/components/live-duration";
 import type { ExecutionStep } from "@/features/executions/types";
 
 type StepDetailsProps = {
@@ -8,7 +8,6 @@ type StepDetailsProps = {
 };
 
 export function StepDetails({ step }: StepDetailsProps) {
-  const durationMs = getDurationMs(step);
   const hasData = step.input || step.output || step.error;
 
   return (
@@ -21,7 +20,11 @@ export function StepDetails({ step }: StepDetailsProps) {
       <dl className="grid grid-cols-[88px_1fr] gap-x-3 gap-y-2 text-[13px]">
         <dt className="text-fg-muted">Duration</dt>
         <dd className="font-mono">
-          {durationMs === null ? "—" : formatDuration(durationMs)}
+          <LiveDuration
+            startedAt={step.startedAt}
+            finishedAt={step.finishedAt}
+            running={step.status === "RUNNING"}
+          />
         </dd>
         <dt className="text-fg-muted">Attempt</dt>
         <dd className="font-mono">{step.attempt}</dd>

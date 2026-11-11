@@ -44,6 +44,7 @@ export interface TurnContext {
   >;
   tools: ToolDefinition[];
   history: HistoryEntry[];
+  signal?: AbortSignal;
 }
 
 // An abstract class instead of an interface: it survives compilation,

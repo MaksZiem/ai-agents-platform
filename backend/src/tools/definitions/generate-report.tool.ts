@@ -1,11 +1,10 @@
-import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { defineTool } from '../tool-definition.js';
 
 export const generateReportTool = defineTool({
   name: 'generateReport',
   description:
-    'Formats findings into a structured Markdown report. Use it for the final deliverable when the user asks for a report. Only include facts taken from tool results.',
+    'Formats findings into a structured Markdown report and saves it as a downloadable file. Use it for the final deliverable when the user asks for a report. Only include facts taken from tool results. Returns fileId, which sendEmail accepts as attachmentFileId.',
   inputSchema: z.object({
     title: z.string().min(1).max(200),
     summary: z.string().min(1).max(2_000),
@@ -20,7 +19,7 @@ export const generateReportTool = defineTool({
       .max(20),
   }),
   outputSchema: z.object({
-    reportId: z.string(),
+    fileId: z.string(),
     title: z.string(),
     fileName: z.string(),
     markdown: z.string(),
@@ -28,7 +27,7 @@ export const generateReportTool = defineTool({
   }),
   permission: { resource: 'reports', action: 'create' },
   requiresApproval: false,
-  execute: async ({ title, summary, sections }) => {
+  execute: async ({ title, summary, sections }, context) => {
     const markdown = [
       `# ${title}`,
       '',
@@ -45,10 +44,16 @@ export const generateReportTool = defineTool({
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
 
+    const file = await context.saveFile({
+      name: `${slug || 'report'}.md`,
+      mimeType: 'text/markdown',
+      content: markdown,
+    });
+
     return {
-      reportId: randomUUID(),
+      fileId: file.id,
       title,
-      fileName: `${slug || 'report'}.md`,
+      fileName: file.name,
       markdown,
       createdAt: new Date().toISOString(),
     };
