@@ -28,6 +28,11 @@ export class ExecutionsController {
     return this.executionsService.findAll(user.sub, { status });
   }
 
+  @Get('activity')
+  activity(@CurrentUser() user: JwtPayload) {
+    return this.executionsService.activity(user.sub);
+  }
+
   @Get(':id')
   findOne(
     @Param('id', ParseUUIDPipe) id: string,

@@ -18,6 +18,28 @@ export type Agent = {
   updatedAt: string;
 };
 
+export type AgentActivity = {
+  agentId: string;
+  totalRuns: number;
+  completedRuns: number;
+  failedRuns: number;
+  lastRunAt: string | null;
+  activeRuns: number;
+  current: {
+    executionId: string;
+    status: "QUEUED" | "RUNNING" | "WAITING_FOR_APPROVAL";
+    task: string;
+    startedAt: string | null;
+    step: string | null;
+  } | null;
+};
+
+export type AgentWithActivity = Agent & {
+  activity: AgentActivity | null;
+};
+
+export type AgentView = "grid" | "list";
+
 export type AgentSummary = Pick<Agent, "id" | "name">;
 
 export type AgentTool = {

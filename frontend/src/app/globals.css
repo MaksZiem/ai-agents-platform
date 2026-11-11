@@ -29,6 +29,33 @@
   --color-danger: #e5534b;
 }
 
+@theme {
+  --animate-indeterminate: indeterminate 1.6s ease-in-out infinite;
+  --animate-thinking: thinking 1.2s ease-in-out infinite;
+
+  @keyframes indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
+  }
+
+  @keyframes thinking {
+    0%,
+    80%,
+    100% {
+      opacity: 0.25;
+      transform: translateY(0);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+  }
+}
+
 /*
  * Fonty osobno, w @theme inline, bo wskazują na zmienne,
  * które next/font ustawia na <html> w layout.tsx.

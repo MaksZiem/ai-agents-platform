@@ -5,13 +5,16 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { type FindOptionsWhere, Repository } from 'typeorm';
+import { type FindOptionsWhere, In, Not, Repository } from 'typeorm';
 import { AgentsService } from '../agents/agents.service.js';
 import { AgentStatus } from '../agents/entities/agent.entity.js';
 import { ApprovalManager } from '../engine/approval-manager.service.js';
 import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
 import { ExecutionStateManager } from '../engine/execution-state-manager.service.js';
+import { buildAgentActivity } from './agent-activity.js';
+import { ExecutionStep } from './entities/execution-step.entity.js';
 import { Execution } from './entities/execution.entity.js';
+import { StepStatus } from './execution-step-enums.js';
 import { computeMetrics } from './execution-metrics.js';
 import { ExecutionStatus, isTerminal } from './execution-status.js';
 
@@ -20,6 +23,8 @@ export class ExecutionsService {
   constructor(
     @InjectRepository(Execution)
     private readonly executionsRepository: Repository<Execution>,
+    @InjectRepository(ExecutionStep)
+    private readonly stepsRepository: Repository<ExecutionStep>,
     private readonly agentsService: AgentsService,
     private readonly state: ExecutionStateManager,
     private readonly scheduler: ExecutionScheduler,
@@ -128,6 +133,42 @@ export class ExecutionsService {
     await this.approvals.cancelPending(id);
 
     return this.findOne(id, userId);
+  }
+
+  async activity(userId: string) {
+    const executions = await this.executionsRepository.find({
+      where: { userId },
+      select: {
+        id: true,
+        agentId: true,
+        status: true,
+        task: true,
+        createdAt: true,
+        startedAt: true,
+      },
+      order: { createdAt: 'DESC' },
+    });
+    const activeIds = executions
+      .filter((execution) => !isTerminal(execution.status))
+      .map((execution) => execution.id);
+    const steps =
+      activeIds.length === 0
+        ? []
+        : await this.stepsRepository.find({
+            where: {
+              executionId: In(activeIds),
+              status: Not(StepStatus.PENDING),
+            },
+            select: {
+              executionId: true,
+              type: true,
+              status: true,
+              toolName: true,
+              position: true,
+            },
+          });
+
+    return buildAgentActivity(executions, steps);
   }
 
   async remove(id: string, userId: string): Promise<void> {

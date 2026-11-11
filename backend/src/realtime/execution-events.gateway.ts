@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   ConnectedSocket,
   MessageBody,
+  type OnGatewayConnection,
   type OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
@@ -22,11 +23,17 @@ import {
 import { Execution } from '../executions/entities/execution.entity.js';
 
 const executionRoom = (executionId: string) => `execution:${executionId}`;
+const userRoom = (userId: string) => `user:${userId}`;
+const MAX_CACHED_OWNERS = 500;
 
 @WebSocketGateway({ namespace: 'executions' })
-export class ExecutionEventsGateway implements OnGatewayInit {
+export class ExecutionEventsGateway
+  implements OnGatewayInit, OnGatewayConnection
+{
   @WebSocketServer()
   private readonly server: Namespace;
+
+  private readonly owners = new Map<string, string>();
 
   constructor(
     private readonly jwtService: JwtService,
@@ -54,6 +61,14 @@ export class ExecutionEventsGateway implements OnGatewayInit {
         })
         .catch(() => next(new Error('Unauthorized')));
     });
+  }
+
+  async handleConnection(client: Socket) {
+    const user = client.data.user as JwtPayload | undefined;
+
+    if (user) {
+      await client.join(userRoom(user.sub));
+    }
   }
 
   @SubscribeMessage('subscribe')
@@ -93,16 +108,49 @@ export class ExecutionEventsGateway implements OnGatewayInit {
   }
 
   @OnEvent(EXECUTION_UPDATED)
-  onExecutionUpdated(event: ExecutionUpdatedEvent) {
+  async onExecutionUpdated(event: ExecutionUpdatedEvent) {
     this.server
       .to(executionRoom(event.executionId))
       .emit('execution.updated', event);
+    await this.notifyOwner(event.executionId);
   }
 
   @OnEvent(STEP_UPDATED)
-  onStepUpdated(event: StepUpdatedEvent) {
+  async onStepUpdated(event: StepUpdatedEvent) {
     this.server
       .to(executionRoom(event.executionId))
       .emit('step.updated', event.step);
+    await this.notifyOwner(event.executionId);
+  }
+
+  private async notifyOwner(executionId: string) {
+    const userId = await this.ownerOf(executionId);
+
+    if (userId) {
+      this.server.to(userRoom(userId)).emit('activity', { executionId });
+    }
+  }
+
+  private async ownerOf(executionId: string): Promise<string | null> {
+    const cached = this.owners.get(executionId);
+
+    if (cached) {
+      return cached;
+    }
+
+    const execution = await this.executionsRepository.findOne({
+      where: { id: executionId },
+      select: { id: true, userId: true },
+    });
+
+    if (!execution) {
+      return null;
+    }
+
+    if (this.owners.size >= MAX_CACHED_OWNERS) {
+      this.owners.clear();
+    }
+    this.owners.set(executionId, execution.userId);
+    return execution.userId;
   }
 }
