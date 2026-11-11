@@ -11,6 +11,8 @@ import { AgentDocument } from '../knowledge/entities/agent-document.entity.js';
 import { DocumentChunk } from '../knowledge/entities/document-chunk.entity.js';
 import { KnowledgeDocument } from '../knowledge/entities/knowledge-document.entity.js';
 import { GeneratedFile } from '../files/entities/generated-file.entity.js';
+import { AgentConnection } from '../connections/entities/agent-connection.entity.js';
+import { Connection } from '../connections/entities/connection.entity.js';
 
 export function createDataSourceOptions(url: string): DataSourceOptions {
   return {
@@ -28,6 +30,8 @@ export function createDataSourceOptions(url: string): DataSourceOptions {
       DocumentChunk,
       AgentDocument,
       GeneratedFile,
+      Connection,
+      AgentConnection,
     ],
     migrations: [join(import.meta.dirname, 'migrations', '*.js')],
     synchronize: false,

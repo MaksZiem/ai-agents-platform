@@ -6,6 +6,7 @@ import { AgentTool } from './entities/agent-tool.entity.js';
 import { Agent } from './entities/agent.entity.js';
 import { CreateAgentDto } from './dto/create-agent.dto.js';
 import { UpdateAgentDto } from './dto/update-agent.dto.js';
+import { AgentConnection } from '../connections/entities/agent-connection.entity.js';
 import { AgentDocument } from '../knowledge/entities/agent-document.entity.js';
 
 @Injectable()
@@ -93,6 +94,19 @@ export class AgentsService {
           manager.create(AgentDocument, {
             agentId: copy.id,
             documentId: link.documentId,
+          }),
+        ),
+      );
+
+      const sourceConnections = await manager.findBy(AgentConnection, {
+        agentId: source.id,
+      });
+
+      await manager.save(
+        sourceConnections.map((link) =>
+          manager.create(AgentConnection, {
+            agentId: copy.id,
+            connectionId: link.connectionId,
           }),
         ),
       );

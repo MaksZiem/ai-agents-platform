@@ -12,6 +12,8 @@ const envSchema = z.object({
   JWT_EXPIRES_IN_SECONDS: z.coerce.number().int().positive().default(3600),
   GEMINI_API_KEY: z.string().min(1),
   RESEND_API_KEY: z.string().min(1),
+  ENCRYPTION_KEY: z.string().min(32),
+  TAVILY_API_KEY: z.string().optional(),
   EMAIL_FROM: z
     .string()
     .min(1)
