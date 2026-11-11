@@ -8,6 +8,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -44,6 +45,22 @@ export class KnowledgeController {
   @Get()
   findAll(@CurrentUser() user: JwtPayload) {
     return this.knowledgeService.findAll(user.sub);
+  }
+
+  @Get(':id/download')
+  async download(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const { name, mimeType, content } = await this.knowledgeService.download(
+      id,
+      user.sub,
+    );
+
+    return new StreamableFile(content, {
+      type: mimeType,
+      disposition: `attachment; filename*=UTF-8''${encodeURIComponent(name)}`,
+    });
   }
 
   @Get(':id')

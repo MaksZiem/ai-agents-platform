@@ -67,7 +67,9 @@ export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps
                 <AgentAvatar name={execution.agent.name} icon={execution.agent.icon} />
                 <span className="truncate">{execution.agent.name}</span>
               </Link>
-              <ExecutionStatusBadge status={execution.status} />
+              <div>
+                <ExecutionStatusBadge status={execution.status} />
+              </div>
               <span className="hidden text-right font-mono text-xs text-fg-muted md:block">
                 {durationMs === null ? "—" : formatDuration(durationMs)}
               </span>

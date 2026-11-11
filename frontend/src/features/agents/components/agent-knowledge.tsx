@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { Select } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { uploadedFileHref } from "@/features/files/entries";
 import { attachDocument, detachDocument } from "@/features/knowledge/actions";
 import type { AgentDocument, KnowledgeDocument } from "@/features/knowledge/types";
 
@@ -25,7 +26,8 @@ export function AgentKnowledge({
         <h2 className="text-base font-semibold">Knowledge</h2>
         <p className="text-[13px] text-fg-muted">
           Documents this agent can read with the readDocument and
-          searchDocuments tools.
+          searchDocuments tools. Remove only detaches a document from this
+          agent; it stays in your library for other agents.
         </p>
       </div>
 
@@ -45,14 +47,21 @@ export function AgentKnowledge({
                 strokeWidth={1.75}
                 aria-hidden
               />
-              <span className="min-w-0 flex-1 truncate text-[13px]">
+              <Link
+                href={uploadedFileHref(document.id)}
+                className="min-w-0 flex-1 truncate text-[13px] hover:underline"
+              >
                 {document.name}
-              </span>
+              </Link>
               <span className="font-mono text-xs text-fg-muted">
                 {document.chunkCount} chunks
               </span>
               <form action={detachDocument.bind(null, agentId, document.id)}>
-                <SubmitButton variant="ghost" pendingLabel="Removing…">
+                <SubmitButton
+                  variant="ghost"
+                  pendingLabel="Removing…"
+                  title="Detach from this agent. The document stays in your library."
+                >
                   Remove
                 </SubmitButton>
               </form>

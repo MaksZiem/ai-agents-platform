@@ -1,6 +1,9 @@
-import { FileText, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Download, FileText, Trash2 } from "lucide-react";
+import { buttonClasses } from "@/components/ui/button";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { uploadedFileHref } from "@/features/files/entries";
 import { deleteDocument } from "@/features/knowledge/actions";
 import { formatBytes, formatShortDate } from "@/lib/format";
 import type { LibraryDocument } from "@/features/knowledge/types";
@@ -32,7 +35,12 @@ export function DocumentLibrary({ documents }: DocumentLibraryProps) {
               aria-hidden
             />
             <div className="min-w-0">
-              <p className="truncate font-medium">{document.name}</p>
+              <Link
+                href={uploadedFileHref(document.id)}
+                className="block truncate font-medium hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                {document.name}
+              </Link>
               <p className="font-mono text-xs text-fg-muted">
                 {formatBytes(document.sizeBytes)} · {document.chunkCount} chunks
                 · {formatShortDate(document.createdAt)}
@@ -46,20 +54,33 @@ export function DocumentLibrary({ documents }: DocumentLibraryProps) {
               : "Not used by any agent"}
           </p>
 
-          <ConfirmForm
-            action={deleteDocument.bind(null, document.id)}
-            title={`Delete "${document.name}"?`}
-            message="Agents using this document will lose access to it. This cannot be undone."
-            confirmLabel="Delete document"
-          >
-            <SubmitButton
-              variant="ghost"
-              pendingLabel="Deleting…"
-              aria-label={`Delete ${document.name}`}
+          <div className="flex items-center gap-1">
+            <a
+              href={`/api/knowledge/${document.id}/download`}
+              className={buttonClasses("ghost")}
+              aria-label={`Download ${document.name}`}
             >
-              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-            </SubmitButton>
-          </ConfirmForm>
+              <Download className="size-4" strokeWidth={1.75} aria-hidden />
+            </a>
+            <ConfirmForm
+              action={deleteDocument.bind(null, document.id)}
+              title={`Delete "${document.name}"?`}
+              message={
+                document.agents.length > 0
+                  ? `The document is removed from your library and from ${document.agents.length} ${document.agents.length === 1 ? "agent" : "agents"} that use it. To take it away from one agent only, use Remove on that agent's page. This cannot be undone.`
+                  : "The document is removed from your library. This cannot be undone."
+              }
+              confirmLabel="Delete document"
+            >
+              <SubmitButton
+                variant="ghost"
+                pendingLabel="…"
+                aria-label={`Delete ${document.name}`}
+              >
+                <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+              </SubmitButton>
+            </ConfirmForm>
+          </div>
         </li>
       ))}
     </ul>

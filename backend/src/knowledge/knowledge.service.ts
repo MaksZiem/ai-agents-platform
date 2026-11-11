@@ -22,6 +22,12 @@ import { extractDocumentText } from './text-extraction.js';
 const MAX_SEARCH_CANDIDATES = 200;
 const MAX_DOCUMENT_CHARACTERS = 30_000;
 
+export interface DocumentDownload {
+  name: string;
+  mimeType: string;
+  content: Buffer;
+}
+
 export interface UploadedDocumentFile {
   originalname: string;
   mimetype: string;
@@ -64,6 +70,7 @@ export class KnowledgeService {
           sizeBytes: file.size,
           characterCount: text.length,
           chunkCount: chunks.length,
+          original: file.buffer,
         }),
       );
 
@@ -78,7 +85,7 @@ export class KnowledgeService {
         { chunk: 500 },
       );
 
-      return document;
+      return manager.findOneByOrFail(KnowledgeDocument, { id: document.id });
     });
   }
 
@@ -203,6 +210,39 @@ export class KnowledgeService {
     });
 
     return rankChunks(chunks, terms, limit);
+  }
+
+  async download(id: string, userId: string): Promise<DocumentDownload> {
+    const document = await this.documentsRepository.findOne({
+      where: { id, userId },
+      select: { id: true, name: true, mimeType: true, original: true },
+    });
+
+    if (!document) {
+      throw new NotFoundException(`Document ${id} not found`);
+    }
+
+    if (document.original) {
+      return {
+        name: document.name,
+        mimeType: document.mimeType,
+        content: document.original,
+      };
+    }
+
+    const chunks = await this.chunksRepository.find({
+      where: { documentId: id },
+      order: { position: 'ASC' },
+    });
+    const text = mergeChunks(chunks.map((chunk) => chunk.content));
+
+    return {
+      name: /\.(txt|md|markdown|csv|json)$/i.test(document.name)
+        ? document.name
+        : `${document.name}.txt`,
+      mimeType: 'text/plain; charset=utf-8',
+      content: Buffer.from(text, 'utf8'),
+    };
   }
 
   async readForAgent(

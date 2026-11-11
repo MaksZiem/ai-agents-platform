@@ -16,7 +16,7 @@ export default async function KnowledgePage() {
     <div>
       <PageHeader
         title="Knowledge"
-        description="Documents your agents can search. Attach them to an agent on its page."
+        description="Documents your agents can read. Attach them to an agent on its page. Uploaded files are also listed in Files."
       />
 
       <div className="flex max-w-4xl flex-col gap-6 p-6">

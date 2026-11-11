@@ -37,6 +37,9 @@ export class KnowledgeDocument {
   @Column({ type: 'int' })
   chunkCount: number;
 
+  @Column({ type: 'bytea', nullable: true, select: false })
+  original: Buffer | null;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 }
