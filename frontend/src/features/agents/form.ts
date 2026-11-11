@@ -9,7 +9,6 @@ export const GEMINI_MODELS = [
 export type AgentFormValues = {
   name: string;
   description: string;
-  icon: string;
   model: string;
   temperature: string;
   maxOutputTokens: string;
@@ -29,13 +28,11 @@ export type AgentPayload = Pick<
   "name" | "model" | "instructions" | "temperature" | "maxOutputTokens"
 > & {
   description: string | null;
-  icon: string | null;
 };
 
 export const EMPTY_AGENT_FORM: AgentFormValues = {
   name: "",
   description: "",
-  icon: "",
   model: GEMINI_MODELS[0],
   temperature: "0.7",
   maxOutputTokens: "2048",
@@ -49,7 +46,6 @@ export function readAgentForm(formData: FormData): AgentFormValues {
   return {
     name: read("name"),
     description: read("description"),
-    icon: read("icon"),
     model: read("model"),
     temperature: read("temperature"),
     maxOutputTokens: read("maxOutputTokens"),
@@ -72,7 +68,6 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
     errors.description = "Description must be at most 500 characters.";
   }
 
-  if (values.icon.length > 32) errors.icon = "Icon is too long.";
 
   if (!values.model) errors.model = "Choose a model.";
 
@@ -108,7 +103,6 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
       temperature,
       maxOutputTokens,
       description: values.description || null,
-      icon: values.icon || null,
     },
   };
 }
@@ -117,7 +111,6 @@ export function agentToFormValues(agent: Agent): AgentFormValues {
   return {
     name: agent.name,
     description: agent.description ?? "",
-    icon: agent.icon ?? "",
     model: agent.model,
     temperature: String(agent.temperature),
     maxOutputTokens: String(agent.maxOutputTokens),

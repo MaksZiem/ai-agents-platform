@@ -37,7 +37,7 @@ export default async function FilesPage({ searchParams }: PageProps<"/files">) {
         description="Files you uploaded as knowledge and files your agents created during executions."
       />
 
-      <div className="flex max-w-6xl flex-col gap-4 p-6">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-6">
         <FileSourceFilter
           active={activeSource}
           counts={{

@@ -18,7 +18,7 @@ export function ExecutionDetails({ execution }: ExecutionDetailsProps) {
             href={`/agents/${execution.agent.id}`}
             className="inline-flex max-w-full items-center gap-2 rounded-md hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <AgentAvatar name={execution.agent.name} icon={execution.agent.icon} />
+            <AgentAvatar name={execution.agent.name} />
             <span className="truncate">{execution.agent.name}</span>
           </Link>
         </dd>

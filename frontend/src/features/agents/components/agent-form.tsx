@@ -40,31 +40,20 @@ export function AgentForm({
   const { values, errors } = state;
 
   return (
-    <form action={formAction} className="flex max-w-[720px] flex-col gap-6">
+    <form action={formAction} className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <section className={SECTION_CLASSES}>
         <h2 className="text-base font-semibold">Identity</h2>
 
-        <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
-          <FormField label="Name" error={errors.name}>
-            <Input
-              name="name"
-              defaultValue={values.name}
-              maxLength={100}
-              placeholder="Financial Analyst"
-              required
-              aria-invalid={Boolean(errors.name)}
-            />
-          </FormField>
-          <FormField label="Icon" hint="One emoji" error={errors.icon}>
-            <Input
-              name="icon"
-              defaultValue={values.icon}
-              maxLength={32}
-              placeholder="📊"
-              aria-invalid={Boolean(errors.icon)}
-            />
-          </FormField>
-        </div>
+        <FormField label="Name" error={errors.name}>
+          <Input
+            name="name"
+            defaultValue={values.name}
+            maxLength={100}
+            placeholder="Financial Analyst"
+            required
+            aria-invalid={Boolean(errors.name)}
+          />
+        </FormField>
 
         <FormField label="Description" error={errors.description}>
           <Input

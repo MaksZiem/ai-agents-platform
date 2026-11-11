@@ -19,7 +19,7 @@ export default async function KnowledgePage() {
         description="Documents your agents can read. Attach them to an agent on its page. Uploaded files are also listed in Files."
       />
 
-      <div className="flex max-w-4xl flex-col gap-6 p-6">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
         <UploadDocumentForm />
 
         <section className="flex flex-col gap-3">

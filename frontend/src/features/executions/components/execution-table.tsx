@@ -64,7 +64,7 @@ export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps
                 href={`/agents/${execution.agent.id}`}
                 className="relative z-10 hidden min-w-0 items-center gap-2 rounded-md text-[13px] hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent md:flex"
               >
-                <AgentAvatar name={execution.agent.name} icon={execution.agent.icon} />
+                <AgentAvatar name={execution.agent.name} />
                 <span className="truncate">{execution.agent.name}</span>
               </Link>
               <div>

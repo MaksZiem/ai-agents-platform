@@ -46,7 +46,6 @@ export class AgentsService {
         manager.create(Agent, {
           name: `${source.name} (copy)`,
           description: source.description,
-          icon: source.icon,
           instructions: source.instructions,
           status: source.status,
           provider: source.provider,

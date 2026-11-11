@@ -18,7 +18,7 @@ export default async function SettingsPage() {
     <div>
       <PageHeader title="Settings" description="Your account and security." />
 
-      <div className="flex max-w-[720px] flex-col gap-6 p-6">
+      <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6 p-6">
         <section className={CARD_CLASSES}>
           <h2 className="text-base font-semibold">Account</h2>
           <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-2 text-[13px]">

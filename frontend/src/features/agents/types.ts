@@ -8,7 +8,6 @@ export type Agent = {
   id: string;
   name: string;
   description: string | null;
-  icon: string | null;
   instructions: string;
   status: AgentStatus;
   provider: LlmProvider;
@@ -19,7 +18,7 @@ export type Agent = {
   updatedAt: string;
 };
 
-export type AgentSummary = Pick<Agent, "id" | "name" | "icon">;
+export type AgentSummary = Pick<Agent, "id" | "name">;
 
 export type AgentTool = {
   toolName: string;

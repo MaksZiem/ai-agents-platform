@@ -47,7 +47,7 @@ export function AgentList({ agents }: AgentListProps) {
               className={`${ROW_GRID} px-[18px] py-2.5 transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent`}
             >
               <div className="flex min-w-0 items-center gap-3">
-                <AgentAvatar name={agent.name} icon={agent.icon} />
+                <AgentAvatar name={agent.name} />
                 <div className="min-w-0">
                   <p className="truncate font-medium">{agent.name}</p>
                   {agent.description && (
