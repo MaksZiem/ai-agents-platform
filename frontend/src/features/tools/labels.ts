@@ -5,6 +5,8 @@ export const RESOURCE_LABELS: Record<ToolResource, string> = {
   documents: "Documents",
   reports: "Reports",
   email: "Email",
+  web: "Web",
+  connections: "Connections",
 };
 
 export const ACTION_LABELS: Record<ToolAction, string> = {

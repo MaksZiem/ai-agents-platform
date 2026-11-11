@@ -1,4 +1,10 @@
-export type ToolResource = "financial_data" | "documents" | "reports" | "email";
+export type ToolResource =
+  | "financial_data"
+  | "documents"
+  | "reports"
+  | "email"
+  | "web"
+  | "connections";
 
 export type ToolAction = "read" | "search" | "modify" | "delete" | "create" | "send";
 

@@ -3,6 +3,7 @@ import { buttonClasses } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { duplicateAgent, setAgentStatus } from "@/features/agents/actions";
+import { AgentConnections } from "@/features/agents/components/agent-connections";
 import { AgentKnowledge } from "@/features/agents/components/agent-knowledge";
 import { AgentPermissions } from "@/features/agents/components/agent-permissions";
 import { AgentStatusBadge } from "@/features/agents/components/agent-status-badge";
@@ -15,6 +16,7 @@ import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import { apiFetch } from "@/lib/api";
 import { formatShortDate } from "@/lib/format";
 import type { AgentTool, ResourcePermissions } from "@/features/agents/types";
+import type { AgentConnection, Connection } from "@/features/connections/types";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 import type { AgentDocument, KnowledgeDocument } from "@/features/knowledge/types";
 import type { Tool } from "@/features/tools/types";
@@ -24,15 +26,25 @@ const CARD_CLASSES = "rounded-xl border border-border bg-surface p-[18px]";
 export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
   const { id } = await params;
   const agent = await getAgent(id);
-  const [executions, tools, agentTools, permissions, agentDocuments, library] =
-    await Promise.all([
-      apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`),
-      apiFetch<Tool[]>("/tools"),
-      apiFetch<AgentTool[]>(`/agents/${agent.id}/tools`),
-      apiFetch<ResourcePermissions[]>(`/agents/${agent.id}/permissions`),
-      apiFetch<AgentDocument[]>(`/agents/${agent.id}/knowledge`),
-      apiFetch<KnowledgeDocument[]>("/knowledge"),
-    ]);
+  const [
+    executions,
+    tools,
+    agentTools,
+    permissions,
+    agentDocuments,
+    library,
+    agentConnections,
+    connections,
+  ] = await Promise.all([
+    apiFetch<ExecutionWithAgent[]>(`/agents/${agent.id}/executions`),
+    apiFetch<Tool[]>("/tools"),
+    apiFetch<AgentTool[]>(`/agents/${agent.id}/tools`),
+    apiFetch<ResourcePermissions[]>(`/agents/${agent.id}/permissions`),
+    apiFetch<AgentDocument[]>(`/agents/${agent.id}/knowledge`),
+    apiFetch<KnowledgeDocument[]>("/knowledge"),
+    apiFetch<AgentConnection[]>(`/agents/${agent.id}/connections`),
+    apiFetch<Connection[]>("/connections"),
+  ]);
 
   const isActive = agent.status === "ACTIVE";
 
@@ -96,6 +108,11 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
             agentId={agent.id}
             attached={agentDocuments}
             library={library}
+          />
+          <AgentConnections
+            agentId={agent.id}
+            attached={agentConnections}
+            library={connections}
           />
 
           <RecentExecutions
