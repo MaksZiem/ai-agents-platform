@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -7,6 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
+import { ASK_USER_TOOL } from '../tools/definitions/ask-user.tool.js';
 import { ApprovalStatus } from './approval-status.js';
 import { Approval } from './entities/approval.entity.js';
 
@@ -41,16 +43,35 @@ export class ApprovalsService {
     return approval;
   }
 
-  async decide(id: string, userId: string, decision: Decision) {
+  async decide(
+    id: string,
+    userId: string,
+    decision: Decision,
+    answer?: string,
+  ) {
     const approval = await this.findOne(id, userId);
 
     if (approval.status !== ApprovalStatus.PENDING) {
       throw new ConflictException(`Approval is already ${approval.status}`);
     }
 
+    const isQuestion = approval.toolName === ASK_USER_TOOL;
+    const trimmedAnswer = answer?.trim() ?? '';
+
+    if (isQuestion && decision === ApprovalStatus.APPROVED && !trimmedAnswer) {
+      throw new BadRequestException('Answer the question or skip it');
+    }
+
     const result = await this.approvalsRepository.update(
       { id, status: ApprovalStatus.PENDING },
-      { status: decision, decidedAt: new Date() },
+      {
+        status: decision,
+        decidedAt: new Date(),
+        answer:
+          isQuestion && decision === ApprovalStatus.APPROVED
+            ? trimmedAnswer
+            : null,
+      },
     );
 
     if (result.affected !== 1) {
@@ -65,7 +86,7 @@ export class ApprovalsService {
     } catch {
       await this.approvalsRepository.update(
         { id },
-        { status: ApprovalStatus.PENDING, decidedAt: null },
+        { status: ApprovalStatus.PENDING, decidedAt: null, answer: null },
       );
       throw new ServiceUnavailableException('Could not resume execution');
     }

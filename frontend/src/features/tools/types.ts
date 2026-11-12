@@ -18,6 +18,8 @@ export type Tool = {
   description: string;
   inputSchema: Record<string, unknown>;
   outputSchema: Record<string, unknown>;
-  permission: ToolPermission;
+  permission: ToolPermission | null;
   requiresApproval: boolean;
 };
+
+export const ASK_USER_TOOL = "askUser";

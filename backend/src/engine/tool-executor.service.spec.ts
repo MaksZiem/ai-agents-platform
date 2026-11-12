@@ -131,6 +131,33 @@ describe('ToolExecutor', () => {
     expect(result.status).toBe('completed');
   });
 
+  it('skips the permission check for a tool without a permission', async () => {
+    const tool = { ...echoTool, permission: null };
+    const result = await createExecutor({
+      tool,
+      hasPermission: false,
+    }).execute(request);
+
+    expect(result.status).toBe('completed');
+  });
+
+  it("passes the user's answer to the tool", async () => {
+    const tool = defineTool({
+      ...echoTool,
+      requiresApproval: true,
+      execute: async (_input, context) => ({
+        text: context.userAnswer ?? '',
+      }),
+    }) as ToolDefinition;
+    const result = await createExecutor({ tool }).execute({
+      ...request,
+      approved: true,
+      answer: 'Q3',
+    });
+
+    expect(result).toEqual({ status: 'completed', output: { text: 'Q3' } });
+  });
+
   it('marks a failing tool as a retryable execution error', async () => {
     const tool = {
       ...echoTool,

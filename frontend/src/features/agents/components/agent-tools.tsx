@@ -1,6 +1,6 @@
 import { SubmitSwitch } from "@/components/ui/submit-switch";
 import { disableTool, enableTool } from "@/features/agents/actions";
-import { RESOURCE_LABELS } from "@/features/tools/labels";
+import { alwaysPausesLabel, permissionLabel } from "@/features/tools/labels";
 import type { AgentTool } from "@/features/agents/types";
 import type { Tool } from "@/features/tools/types";
 
@@ -43,7 +43,7 @@ export function AgentTools({ agentId, tools, enabledTools }: AgentToolsProps) {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-[13px] font-medium">{tool.name}</span>
                   <span className="rounded bg-surface-2 px-1.5 text-[11px] text-fg-muted">
-                    {RESOURCE_LABELS[tool.permission.resource]} · {tool.permission.action}
+                    {permissionLabel(tool.permission)}
                   </span>
                 </div>
                 <p className="text-[13px] text-fg-muted">{tool.description}</p>
@@ -51,7 +51,7 @@ export function AgentTools({ agentId, tools, enabledTools }: AgentToolsProps) {
 
               {tool.requiresApproval ? (
                 <span className="shrink-0 rounded bg-warning/10 px-1.5 text-[11px] text-warning">
-                  Always requires approval
+                  {alwaysPausesLabel(tool.name)}
                 </span>
               ) : (
                 enabled && (

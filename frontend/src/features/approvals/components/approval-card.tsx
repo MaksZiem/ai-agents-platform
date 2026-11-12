@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { approveApproval, rejectApproval } from "@/features/approvals/actions";
+import { QuestionCard } from "@/features/approvals/components/question-card";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
+import { ASK_USER_TOOL } from "@/features/tools/types";
 import { formatValue } from "@/lib/format";
 import type { Approval } from "@/features/approvals/types";
 import type { ExecutionWithAgent } from "@/features/executions/types";
@@ -12,6 +14,10 @@ type ApprovalCardProps = {
 };
 
 export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
+  if (approval.toolName === ASK_USER_TOOL) {
+    return <QuestionCard approval={approval} execution={execution} />;
+  }
+
   const titleId = `approval-${approval.id}`;
 
   return (

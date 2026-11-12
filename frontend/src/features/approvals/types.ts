@@ -9,6 +9,7 @@ export type Approval = {
   toolName: string;
   input: Record<string, unknown>;
   reason: string | null;
+  answer: string | null;
   status: ApprovalStatus;
   decidedAt: string | null;
   createdAt: string;

@@ -26,6 +26,9 @@ export function ApprovalHistory({ approvals }: ApprovalHistoryProps) {
           >
             <div className="min-w-0">
               <p className="font-mono text-[13px] font-medium">{approval.toolName}</p>
+              {approval.answer && (
+                <p className="truncate text-[13px]">Answer: {approval.answer}</p>
+              )}
               <p className="truncate text-[13px] text-fg-muted">
                 {approval.execution.agent.name} · {approval.execution.task}
               </p>

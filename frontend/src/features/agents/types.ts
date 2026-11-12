@@ -45,7 +45,7 @@ export type AgentSummary = Pick<Agent, "id" | "name">;
 export type AgentTool = {
   toolName: string;
   description: string;
-  permission: ToolPermission;
+  permission: ToolPermission | null;
   requiresApproval: boolean;
   enabledAt: string;
 };

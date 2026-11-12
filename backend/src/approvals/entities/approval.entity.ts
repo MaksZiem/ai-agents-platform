@@ -50,6 +50,9 @@ export class Approval {
   @Column({ type: 'text', nullable: true })
   reason: string | null;
 
+  @Column({ type: 'text', nullable: true })
+  answer: string | null;
+
   @Column({
     type: 'enum',
     enum: ApprovalStatus,

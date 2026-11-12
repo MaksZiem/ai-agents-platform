@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { SchemaTable } from "@/features/tools/components/schema-table";
-import { ACTION_LABELS, RESOURCE_LABELS } from "@/features/tools/labels";
+import { alwaysPausesLabel, permissionLabel } from "@/features/tools/labels";
 import type { Tool } from "@/features/tools/types";
 
 type ToolCardProps = {
@@ -13,12 +13,11 @@ export function ToolCard({ tool }: ToolCardProps) {
       <div className="flex flex-wrap items-center gap-2">
         <h3 className="font-mono text-[13px] font-semibold">{tool.name}</h3>
         <span className="rounded bg-surface-2 px-1.5 text-[11px] text-fg-muted">
-          {RESOURCE_LABELS[tool.permission.resource]} ·{" "}
-          {ACTION_LABELS[tool.permission.action]}
+          {permissionLabel(tool.permission)}
         </span>
         {tool.requiresApproval && (
           <span className="rounded bg-warning/10 px-1.5 text-[11px] text-warning">
-            Always requires approval
+            {alwaysPausesLabel(tool.name)}
           </span>
         )}
       </div>

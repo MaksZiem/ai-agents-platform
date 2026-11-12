@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -12,6 +13,7 @@ import {
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import type { JwtPayload } from '../auth/jwt-payload.js';
 import { ApprovalStatus } from './approval-status.js';
+import { ApproveDto } from './dto/approve.dto.js';
 import { ApprovalsService } from './approvals.service.js';
 
 @Controller('approvals')
@@ -40,8 +42,14 @@ export class ApprovalsController {
   approve(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() user: JwtPayload,
+    @Body() dto: ApproveDto,
   ) {
-    return this.approvalsService.decide(id, user.sub, ApprovalStatus.APPROVED);
+    return this.approvalsService.decide(
+      id,
+      user.sub,
+      ApprovalStatus.APPROVED,
+      dto.answer,
+    );
   }
 
   @Post(':id/reject')

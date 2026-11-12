@@ -12,12 +12,18 @@ export const metadata: Metadata = {
 export default async function ToolsPage() {
   const tools = await apiFetch<Tool[]>("/tools");
 
-  const groups = (Object.keys(RESOURCE_LABELS) as ToolResource[])
-    .map((resource) => ({
-      resource,
-      tools: tools.filter((tool) => tool.permission.resource === resource),
-    }))
-    .filter((group) => group.tools.length > 0);
+  const groups = [
+    ...(Object.keys(RESOURCE_LABELS) as ToolResource[]).map((resource) => ({
+      key: resource,
+      label: RESOURCE_LABELS[resource],
+      tools: tools.filter((tool) => tool.permission?.resource === resource),
+    })),
+    {
+      key: "general",
+      label: "General",
+      tools: tools.filter((tool) => !tool.permission),
+    },
+  ].filter((group) => group.tools.length > 0);
 
   return (
     <div>
@@ -27,9 +33,9 @@ export default async function ToolsPage() {
       />
 
       <div className="flex flex-col gap-8 p-6">
-        {groups.map(({ resource, tools: groupTools }) => (
-          <section key={resource} className="flex flex-col gap-3">
-            <h2 className="text-base font-semibold">{RESOURCE_LABELS[resource]}</h2>
+        {groups.map(({ key, label, tools: groupTools }) => (
+          <section key={key} className="flex flex-col gap-3">
+            <h2 className="text-base font-semibold">{label}</h2>
             <div className="grid items-start gap-4 lg:grid-cols-2">
               {groupTools.map((tool) => (
                 <ToolCard key={tool.name} tool={tool} />

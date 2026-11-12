@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
 import type { Env } from '../config/env.js';
 import type { ToolDefinition } from '../tools/tool-definition.js';
+import { ASK_USER_TOOL } from '../tools/definitions/ask-user.tool.js';
 import { ModelCallError } from './model-call.error.js';
 import {
   type HistoryEntry,
@@ -177,7 +178,12 @@ export class GeminiPlanner extends Planner {
       case 'completed':
         return { output: result.output };
       case 'rejected':
-        return { error: 'The user rejected this action.' };
+        return {
+          error:
+            result.call.toolName === ASK_USER_TOOL
+              ? 'The user skipped this question. Continue with your best judgement and state the assumption you made.'
+              : 'The user rejected this action.',
+        };
       case 'failed':
         return { error: result.error };
     }

@@ -10,6 +10,7 @@ import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
 import { StepStatus, StepType } from '../executions/execution-step-enums.js';
 import { ConnectionsService } from '../connections/connections.service.js';
+import { ASK_USER_TOOL } from '../tools/definitions/ask-user.tool.js';
 import { ToolsService } from '../tools/tools.service.js';
 import { ApprovalManager } from './approval-manager.service.js';
 import { CancellationRegistry } from './cancellation-registry.service.js';
@@ -144,7 +145,10 @@ export class ExecutionRunner {
 
     if (approval.status !== ApprovalStatus.APPROVED) {
       await this.state.finishStep(waitingStep, StepStatus.SKIPPED, {
-        error: 'Rejected by user',
+        error:
+          approval.toolName === ASK_USER_TOOL
+            ? 'Skipped by user'
+            : 'Rejected by user',
       });
       return true;
     }
@@ -157,6 +161,7 @@ export class ExecutionRunner {
         reason: approval.reason,
       },
       true,
+      approval.answer,
     );
 
     return outcome === 'continue';
@@ -287,6 +292,7 @@ export class ExecutionRunner {
     step: ExecutionStep,
     { call, reason }: PendingToolCall,
     approved: boolean,
+    answer: string | null = null,
   ): Promise<ToolCallOutcome> {
     const result = await this.withRetries(execution, step, () =>
       this.toolExecutor.execute({
@@ -296,6 +302,7 @@ export class ExecutionRunner {
         toolName: call.toolName,
         input: call.input,
         approved,
+        answer,
       }),
     );
 

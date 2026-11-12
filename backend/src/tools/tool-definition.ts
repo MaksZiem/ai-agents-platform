@@ -53,6 +53,7 @@ export interface ToolContext {
   webSearch(query: string, maxResults: number): Promise<WebSearchResult[]>;
   fetchUrl(url: string): Promise<WebPage>;
   httpRequest(request: ConnectionRequest): Promise<ConnectionResponse>;
+  userAnswer: string | null;
 }
 
 export interface ToolDefinition<
@@ -63,7 +64,7 @@ export interface ToolDefinition<
   description: string;
   inputSchema: TInput;
   outputSchema: TOutput;
-  permission: ToolPermission;
+  permission: ToolPermission | null;
   permissionFor?(input: z.infer<TInput>): ToolPermission;
   requiresApproval: boolean;
   needsApproval?(input: z.infer<TInput>): boolean;

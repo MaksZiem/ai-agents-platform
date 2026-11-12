@@ -22,6 +22,7 @@ export interface ToolExecutionRequest {
   toolName: string;
   input: unknown;
   approved?: boolean;
+  answer?: string | null;
 }
 
 export type ToolExecutionResult =
@@ -50,6 +51,7 @@ export class ToolExecutor {
     toolName,
     input,
     approved = false,
+    answer = null,
   }: ToolExecutionRequest): Promise<ToolExecutionResult> {
     const tool = this.toolsService.find(toolName);
 
@@ -81,19 +83,22 @@ export class ToolExecutor {
       );
     }
 
-    const { resource, action } =
+    const permission =
       tool.permissionFor?.(parsedInput.data) ?? tool.permission;
-    const hasPermission = await this.agentPermissionsRepository.existsBy({
-      agentId,
-      resource,
-      action,
-    });
 
-    if (!hasPermission) {
-      throw new ToolExecutionError(
-        'PERMISSION_DENIED',
-        `Agent is missing permission ${resource}:${action}`,
-      );
+    if (permission) {
+      const hasPermission = await this.agentPermissionsRepository.existsBy({
+        agentId,
+        resource: permission.resource,
+        action: permission.action,
+      });
+
+      if (!hasPermission) {
+        throw new ToolExecutionError(
+          'PERMISSION_DENIED',
+          `Agent is missing permission ${permission.resource}:${permission.action}`,
+        );
+      }
     }
 
     const needsApproval =
@@ -110,7 +115,7 @@ export class ToolExecutor {
     try {
       output = await tool.execute(
         parsedInput.data,
-        this.createContext({ agentId, executionId, userId }),
+        this.createContext({ agentId, executionId, userId, answer }),
       );
     } catch (error) {
       if (error instanceof ToolExecutionError) {
@@ -152,10 +157,10 @@ export class ToolExecutor {
     agentId,
     executionId,
     userId,
-  }: Pick<
-    ToolExecutionRequest,
-    'agentId' | 'executionId' | 'userId'
-  >): ToolContext {
+    answer,
+  }: Pick<ToolExecutionRequest, 'agentId' | 'executionId' | 'userId'> & {
+    answer: string | null;
+  }): ToolContext {
     return {
       agentId,
       executionId,
@@ -210,6 +215,7 @@ export class ToolExecutor {
       fetchUrl: (url) => this.webService.fetchPage(url),
       httpRequest: (request) =>
         this.connectionsService.request(agentId, request),
+      userAnswer: answer,
     };
   }
 }
