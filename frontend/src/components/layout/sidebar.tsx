@@ -50,7 +50,12 @@ function isActive(pathname: string, href: string) {
 function Brand() {
   return (
     <div className="flex items-center gap-2">
-      <span className="size-4 rounded bg-accent" aria-hidden />
+      <span
+        className="flex size-5 items-center justify-center rounded bg-accent text-white"
+        aria-hidden
+      >
+        <Bot className="size-3.5" strokeWidth={2} />
+      </span>
       <span className="font-semibold">Agent Platform</span>
     </div>
   );

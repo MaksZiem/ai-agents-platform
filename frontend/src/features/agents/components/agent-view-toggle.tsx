@@ -1,25 +1,32 @@
 import Link from "next/link";
 import { LayoutGrid, List } from "lucide-react";
+import { agentsHref } from "@/features/agents/search";
 import type { AgentView } from "@/features/agents/types";
 
-const VIEWS: { view: AgentView; label: string; icon: typeof List; href: string }[] = [
-  { view: "grid", label: "Tiles", icon: LayoutGrid, href: "/agents" },
-  { view: "list", label: "List", icon: List, href: "/agents?view=list" },
+const VIEWS: { view: AgentView; label: string; icon: typeof List }[] = [
+  { view: "grid", label: "Tiles", icon: LayoutGrid },
+  { view: "list", label: "List", icon: List },
 ];
 
-export function AgentViewToggle({ active }: { active: AgentView }) {
+export function AgentViewToggle({
+  active,
+  query,
+}: {
+  active: AgentView;
+  query: string;
+}) {
   return (
     <nav
       aria-label="View"
       className="flex items-center rounded-md border border-border bg-surface p-0.5"
     >
-      {VIEWS.map(({ view, label, icon: Icon, href }) => {
+      {VIEWS.map(({ view, label, icon: Icon }) => {
         const isActive = view === active;
 
         return (
           <Link
             key={view}
-            href={href}
+            href={agentsHref({ view, query })}
             aria-label={label}
             aria-current={isActive ? "page" : undefined}
             title={label}

@@ -11,8 +11,8 @@ colors:
   fg: "#ededed"
   fg-muted: "#8b8f99"
   fg-subtle: "#62666f"
-  accent: "#6e6af0"
-  accent-hover: "#7f7bf3"
+  accent: "#3d6ee0"
+  accent-hover: "#5683e8"
   success: "#3fb67a"
   warning: "#e5a83b"
   danger: "#e5534b"
@@ -145,7 +145,7 @@ Restrained strategy: a tonal neutral ramp plus one accent and four state colours
 | `fg` | `#ededed` | Primary text |
 | `fg-muted` | `#8b8f99` | Secondary text, labels, metadata, inactive nav |
 | `fg-subtle` | `#62666f` | Placeholders, future/pending steps, disabled. Never for body copy. |
-| `accent` | `#6e6af0` | Primary button, RUNNING state, focus ring, links, the selected item, Approvals count |
+| `accent` | `#3d6ee0` | Primary button, RUNNING state, focus ring, links, the selected item, Approvals count |
 | `success` | `#3fb67a` | COMPLETED, ✓ step done |
 | `warning` | `#e5a83b` | WAITING_FOR_APPROVAL, retry attempts |
 | `danger` | `#e5534b` | FAILED, errors, destructive actions |
@@ -180,8 +180,8 @@ Tokens live in `src/app/globals.css` and become utilities (`bg-surface`, `text-f
   --color-fg: #ededed;
   --color-fg-muted: #8b8f99;
   --color-fg-subtle: #62666f;
-  --color-accent: #6e6af0;
-  --color-accent-hover: #7f7bf3;
+  --color-accent: #3d6ee0;
+  --color-accent-hover: #5683e8;
   --color-success: #3fb67a;
   --color-warning: #e5a83b;
   --color-danger: #e5534b;
@@ -233,7 +233,7 @@ Flat. Depth comes from **tonal layering** (`bg` → `surface` → `surface-2`) a
 
 ## Components
 
-**Sidebar nav.** Brand row at the top (16px accent square plus name, `font-semibold`). Items are Dashboard, Agents, Executions, Knowledge, Tools, Approvals and Settings: icon plus label, `text-sm text-fg-muted`, `rounded-md px-2.5 py-1.5`. Hover sets `bg-surface-hover text-fg`; active sets `bg-surface-2 text-fg`. Approvals shows a count pill (`bg-accent text-white text-[11px] rounded-full px-1.5`) only when the count is above 0. User and workspace sit at the bottom.
+**Sidebar nav.** Brand row at the top (20px accent tile with a white lucide `Bot` icon, matching the favicon, plus name, `font-semibold`). Items are Dashboard, Agents, Executions, Knowledge, Tools, Approvals and Settings: icon plus label, `text-sm text-fg-muted`, `rounded-md px-2.5 py-1.5`. Hover sets `bg-surface-hover text-fg`; active sets `bg-surface-2 text-fg`. Approvals shows a count pill (`bg-accent text-white text-[11px] rounded-full px-1.5`) only when the count is above 0. User and workspace sit at the bottom.
 
 **Buttons.** Height 34px, `rounded-md`, `text-sm font-medium`, `px-3.5`.
 - Primary: `bg-accent text-white hover:bg-accent-hover`. One per view region: Run Agent, Approve, Save.
