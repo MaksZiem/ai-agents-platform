@@ -12,6 +12,8 @@ import type { WebPage, WebSearchResult } from '../web/web.service.js';
 export type ToolResource =
   'financial_data' | 'documents' | 'reports' | 'email' | 'web' | 'connections';
 
+export type ToolCategory = 'documents' | 'analysis' | 'web' | 'communication';
+
 export type ToolAction =
   'read' | 'search' | 'modify' | 'delete' | 'create' | 'send';
 
@@ -61,6 +63,8 @@ export interface ToolDefinition<
   TOutput extends z.ZodType = z.ZodType,
 > {
   name: string;
+  summary: string;
+  category: ToolCategory;
   description: string;
   inputSchema: TInput;
   outputSchema: TOutput;

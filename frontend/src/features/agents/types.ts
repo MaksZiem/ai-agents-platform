@@ -1,4 +1,9 @@
-import type { ToolAction, ToolPermission, ToolResource } from "@/features/tools/types";
+import type {
+  ToolAction,
+  ToolCategory,
+  ToolPermission,
+  ToolResource,
+} from "@/features/tools/types";
 
 export type AgentStatus = "ACTIVE" | "INACTIVE";
 
@@ -44,6 +49,8 @@ export type AgentSummary = Pick<Agent, "id" | "name">;
 
 export type AgentTool = {
   toolName: string;
+  summary: string;
+  category: ToolCategory;
   description: string;
   permission: ToolPermission | null;
   requiresApproval: boolean;

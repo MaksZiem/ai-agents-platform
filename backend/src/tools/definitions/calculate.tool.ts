@@ -8,6 +8,8 @@ const identifierSchema = z
 
 export const calculateTool = defineTool({
   name: 'calculate',
+  summary: 'Computes sums, averages and percentage changes exactly.',
+  category: 'analysis',
   description: `Evaluates arithmetic exactly. Use it for every number you report instead of calculating in your head: totals, differences, ratios, growth, forecasts. Pass the numbers you found as variables, then a list of named calculations; each calculation can use the variables and the results of earlier calculations. Operators: + - * / % ^ and parentheses. Functions: ${EXPRESSION_FUNCTIONS.join(', ')}. pct(part, whole) and pct_change(current, previous) return percentages; cagr(start, end, periods) returns a percentage per period. Example: variables [{"name": "booked_q4", "value": 610}, {"name": "booked_q4_ly", "value": 540}, {"name": "actual_q4_ly", "value": 763}], calculations [{"name": "conversion", "expression": "actual_q4_ly / booked_q4_ly"}, {"name": "forecast_q4", "expression": "booked_q4 * conversion"}].`,
   inputSchema: z.object({
     variables: z

@@ -10,6 +10,9 @@ const cellSchema = z.union([z.string(), z.number(), z.null()]);
 
 export const extractTableTool = defineTool({
   name: 'extractTable',
+  summary:
+    'Turns tables from CSV, JSON or Markdown files into rows and columns.',
+  category: 'documents',
   description:
     'Extracts tables from a document attached to this agent as structured rows and columns. Works for CSV/TSV files, JSON arrays of objects and Markdown tables; tables inside PDFs are not detected, use readDocument for those. Numeric columns (also with currency symbols, % or thousand separators) come back as numbers, ready for calculate. Without tableIndex it returns every table found (up to 10). Get document ids from readDocument or searchDocuments.',
   inputSchema: z.object({

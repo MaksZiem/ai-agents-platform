@@ -4,6 +4,8 @@ import { defineTool } from '../tool-definition.js';
 
 export const httpRequestTool = defineTool({
   name: 'httpRequest',
+  summary: 'Calls an API from the connections attached to the agent.',
+  category: 'web',
   description:
     'Calls an HTTP API through a connection the user configured for this agent. Pass the connection name, the method and a path relative to the connection base URL (it may include a query string, e.g. "/deals?status=open"). Authentication is added by the platform: never put keys or tokens in the request. For POST, PUT and PATCH pass a JSON string as body. GET requests run immediately; every other method waits for the user\'s approval. Only methods allowed on the connection can be used. The available connections are listed in the system instructions.',
   inputSchema: z.object({

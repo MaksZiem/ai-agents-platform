@@ -6,6 +6,8 @@ export type ToolResource =
   | "web"
   | "connections";
 
+export type ToolCategory = "documents" | "analysis" | "web" | "communication";
+
 export type ToolAction = "read" | "search" | "modify" | "delete" | "create" | "send";
 
 export type ToolPermission = {
@@ -15,6 +17,8 @@ export type ToolPermission = {
 
 export type Tool = {
   name: string;
+  summary: string;
+  category: ToolCategory;
   description: string;
   inputSchema: Record<string, unknown>;
   outputSchema: Record<string, unknown>;

@@ -101,6 +101,7 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
             agentId={agent.id}
             tools={tools}
             enabledTools={agentTools}
+            permissions={permissions}
           />
 
           <AgentPermissions agentId={agent.id} permissions={permissions} />

@@ -13,6 +13,8 @@ const documentSchema = z.object({
 
 export const compareDocumentsTool = defineTool({
   name: 'compareDocuments',
+  summary: 'Shows what changed between two versions of a document.',
+  category: 'documents',
   description:
     'Compares two documents attached to this agent line by line, e.g. two versions of a contract, policy or price list. Returns a similarity score (0-1), counts of unchanged, added and removed lines, and the list of changes with line numbers: "changed" (before → after), "added" (only in B) and "removed" (only in A). Whitespace differences and blank lines are ignored. Document A is the old version, B the new one. Get document ids from readDocument or searchDocuments.',
   inputSchema: z.object({

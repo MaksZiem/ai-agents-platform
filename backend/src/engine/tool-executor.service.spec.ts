@@ -14,6 +14,8 @@ import { ToolExecutor } from './tool-executor.service.js';
 
 const echoTool = defineTool({
   name: 'echo',
+  summary: 'Returns the given text.',
+  category: 'analysis',
   description: 'Returns the given text.',
   inputSchema: z.object({ text: z.string() }),
   outputSchema: z.object({ text: z.string() }),
@@ -189,6 +191,8 @@ describe('ToolExecutor', () => {
   describe('input-dependent permission and approval', () => {
     const writeTool = defineTool({
       name: 'echo',
+      summary: 'Reads or writes.',
+      category: 'analysis',
       description: 'Reads or writes.',
       inputSchema: z.object({ text: z.string(), write: z.boolean() }),
       outputSchema: z.object({ text: z.string() }),

@@ -5,6 +5,8 @@ import { defineTool } from '../tool-definition.js';
 
 export const generateReportTool = defineTool({
   name: 'generateReport',
+  summary: 'Creates an HTML report with tables and charts.',
+  category: 'analysis',
   description:
     'Builds the final report as a self-contained HTML file with optional charts and saves it as a downloadable file. Section content is Markdown (paragraphs, lists, bold, tables). Each section can have charts: type "bar" for comparing categories or periods, "line" for trends over time; give one label per period/category and one value per label in every series. Only include facts and numbers taken from tool results, and mark forecasts and assumptions as such. Returns fileId, which sendEmail accepts as attachmentFileId.',
   inputSchema: z.object({

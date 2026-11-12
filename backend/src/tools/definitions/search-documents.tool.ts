@@ -5,6 +5,8 @@ const DEFAULT_LIMIT = 5;
 
 export const searchDocumentsTool = defineTool({
   name: 'searchDocuments',
+  summary: "Finds the most relevant passages in the agent's documents.",
+  category: 'documents',
   description:
     "Searches the agent's knowledge base (documents attached to this agent) by keywords. Returns the most relevant text fragments with the name of the document they come from.",
   inputSchema: z.object({

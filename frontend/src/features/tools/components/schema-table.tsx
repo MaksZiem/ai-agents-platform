@@ -1,7 +1,7 @@
 import { getSchemaFields } from "@/features/tools/schema";
 
 type SchemaTableProps = {
-  title: string;
+  title?: string;
   schema: Record<string, unknown>;
 };
 
@@ -10,7 +10,7 @@ export function SchemaTable({ title, schema }: SchemaTableProps) {
 
   return (
     <div className="flex flex-col gap-1.5">
-      <h4 className="text-xs font-medium text-fg-muted">{title}</h4>
+      {title && <h4 className="text-xs font-medium text-fg-muted">{title}</h4>}
       {fields.length === 0 ? (
         <p className="text-[13px] text-fg-muted">No fields.</p>
       ) : (

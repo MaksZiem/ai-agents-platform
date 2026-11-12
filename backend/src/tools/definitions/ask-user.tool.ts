@@ -6,6 +6,8 @@ export const ASK_USER_TOOL = 'askUser';
 
 export const askUserTool = defineTool({
   name: ASK_USER_TOOL,
+  summary: 'Pauses the run to ask you a question.',
+  category: 'communication',
   description:
     'Asks the user a question and pauses the execution until they answer. Use it only when the task is ambiguous or you need information you cannot get from documents or other tools, e.g. which period to analyze or who should receive a report. Ask one short, specific question; add up to 6 suggested answers in options when the choice is closed. The user may also skip the question: then continue with your best judgement and state the assumption in your answer. Call it alone, not together with other tools.',
   inputSchema: z.object({

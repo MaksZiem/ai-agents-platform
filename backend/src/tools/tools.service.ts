@@ -34,6 +34,8 @@ export class ToolsService {
   private toPublic(tool: ToolDefinition) {
     return {
       name: tool.name,
+      summary: tool.summary,
+      category: tool.category,
       description: tool.description,
       inputSchema: z.toJSONSchema(tool.inputSchema),
       outputSchema: z.toJSONSchema(tool.outputSchema),

@@ -3,6 +3,8 @@ import { defineTool } from '../tool-definition.js';
 
 export const sendEmailTool = defineTool({
   name: 'sendEmail',
+  summary: 'Sends an email, optionally with a generated report attached.',
+  category: 'communication',
   description:
     'Sends a plain-text email to a single recipient. To attach a report created in this execution, pass the fileId returned by generateReport as attachmentFileId.',
   inputSchema: z.object({

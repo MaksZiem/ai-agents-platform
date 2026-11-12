@@ -71,6 +71,8 @@ export class AgentToolsService {
   private toResponse(agentTool: AgentTool, tool: ToolDefinition) {
     return {
       toolName: tool.name,
+      summary: tool.summary,
+      category: tool.category,
       description: tool.description,
       permission: tool.permission,
       requiresApproval: tool.requiresApproval || agentTool.requiresApproval,
