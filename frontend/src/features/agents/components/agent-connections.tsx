@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Plug } from "lucide-react";
-import { Select } from "@/components/ui/select";
+import { ItemPicker } from "@/components/ui/item-picker";
 import { SubmitButton } from "@/components/ui/submit-button";
 import {
-  attachConnection,
+  attachConnections,
   detachConnection,
 } from "@/features/connections/actions";
 import type {
@@ -42,7 +42,7 @@ export function AgentConnections({
           No connections attached.
         </p>
       ) : (
-        <ul className="divide-y divide-border">
+        <ul className="max-h-[360px] divide-y divide-border overflow-y-auto">
           {attached.map((connection) => (
             <li
               key={connection.id}
@@ -85,28 +85,24 @@ export function AgentConnections({
 
       <div className="border-t border-border px-[18px] py-3">
         {available.length > 0 ? (
-          <form
-            action={attachConnection.bind(null, agentId)}
-            className="flex gap-2"
-          >
-            <Select
-              name="connectionId"
-              required
-              defaultValue=""
-              aria-label="Connection to attach"
-              className="min-w-0 flex-1"
-            >
-              <option value="" disabled>
-                Choose a connection…
-              </option>
-              {available.map((connection) => (
-                <option key={connection.id} value={connection.id}>
-                  {connection.name} · {connection.baseUrl}
-                </option>
-              ))}
-            </Select>
-            <SubmitButton pendingLabel="Attaching…">Attach</SubmitButton>
-          </form>
+          <ItemPicker
+            items={available.map((connection) => ({
+              id: connection.id,
+              label: connection.name,
+              meta: connection.baseUrl,
+            }))}
+            action={attachConnections.bind(null, agentId)}
+            icon={
+              <Plug
+                className="size-4 shrink-0 text-fg-muted"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            }
+            openLabel="Add connections"
+            searchLabel="Search connections by name or URL…"
+            noun={{ one: "connection", other: "connections" }}
+          />
         ) : (
           <p className="text-[13px] text-fg-muted">
             {library.length === 0 ? (

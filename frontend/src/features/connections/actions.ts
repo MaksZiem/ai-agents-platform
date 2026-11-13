@@ -74,13 +74,15 @@ export async function deleteConnection(connectionId: string) {
   redirect("/connections");
 }
 
-export async function attachConnection(agentId: string, formData: FormData) {
-  const connectionId = String(formData.get("connectionId") ?? "");
-  if (!connectionId) return;
+export async function attachConnections(agentId: string, formData: FormData) {
+  const connectionIds = [...new Set(formData.getAll("ids").map(String))].filter(Boolean);
+  if (connectionIds.length === 0) return;
 
-  await apiFetch(`/agents/${agentId}/connections/${connectionId}`, {
-    method: "PUT",
-  });
+  await Promise.all(
+    connectionIds.map((connectionId) =>
+      apiFetch(`/agents/${agentId}/connections/${connectionId}`, { method: "PUT" }),
+    ),
+  );
   refresh();
 }
 

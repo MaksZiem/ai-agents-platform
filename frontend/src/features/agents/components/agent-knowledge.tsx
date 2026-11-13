@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { Select } from "@/components/ui/select";
+import { ItemPicker } from "@/components/ui/item-picker";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { uploadedFileHref } from "@/features/files/entries";
-import { attachDocument, detachDocument } from "@/features/knowledge/actions";
+import { formatBytes } from "@/lib/format";
+import { attachDocuments, detachDocument } from "@/features/knowledge/actions";
 import type { AgentDocument, KnowledgeDocument } from "@/features/knowledge/types";
 
 type AgentKnowledgeProps = {
@@ -36,7 +37,7 @@ export function AgentKnowledge({
           No documents attached.
         </p>
       ) : (
-        <ul className="divide-y divide-border">
+        <ul className="max-h-[360px] divide-y divide-border overflow-y-auto">
           {attached.map((document) => (
             <li
               key={document.id}
@@ -72,28 +73,24 @@ export function AgentKnowledge({
 
       <div className="border-t border-border px-[18px] py-3">
         {available.length > 0 ? (
-          <form
-            action={attachDocument.bind(null, agentId)}
-            className="flex gap-2"
-          >
-            <Select
-              name="documentId"
-              required
-              defaultValue=""
-              aria-label="Document to attach"
-              className="min-w-0 flex-1"
-            >
-              <option value="" disabled>
-                Choose a document…
-              </option>
-              {available.map((document) => (
-                <option key={document.id} value={document.id}>
-                  {document.name}
-                </option>
-              ))}
-            </Select>
-            <SubmitButton pendingLabel="Attaching…">Attach</SubmitButton>
-          </form>
+          <ItemPicker
+            items={available.map((document) => ({
+              id: document.id,
+              label: document.name,
+              meta: `${formatBytes(document.sizeBytes)} · ${document.chunkCount} chunks`,
+            }))}
+            action={attachDocuments.bind(null, agentId)}
+            icon={
+              <FileText
+                className="size-4 shrink-0 text-fg-muted"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+            }
+            openLabel="Add documents"
+            searchLabel="Search your library…"
+            noun={{ one: "document", other: "documents" }}
+          />
         ) : (
           <p className="text-[13px] text-fg-muted">
             {library.length === 0 ? (

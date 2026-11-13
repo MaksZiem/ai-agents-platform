@@ -47,13 +47,15 @@ export async function deleteDocument(documentId: string) {
   refresh();
 }
 
-export async function attachDocument(agentId: string, formData: FormData) {
-  const documentId = String(formData.get("documentId") ?? "");
-  if (!documentId) return;
+export async function attachDocuments(agentId: string, formData: FormData) {
+  const documentIds = [...new Set(formData.getAll("ids").map(String))].filter(Boolean);
+  if (documentIds.length === 0) return;
 
-  await apiFetch(`/agents/${agentId}/knowledge/${documentId}`, {
-    method: "PUT",
-  });
+  await Promise.all(
+    documentIds.map((documentId) =>
+      apiFetch(`/agents/${agentId}/knowledge/${documentId}`, { method: "PUT" }),
+    ),
+  );
   refresh();
 }
 
