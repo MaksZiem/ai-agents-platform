@@ -40,7 +40,7 @@ export function AgentForm({
   const { values, errors } = state;
 
   return (
-    <form action={formAction} className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+    <form action={formAction} noValidate className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <section className={SECTION_CLASSES}>
         <h2 className="text-base font-semibold">Identity</h2>
 
@@ -50,7 +50,6 @@ export function AgentForm({
             defaultValue={values.name}
             maxLength={100}
             placeholder="Financial Analyst"
-            required
             aria-invalid={Boolean(errors.name)}
           />
         </FormField>
@@ -128,7 +127,6 @@ export function AgentForm({
             name="instructions"
             defaultValue={values.instructions}
             rows={14}
-            required
             placeholder={
               "You are a financial analyst.\n\nAnalyze financial data carefully.\nNever invent financial information."
             }

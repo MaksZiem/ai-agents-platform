@@ -1,9 +1,15 @@
 "use server";
 
+import { hasErrors, newPasswordError } from "@/features/auth/validation";
 import { ApiError, apiFetch } from "@/lib/api";
 
 export type ChangePasswordState = {
-  error: string | null;
+  errors: {
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  };
+  formError: string | null;
   success: boolean;
 };
 
@@ -15,23 +21,22 @@ export async function changePassword(
   const newPassword = String(formData.get("newPassword") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    return { error: "Fill in every field.", success: false };
-  }
-  if (newPassword.length < 8 || newPassword.length > 128) {
-    return {
-      error: "The new password must be 8 to 128 characters.",
-      success: false,
-    };
-  }
-  if (newPassword !== confirmPassword) {
-    return { error: "The new passwords do not match.", success: false };
-  }
-  if (newPassword === currentPassword) {
-    return {
-      error: "Choose a password different from the current one.",
-      success: false,
-    };
+  const errors = {
+    currentPassword: currentPassword ? undefined : "Enter your current password.",
+    newPassword:
+      newPasswordError(newPassword) ??
+      (newPassword === currentPassword
+        ? "Choose a password different from the current one."
+        : undefined),
+    confirmPassword: !confirmPassword
+      ? "Repeat the new password."
+      : confirmPassword !== newPassword
+        ? "The passwords do not match."
+        : undefined,
+  };
+
+  if (hasErrors(errors)) {
+    return { errors, formError: null, success: false };
   }
 
   try {
@@ -41,10 +46,10 @@ export async function changePassword(
     });
   } catch (error) {
     if (error instanceof ApiError && error.status === 400) {
-      return { error: error.message, success: false };
+      return { errors: {}, formError: error.message, success: false };
     }
     throw error;
   }
 
-  return { error: null, success: true };
+  return { errors: {}, formError: null, success: true };
 }

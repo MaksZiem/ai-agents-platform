@@ -13,6 +13,7 @@ export function UploadDocumentForm() {
   return (
     <form
       action={formAction}
+      noValidate
       className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-[18px]"
     >
       <div>
@@ -27,7 +28,6 @@ export function UploadDocumentForm() {
         <input
           type="file"
           name="file"
-          required
           accept={ACCEPTED_EXTENSIONS}
           aria-label="Document"
           className="min-w-0 flex-1 text-[13px] text-fg-muted file:mr-3 file:h-[34px] file:cursor-pointer file:rounded-md file:border file:border-border file:bg-surface-2 file:px-3.5 file:text-sm file:font-medium file:text-fg hover:file:bg-surface-hover"

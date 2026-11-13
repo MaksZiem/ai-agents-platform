@@ -6,45 +6,55 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { register, type RegisterState } from "./actions";
 
-const INITIAL_STATE: RegisterState = { error: null, name: "", email: "" };
+const INITIAL_STATE: RegisterState = {
+  name: "",
+  email: "",
+  errors: {},
+  formError: null,
+};
 
 export function RegisterForm() {
   const [state, formAction] = useActionState(register, INITIAL_STATE);
+  const { errors } = state;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormField label="Name">
+    <form action={formAction} noValidate className="flex flex-col gap-4">
+      <FormField label="Name" error={errors.name}>
         <Input
           name="name"
           autoComplete="name"
-          maxLength={100}
           defaultValue={state.name}
-          required
+          aria-invalid={Boolean(errors.name)}
         />
       </FormField>
-      <FormField label="Email">
+      <FormField label="Email" error={errors.email}>
         <Input
           type="email"
           name="email"
           autoComplete="email"
           defaultValue={state.email}
-          required
+          aria-invalid={Boolean(errors.email)}
         />
       </FormField>
-      <FormField label="Password" hint="At least 8 characters.">
+      <FormField
+        label="Password"
+        hint="At least 8 characters."
+        error={errors.password}
+      >
         <Input
           type="password"
           name="password"
           autoComplete="new-password"
-          minLength={8}
-          maxLength={128}
-          required
+          aria-invalid={Boolean(errors.password)}
         />
       </FormField>
 
-      {state.error && (
-        <p role="alert" className="text-xs text-danger">
-          {state.error}
+      {state.formError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-[13px] text-danger"
+        >
+          {state.formError}
         </p>
       )}
 

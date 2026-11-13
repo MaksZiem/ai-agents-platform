@@ -30,15 +30,21 @@ const STATUS_CONFIG: Record<ExecutionStatus, { badge: string; dot: string }> = {
 
 type ExecutionStatusBadgeProps = {
   status: ExecutionStatus;
+  fixedWidth?: boolean;
 };
 
-export function ExecutionStatusBadge({ status }: ExecutionStatusBadgeProps) {
+export function ExecutionStatusBadge({
+  status,
+  fixedWidth = false,
+}: ExecutionStatusBadgeProps) {
   const { badge, dot } = STATUS_CONFIG[status];
   const label = EXECUTION_STATUS_LABELS[status];
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${badge}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium ${
+        fixedWidth ? "w-[168px] justify-center" : ""
+      } ${badge}`}
     >
       <span className={`size-1.5 rounded-full ${dot}`} aria-hidden />
       {label}

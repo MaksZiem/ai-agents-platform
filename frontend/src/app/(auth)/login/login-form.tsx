@@ -2,40 +2,43 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { login, type LoginState } from "./actions";
 
-const INITIAL_STATE: LoginState = { error: null, email: "" };
+const INITIAL_STATE: LoginState = { email: "", errors: {}, formError: null };
 
 export function LoginForm() {
   const [state, formAction, pending] = useActionState(login, INITIAL_STATE);
+  const { errors } = state;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-medium">Email</span>
+    <form action={formAction} noValidate className="flex flex-col gap-4">
+      <FormField label="Email" error={errors.email}>
         <Input
           type="email"
           name="email"
           autoComplete="email"
           defaultValue={state.email}
-          required
+          aria-invalid={Boolean(errors.email)}
         />
-      </label>
+      </FormField>
 
-      <label className="flex flex-col gap-1.5">
-        <span className="text-[13px] font-medium">Password</span>
+      <FormField label="Password" error={errors.password}>
         <Input
           type="password"
           name="password"
           autoComplete="current-password"
-          required
+          aria-invalid={Boolean(errors.password)}
         />
-      </label>
+      </FormField>
 
-      {state.error && (
-        <p role="alert" className="text-xs text-danger">
-          {state.error}
+      {state.formError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-[13px] text-danger"
+        >
+          {state.formError}
         </p>
       )}
 

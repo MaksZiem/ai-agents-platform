@@ -46,6 +46,7 @@ export function ConnectionForm({
   return (
     <form
       action={formAction}
+      noValidate
       className="mx-auto flex w-full max-w-[720px] flex-col gap-6"
     >
       <section className={SECTION_CLASSES}>
@@ -61,7 +62,6 @@ export function ConnectionForm({
             defaultValue={values.name}
             maxLength={64}
             placeholder="crm"
-            required
             className="font-mono"
             aria-invalid={Boolean(errors.name)}
           />
@@ -92,7 +92,6 @@ export function ConnectionForm({
             defaultValue={values.baseUrl}
             maxLength={2048}
             placeholder="https://api.example.com/v1"
-            required
             className="font-mono"
             aria-invalid={Boolean(errors.baseUrl)}
           />

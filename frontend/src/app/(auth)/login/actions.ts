@@ -1,24 +1,31 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { emailError, hasErrors } from "@/features/auth/validation";
 import { ApiError, apiFetch } from "@/lib/api";
 import { setAccessToken } from "@/lib/session";
 import type { AuthResponse } from "@/features/auth/types";
 
 export type LoginState = {
-  error: string | null;
   email: string;
+  errors: { email?: string; password?: string };
+  formError: string | null;
 };
 
 export async function login(
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (!email || !password) {
-    return { error: "Enter your email and password.", email };
+  const errors = {
+    email: emailError(email),
+    password: password ? undefined : "Enter your password.",
+  };
+
+  if (hasErrors(errors)) {
+    return { email, errors, formError: null };
   }
 
   try {
@@ -30,9 +37,13 @@ export async function login(
     await setAccessToken(accessToken);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      return { error: "Invalid email or password.", email };
+      return { email, errors: {}, formError: "Invalid email or password." };
     }
-    return { error: "Could not reach the server. Try again.", email };
+    return {
+      email,
+      errors: {},
+      formError: "Could not reach the server. Try again.",
+    };
   }
 
   redirect("/");

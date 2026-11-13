@@ -10,7 +10,7 @@ import { formatDuration, formatExecutionDate, getDurationMs } from "@/lib/format
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
 const ROW_GRID =
-  "grid grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_200px_170px_80px_112px_34px]";
+  "grid grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_200px_172px_80px_112px_34px]";
 
 type ExecutionTableProps = {
   executions: ExecutionWithAgent[];
@@ -68,7 +68,7 @@ export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps
                 <span className="truncate">{execution.agent.name}</span>
               </Link>
               <div>
-                <ExecutionStatusBadge status={execution.status} />
+                <ExecutionStatusBadge status={execution.status} fixedWidth />
               </div>
               <span className="hidden text-right font-mono text-xs text-fg-muted md:block">
                 {durationMs === null ? "—" : formatDuration(durationMs)}

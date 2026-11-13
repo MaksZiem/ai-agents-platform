@@ -45,7 +45,7 @@ export function RunTaskForm({
 
   return (
     <section className="rounded-xl border border-border bg-surface p-[18px]">
-      <form action={formAction}>
+      <form action={formAction} noValidate>
         <fieldset
           disabled={disabled}
           className="flex flex-col gap-3 disabled:opacity-60"
@@ -61,7 +61,6 @@ export function RunTaskForm({
               name="task"
               rows={4}
               maxLength={4000}
-              required
               defaultValue={state.task}
               placeholder="Analyze our Q1 spending and compare it with Q4. Find unusual expenses and create a report."
               onKeyDown={submitOnCmdEnter}

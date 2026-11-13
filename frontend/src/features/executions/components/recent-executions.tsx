@@ -42,7 +42,7 @@ export function RecentExecutions({
                     {execution.task}
                   </p>
                 </div>
-                <ExecutionStatusBadge status={execution.status} />
+                <ExecutionStatusBadge status={execution.status} fixedWidth />
                 <span className="text-right font-mono text-xs text-fg-muted">
                   {formatExecutionDate(execution.createdAt)}
                 </span>

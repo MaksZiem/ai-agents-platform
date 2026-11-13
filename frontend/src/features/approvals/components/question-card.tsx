@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { MessageCircleQuestionMark } from "lucide-react";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { Textarea } from "@/components/ui/textarea";
-import { answerQuestion, rejectApproval } from "@/features/approvals/actions";
+import { answerQuestion } from "@/features/approvals/actions";
+import { QuestionAnswerForm } from "@/features/approvals/components/question-answer-form";
 import type { Approval } from "@/features/approvals/types";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
@@ -22,7 +22,6 @@ function readQuestion(input: Record<string, unknown>) {
 
 export function QuestionCard({ approval, execution }: QuestionCardProps) {
   const titleId = `question-${approval.id}`;
-  const formId = `answer-${approval.id}`;
   const { question, options } = readQuestion(approval.input);
   const answer = answerQuestion.bind(null, approval.id);
 
@@ -63,32 +62,11 @@ export function QuestionCard({ approval, execution }: QuestionCardProps) {
         </div>
       )}
 
-      <Textarea
-        form={formId}
-        name="answer"
-        rows={3}
-        maxLength={4000}
-        required
-        placeholder={options.length > 0 ? "Or write your own answer…" : "Your answer…"}
-        aria-labelledby={titleId}
+      <QuestionAnswerForm
+        approvalId={approval.id}
+        hasOptions={options.length > 0}
+        labelledBy={titleId}
       />
-
-      <div className="grid grid-cols-2 gap-2">
-        <form action={rejectApproval.bind(null, approval.id)}>
-          <SubmitButton
-            pendingLabel="Skipping…"
-            className="w-full"
-            title="The agent continues without an answer and states its assumption."
-          >
-            Skip question
-          </SubmitButton>
-        </form>
-        <form id={formId} action={answer}>
-          <SubmitButton variant="primary" pendingLabel="Sending…" className="w-full">
-            Send answer
-          </SubmitButton>
-        </form>
-      </div>
     </section>
   );
 }

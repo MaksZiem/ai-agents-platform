@@ -6,48 +6,56 @@ import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { changePassword, type ChangePasswordState } from "./actions";
 
-const INITIAL_STATE: ChangePasswordState = { error: null, success: false };
+const INITIAL_STATE: ChangePasswordState = {
+  errors: {},
+  formError: null,
+  success: false,
+};
 
 export function ChangePasswordForm() {
   const [state, formAction] = useActionState(changePassword, INITIAL_STATE);
+  const { errors } = state;
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
-      <FormField label="Current password">
+    <form action={formAction} noValidate className="flex flex-col gap-4">
+      <FormField label="Current password" error={errors.currentPassword}>
         <Input
           type="password"
           name="currentPassword"
           autoComplete="current-password"
-          required
+          aria-invalid={Boolean(errors.currentPassword)}
         />
       </FormField>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="New password" hint="At least 8 characters.">
+      <div className="grid items-start gap-4 sm:grid-cols-2">
+        <FormField
+          label="New password"
+          hint="At least 8 characters."
+          error={errors.newPassword}
+        >
           <Input
             type="password"
             name="newPassword"
             autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-            required
+            aria-invalid={Boolean(errors.newPassword)}
           />
         </FormField>
-        <FormField label="Confirm new password">
+        <FormField label="Confirm new password" error={errors.confirmPassword}>
           <Input
             type="password"
             name="confirmPassword"
             autoComplete="new-password"
-            minLength={8}
-            maxLength={128}
-            required
+            aria-invalid={Boolean(errors.confirmPassword)}
           />
         </FormField>
       </div>
 
-      {state.error && (
-        <p role="alert" className="text-xs text-danger">
-          {state.error}
+      {state.formError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-danger/30 bg-danger/10 p-3 text-[13px] text-danger"
+        >
+          {state.formError}
         </p>
       )}
       {state.success && (
