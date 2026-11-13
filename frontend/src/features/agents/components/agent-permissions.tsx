@@ -30,7 +30,7 @@ export function AgentPermissions({ agentId, permissions }: AgentPermissionsProps
               <span id={`permissions-${resource}`} className="text-[13px] font-medium">
                 {RESOURCE_LABELS[resource]}
               </span>
-              <div className="flex flex-wrap gap-x-5 gap-y-2">
+              <div className="grid grid-cols-3 gap-x-5 gap-y-2 sm:grid-cols-[repeat(3,112px)]">
                 {actions.map(({ action, granted }) => (
                   <label key={action} className="flex items-center gap-2 text-[13px]">
                     <input
