@@ -10,6 +10,7 @@ import {
   Min,
 } from 'class-validator';
 import { AgentStatus, LlmProvider } from '../entities/agent.entity.js';
+import { MAX_OUTPUT_TOKENS } from '../agent-limits.js';
 
 export class CreateAgentDto {
   @IsString()
@@ -47,6 +48,6 @@ export class CreateAgentDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  @Max(65536)
+  @Max(MAX_OUTPUT_TOKENS)
   maxOutputTokens?: number;
 }

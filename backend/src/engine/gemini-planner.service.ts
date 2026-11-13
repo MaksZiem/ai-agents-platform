@@ -11,6 +11,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
+import { MAX_OUTPUT_TOKENS } from '../agents/agent-limits.js';
 import type { Env } from '../config/env.js';
 import type { ToolDefinition } from '../tools/tool-definition.js';
 import { ASK_USER_TOOL } from '../tools/definitions/ask-user.tool.js';
@@ -64,7 +65,7 @@ export class GeminiPlanner extends Planner {
         config: {
           systemInstruction: this.buildInstruction(agent.instructions, notes),
           temperature: agent.temperature,
-          maxOutputTokens: agent.maxOutputTokens,
+          maxOutputTokens: Math.min(agent.maxOutputTokens, MAX_OUTPUT_TOKENS),
           abortSignal: signal,
           ...(tools.length > 0 && {
             tools: [

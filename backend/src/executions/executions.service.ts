@@ -11,6 +11,7 @@ import { AgentStatus } from '../agents/entities/agent.entity.js';
 import { ApprovalManager } from '../engine/approval-manager.service.js';
 import { ExecutionScheduler } from '../engine/execution-scheduler.service.js';
 import { ExecutionStateManager } from '../engine/execution-state-manager.service.js';
+import { UsageLimits } from '../engine/usage-limits.service.js';
 import { buildAgentActivity } from './agent-activity.js';
 import { ExecutionStep } from './entities/execution-step.entity.js';
 import { Execution } from './entities/execution.entity.js';
@@ -29,6 +30,7 @@ export class ExecutionsService {
     private readonly state: ExecutionStateManager,
     private readonly scheduler: ExecutionScheduler,
     private readonly approvals: ApprovalManager,
+    private readonly usageLimits: UsageLimits,
   ) {}
 
   async create(agentId: string, task: string, userId: string) {
@@ -37,6 +39,8 @@ export class ExecutionsService {
     if (agent.status !== AgentStatus.ACTIVE) {
       throw new ConflictException('Agent is inactive');
     }
+
+    await this.usageLimits.assertCanStart(userId);
 
     const execution = await this.executionsRepository.save(
       this.executionsRepository.create({

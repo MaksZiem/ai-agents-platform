@@ -8,7 +8,6 @@ import {
   approveApproval,
   rejectApproval,
 } from "@/features/approvals/actions";
-import { rerunExecution } from "@/features/executions/actions";
 import { ASK_USER_TOOL } from "@/features/tools/types";
 import { formatExecutionDate } from "@/lib/format";
 import type { ApprovalWithExecution } from "@/features/approvals/types";
@@ -131,12 +130,9 @@ function FailureRow({ execution }: { execution: ExecutionWithAgent }) {
         }`}
       />
       <div className="col-span-2 flex justify-end gap-2 md:col-span-1">
-        <Link href={href} className={buttonClasses("ghost")}>
-          Details
+        <Link href={href} className={buttonClasses("secondary")}>
+          Review &amp; retry
         </Link>
-        <form action={rerunExecution.bind(null, execution.agentId, execution.task)}>
-          <SubmitButton pendingLabel="Starting…">Retry</SubmitButton>
-        </form>
       </div>
     </li>
   );

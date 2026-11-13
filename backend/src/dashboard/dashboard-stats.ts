@@ -1,3 +1,4 @@
+import { startOfDay } from '../common/dates.js';
 import { StepStatus, StepType } from '../executions/execution-step-enums.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
 
@@ -44,13 +45,6 @@ interface UsageStep {
   status: StepStatus;
   toolName: string | null;
   attempt: number;
-}
-
-export function startOfDay(date: Date, daysAgo = 0): Date {
-  const day = new Date(date);
-  day.setHours(0, 0, 0, 0);
-  day.setDate(day.getDate() - daysAgo);
-  return day;
 }
 
 function dayKey(date: Date): string {

@@ -5,6 +5,7 @@ import type {
 } from '../connections/connections.service.js';
 import type {
   DocumentSearchHit,
+  DocumentSummary,
   DocumentText,
 } from '../knowledge/knowledge-search.js';
 import type { WebPage, WebSearchResult } from '../web/web.service.js';
@@ -48,6 +49,7 @@ export interface ToolContext {
   executionId: string;
   searchDocuments(query: string, limit: number): Promise<DocumentSearchHit[]>;
   readDocuments(documentId?: string): Promise<DocumentText[]>;
+  listDocuments(): Promise<DocumentSummary[]>;
   saveFile(file: ToolFileInput): Promise<SavedToolFile>;
   sendEmail(
     email: ToolEmail,

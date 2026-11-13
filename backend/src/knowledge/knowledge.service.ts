@@ -12,6 +12,7 @@ import { DocumentChunk } from './entities/document-chunk.entity.js';
 import { KnowledgeDocument } from './entities/knowledge-document.entity.js';
 import {
   type DocumentSearchHit,
+  type DocumentSummary,
   type DocumentText,
   rankChunks,
   searchTerms,
@@ -243,6 +244,19 @@ export class KnowledgeService {
       mimeType: 'text/plain; charset=utf-8',
       content: Buffer.from(text, 'utf8'),
     };
+  }
+
+  async listForAgent(agentId: string): Promise<DocumentSummary[]> {
+    const links = await this.agentDocumentsRepository.find({
+      where: { agentId },
+      relations: { document: true },
+      order: { createdAt: 'ASC' },
+    });
+
+    return links.map(({ document }) => ({
+      documentId: document.id,
+      documentName: document.name,
+    }));
   }
 
   async readForAgent(

@@ -26,6 +26,7 @@ import {
 } from './planner.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 import { ToolExecutor } from './tool-executor.service.js';
+import { UsageLimits } from './usage-limits.service.js';
 
 type AgentContext = Omit<TurnContext, 'history'>;
 
@@ -67,6 +68,7 @@ export class ExecutionRunner {
     private readonly toolsService: ToolsService,
     private readonly cancellation: CancellationRegistry,
     private readonly connectionsService: ConnectionsService,
+    private readonly usageLimits: UsageLimits,
   ) {}
 
   async run(executionId: string): Promise<void> {
@@ -223,6 +225,16 @@ export class ExecutionRunner {
     steps: ExecutionStep[],
     context: AgentContext,
   ): Promise<boolean> {
+    const budgetError = await this.usageLimits.budgetError(execution);
+
+    if (budgetError) {
+      await this.state.transition(execution, ExecutionStatus.FAILED, {
+        error: budgetError,
+        finishedAt: new Date(),
+      });
+      return true;
+    }
+
     const step = await this.state.startStep(
       execution.id,
       steps.length,

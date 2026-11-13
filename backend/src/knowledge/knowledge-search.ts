@@ -8,6 +8,11 @@ export interface DocumentSearchHit {
   score: number;
 }
 
+export interface DocumentSummary {
+  documentId: string;
+  documentName: string;
+}
+
 export interface DocumentText {
   documentId: string;
   documentName: string;

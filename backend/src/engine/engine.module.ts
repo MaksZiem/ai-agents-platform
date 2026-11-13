@@ -22,6 +22,7 @@ import { ExecutionStateManager } from './execution-state-manager.service.js';
 import { ExecutionsProcessor } from './executions.processor.js';
 import { GeminiPlanner } from './gemini-planner.service.js';
 import { Planner } from './planner.js';
+import { UsageLimits } from './usage-limits.service.js';
 import { ToolExecutor } from './tool-executor.service.js';
 
 @Module({
@@ -51,7 +52,13 @@ import { ToolExecutor } from './tool-executor.service.js';
     ExecutionsProcessor,
     ApprovalManager,
     CancellationRegistry,
+    UsageLimits,
   ],
-  exports: [ExecutionStateManager, ExecutionScheduler, ApprovalManager],
+  exports: [
+    ExecutionStateManager,
+    ExecutionScheduler,
+    ApprovalManager,
+    UsageLimits,
+  ],
 })
 export class EngineModule {}

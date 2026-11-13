@@ -3,9 +3,9 @@ import { ExecutionStatus } from '../executions/execution-status.js';
 import {
   buildDailyActivity,
   rankTools,
-  startOfDay,
   summarizeUsage,
 } from './dashboard-stats.js';
+import { startOfDay } from '../common/dates.js';
 
 const NOW = new Date(2026, 10, 13, 15, 30);
 

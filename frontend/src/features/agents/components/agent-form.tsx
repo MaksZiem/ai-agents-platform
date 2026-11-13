@@ -10,6 +10,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   GEMINI_MODELS,
+  MAX_OUTPUT_TOKENS,
   type AgentFormState,
   type AgentFormValues,
 } from "@/features/agents/form";
@@ -107,7 +108,7 @@ export function AgentForm({
               defaultValue={values.maxOutputTokens}
               step="1"
               min="1"
-              max="65536"
+              max={MAX_OUTPUT_TOKENS}
               aria-invalid={Boolean(errors.maxOutputTokens)}
             />
           </FormField>

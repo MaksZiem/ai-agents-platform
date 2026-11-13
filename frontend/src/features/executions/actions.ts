@@ -27,14 +27,6 @@ export async function deleteExecution(
   refresh();
 }
 
-export async function rerunExecution(agentId: string, task: string) {
-  const execution = await apiFetch<Execution>(`/agents/${agentId}/executions`, {
-    method: "POST",
-    body: { task },
-  });
-  redirect(`/executions/${execution.id}`);
-}
-
 export type RunTaskState = {
   error: string | null;
   task: string;
@@ -65,7 +57,9 @@ export async function runTask(
     if (error.status === 409) {
       return { error: "This agent is inactive. Activate it to run tasks.", task };
     }
-    if (error.status === 400) return { error: error.message, task };
+    if (error.status === 400 || error.status === 429) {
+      return { error: error.message, task };
+    }
     return { error: "Could not start the execution. Try again.", task };
   }
 

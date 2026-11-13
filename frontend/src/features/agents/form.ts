@@ -1,5 +1,7 @@
 import type { Agent } from "@/features/agents/types";
 
+export const MAX_OUTPUT_TOKENS = 8192;
+
 export const GEMINI_MODELS = [
   "gemini-3.5-flash",
   "gemini-3.5-flash-lite",
@@ -85,9 +87,9 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
   if (
     !Number.isInteger(maxOutputTokens) ||
     maxOutputTokens < 1 ||
-    maxOutputTokens > 65536
+    maxOutputTokens > MAX_OUTPUT_TOKENS
   ) {
-    errors.maxOutputTokens = "Use a whole number between 1 and 65,536.";
+    errors.maxOutputTokens = `Use a whole number between 1 and ${MAX_OUTPUT_TOKENS.toLocaleString("en-US")}.`;
   }
 
   if (!values.instructions) errors.instructions = "Instructions are required.";

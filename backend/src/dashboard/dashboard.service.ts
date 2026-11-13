@@ -7,12 +7,13 @@ import { Approval } from '../approvals/entities/approval.entity.js';
 import { ExecutionStep } from '../executions/entities/execution-step.entity.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
+import { UsageLimits } from '../engine/usage-limits.service.js';
 import {
   buildDailyActivity,
   rankTools,
-  startOfDay,
   summarizeUsage,
 } from './dashboard-stats.js';
+import { startOfDay } from '../common/dates.js';
 
 const RECENT_EXECUTIONS_LIMIT = 5;
 const ACTIVITY_DAYS = 14;
@@ -32,6 +33,7 @@ export class DashboardService {
     private readonly stepsRepository: Repository<ExecutionStep>,
     @InjectRepository(Approval)
     private readonly approvalsRepository: Repository<Approval>,
+    private readonly usageLimits: UsageLimits,
   ) {}
 
   async getSummary(userId: string) {
@@ -52,6 +54,7 @@ export class DashboardService {
       usageSteps,
       pendingApprovals,
       recentFailures,
+      quota,
     ] = await Promise.all([
       this.agentsRepository.countBy({ userId }),
       this.executionsRepository.countBy({
@@ -108,6 +111,7 @@ export class DashboardService {
         order: { finishedAt: 'DESC' },
         take: ATTENTION_LIMIT,
       }),
+      this.usageLimits.quota(userId),
     ]);
 
     const usageExecutions = periodExecutions.filter(
@@ -123,6 +127,7 @@ export class DashboardService {
       activity: buildDailyActivity(periodExecutions, ACTIVITY_DAYS, now),
       usage: summarizeUsage(usageExecutions, usageSteps),
       topTools: rankTools(usageSteps, TOP_TOOLS_LIMIT),
+      quota,
       attention: {
         approvals: pendingApprovals,
         failures: recentFailures,

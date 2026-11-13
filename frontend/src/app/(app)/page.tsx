@@ -73,7 +73,7 @@ export default async function DashboardPage() {
         <div className="grid items-start gap-6 xl:grid-cols-[1fr_340px]">
           <div className="flex min-w-0 flex-col gap-6">
             <ActivityChart days={summary.activity} />
-            <UsageStats usage={summary.usage} />
+            <UsageStats usage={summary.usage} quota={summary.quota} />
             <RecentExecutions executions={summary.recentExecutions} />
           </div>
 

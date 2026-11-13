@@ -14,6 +14,26 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().min(1),
   ENCRYPTION_KEY: z.string().min(32),
   TAVILY_API_KEY: z.string().optional(),
+  TOKEN_BUDGET_PER_EXECUTION: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(200_000),
+  DAILY_TOKEN_LIMIT_PER_USER: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(1_000_000),
+  MAX_CONCURRENT_EXECUTIONS_PER_USER: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(3),
+  MAX_EXECUTION_STARTS_PER_MINUTE: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(10),
   EMAIL_FROM: z
     .string()
     .min(1)

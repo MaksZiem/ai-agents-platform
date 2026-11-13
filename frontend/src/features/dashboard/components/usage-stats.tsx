@@ -1,6 +1,7 @@
 import { StatCard } from "@/components/ui/stat-card";
 import { formatDuration } from "@/lib/format";
-import type { UsageSummary } from "@/features/dashboard/types";
+import { DailyQuota } from "@/features/dashboard/components/daily-quota";
+import type { UsageQuota, UsageSummary } from "@/features/dashboard/types";
 
 function formatCompact(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -9,7 +10,13 @@ function formatCompact(value: number) {
   }).format(value);
 }
 
-export function UsageStats({ usage }: { usage: UsageSummary }) {
+export function UsageStats({
+  usage,
+  quota,
+}: {
+  usage: UsageSummary;
+  quota: UsageQuota;
+}) {
   return (
     <section aria-labelledby="usage-title" className="flex flex-col gap-2.5">
       <div className="flex items-baseline justify-between gap-3">
@@ -34,6 +41,7 @@ export function UsageStats({ usage }: { usage: UsageSummary }) {
           tone={usage.retries > 0 ? "warning" : "default"}
         />
       </div>
+      <DailyQuota quota={quota} />
     </section>
   );
 }

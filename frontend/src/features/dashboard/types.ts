@@ -32,7 +32,15 @@ export type ToolUsage = {
   failed: number;
 };
 
+export type UsageQuota = {
+  tokensToday: number;
+  dailyTokenLimit: number;
+  tokenBudgetPerExecution: number;
+  maxConcurrentExecutions: number;
+};
+
 export type DashboardSummary = DashboardStats & {
+  quota: UsageQuota;
   recentExecutions: ExecutionWithAgent[];
   activity: DayActivity[];
   usage: UsageSummary;
