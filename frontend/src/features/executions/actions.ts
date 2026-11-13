@@ -27,6 +27,14 @@ export async function deleteExecution(
   refresh();
 }
 
+export async function rerunExecution(agentId: string, task: string) {
+  const execution = await apiFetch<Execution>(`/agents/${agentId}/executions`, {
+    method: "POST",
+    body: { task },
+  });
+  redirect(`/executions/${execution.id}`);
+}
+
 export type RunTaskState = {
   error: string | null;
   task: string;
