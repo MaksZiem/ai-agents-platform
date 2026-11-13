@@ -3,7 +3,13 @@ import { getAccessToken } from "@/lib/session";
 const API_URL = process.env.API_URL ?? "http://localhost:3001/api";
 const FORWARDED_HEADERS = ["content-type", "content-disposition", "content-length"];
 
-export async function proxyDownload(path: string) {
+const PREVIEW_CSP =
+  "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox";
+
+export async function proxyDownload(
+  path: string,
+  { inline = false }: { inline?: boolean } = {},
+) {
   const token = await getAccessToken();
 
   if (!token) {
@@ -25,6 +31,12 @@ export async function proxyDownload(path: string) {
   for (const name of FORWARDED_HEADERS) {
     const value = response.headers.get(name);
     if (value) headers.set(name, value);
+  }
+
+  if (inline) {
+    headers.set("content-disposition", "inline");
+    headers.set("content-security-policy", PREVIEW_CSP);
+    headers.set("x-content-type-options", "nosniff");
   }
 
   return new Response(response.body, { headers });

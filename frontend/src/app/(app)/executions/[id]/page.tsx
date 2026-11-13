@@ -12,6 +12,7 @@ import {
 import { ExecutionDetails } from "@/features/executions/components/execution-details";
 import { ExecutionLiveUpdates } from "@/features/executions/components/execution-live-updates";
 import { ExecutionTask } from "@/features/executions/components/execution-task";
+import { ExecutionResult } from "@/features/executions/components/execution-result";
 import { ExecutionMetricsRow } from "@/features/executions/components/execution-metrics";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
 import { StepDetails } from "@/features/executions/components/step-details";
@@ -142,13 +143,16 @@ export default async function ExecutionPage({
         />
 
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_400px]">
-          <section className="rounded-xl border border-border bg-surface px-2.5 py-3">
-            <h2 className="px-2 pb-2 text-base font-semibold">Steps</h2>
-            <StepTimeline
-              steps={execution.steps}
-              selectedStepId={selectedStep?.id ?? null}
-            />
-          </section>
+          <div className="flex min-w-0 flex-col gap-6">
+            <section className="rounded-xl border border-border bg-surface px-2.5 py-3">
+              <h2 className="px-2 pb-2 text-base font-semibold">Steps</h2>
+              <StepTimeline
+                steps={execution.steps}
+                selectedStepId={selectedStep?.id ?? null}
+              />
+            </section>
+            <ExecutionResult execution={execution} />
+          </div>
 
           <aside className="flex flex-col gap-6 lg:sticky lg:top-6">
             {approval && <ApprovalCard approval={approval} />}
