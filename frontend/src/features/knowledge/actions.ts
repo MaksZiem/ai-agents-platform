@@ -1,6 +1,7 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { ApiError, apiFetch } from "@/lib/api";
 
 export type UploadState = {
@@ -14,13 +15,14 @@ export async function uploadDocument(
   _prevState: UploadState,
   formData: FormData,
 ): Promise<UploadState> {
+  const t = await getTranslations("knowledge.upload.errors");
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
-    return { error: "Choose a file to upload.", uploadedName: null };
+    return { error: t("noFile"), uploadedName: null };
   }
   if (file.size > MAX_UPLOAD_BYTES) {
-    return { error: "Files can be at most 5 MB.", uploadedName: null };
+    return { error: t("tooLarge"), uploadedName: null };
   }
 
   const body = new FormData();
@@ -29,11 +31,17 @@ export async function uploadDocument(
   try {
     await apiFetch("/knowledge", { method: "POST", body });
   } catch (error) {
-    if (
-      error instanceof ApiError &&
-      (error.status === 400 || error.status === 413)
-    ) {
-      return { error: error.message, uploadedName: null };
+    if (error instanceof ApiError && error.status === 413) {
+      return { error: t("tooLarge"), uploadedName: null };
+    }
+    if (error instanceof ApiError && error.status === 400) {
+      const message =
+        error.code === "FILE_NO_TEXT" ||
+        error.code === "PDF_UNREADABLE" ||
+        error.code === "FILE_TYPE_UNSUPPORTED"
+          ? t(error.code, { types: String(error.params.types ?? "") })
+          : t("invalid");
+      return { error: message, uploadedName: null };
     }
     throw error;
   }

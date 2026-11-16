@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AgentStatusBadge } from "@/features/agents/components/agent-status-badge";
 import {
   AgentActivityPanel,
   getAgentState,
 } from "@/features/agents/components/agent-activity";
+import { useFormat } from "@/lib/format";
 import type { AgentWithActivity } from "@/features/agents/types";
 
 function WorkingAvatar({ name, state }: { name: string; state: string }) {
@@ -37,11 +39,12 @@ function WorkingAvatar({ name, state }: { name: string; state: string }) {
   );
 }
 
-function successRate(completed: number, total: number) {
-  return total === 0 ? "—" : `${Math.round((completed / total) * 100)}%`;
-}
-
 export function AgentGrid({ agents }: { agents: AgentWithActivity[] }) {
+  const t = useTranslations("agents.card");
+  const format = useFormat();
+  const successRate = (completed: number, total: number) =>
+    total === 0 ? "—" : format.number(completed / total, { style: "percent" });
+
   return (
     <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {agents.map((agent) => {
@@ -90,24 +93,24 @@ export function AgentGrid({ agents }: { agents: AgentWithActivity[] }) {
             </div>
 
             <p className="line-clamp-2 min-h-10 text-[13px] text-fg-muted">
-              {agent.description || "No description."}
+              {agent.description || t("noDescription")}
             </p>
 
             <AgentActivityPanel activity={agent.activity} />
 
             <dl className="mt-auto grid grid-cols-3 gap-2 border-t border-border pt-3">
               <div>
-                <dt className="text-xs text-fg-muted">Runs</dt>
+                <dt className="text-xs text-fg-muted">{t("runs")}</dt>
                 <dd className="font-mono text-sm">{runs}</dd>
               </div>
               <div>
-                <dt className="text-xs text-fg-muted">Success</dt>
+                <dt className="text-xs text-fg-muted">{t("success")}</dt>
                 <dd className="font-mono text-sm">
                   {successRate(agent.activity?.completedRuns ?? 0, runs)}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-fg-muted">Failed</dt>
+                <dt className="text-xs text-fg-muted">{t("failed")}</dt>
                 <dd
                   className={`font-mono text-sm ${
                     (agent.activity?.failedRuns ?? 0) > 0 ? "text-danger" : ""

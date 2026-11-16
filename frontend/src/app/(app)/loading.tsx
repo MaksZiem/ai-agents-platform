@@ -1,10 +1,14 @@
+import { useTranslations } from "next-intl";
+
 const SKELETON =
   "animate-pulse rounded-md bg-surface-2 motion-reduce:animate-none";
 
 export default function Loading() {
+  const t = useTranslations("common");
+
   return (
     <div aria-busy="true">
-      <span className="sr-only">Loading…</span>
+      <span className="sr-only">{t("loading")}</span>
       <div className="border-b border-border px-6 py-5">
         <div className={`h-7 w-48 ${SKELETON}`} />
         <div className={`mt-2 h-4 w-80 max-w-full ${SKELETON}`} />

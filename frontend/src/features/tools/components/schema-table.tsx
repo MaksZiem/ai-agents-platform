@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { getSchemaFields } from "@/features/tools/schema";
 
 type SchemaTableProps = {
@@ -6,19 +7,20 @@ type SchemaTableProps = {
 };
 
 export function SchemaTable({ title, schema }: SchemaTableProps) {
+  const t = useTranslations("tools.card");
   const fields = getSchemaFields(schema);
 
   return (
     <div className="flex flex-col gap-1.5">
       {title && <h4 className="text-xs font-medium text-fg-muted">{title}</h4>}
       {fields.length === 0 ? (
-        <p className="text-[13px] text-fg-muted">No fields.</p>
+        <p className="text-[13px] text-fg-muted">{t("noFields")}</p>
       ) : (
         <table className="w-full text-[13px]">
           <thead className="sr-only">
             <tr>
-              <th>Field</th>
-              <th>Type</th>
+              <th>{t("field")}</th>
+              <th>{t("type")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

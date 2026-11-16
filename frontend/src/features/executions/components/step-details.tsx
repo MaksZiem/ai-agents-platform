@@ -1,5 +1,6 @@
+import { useTranslations } from "next-intl";
 import { JsonBlock } from "@/components/ui/json-block";
-import { getStepTitle } from "@/features/executions/steps";
+import { useStepTitle } from "@/features/executions/steps";
 import { LiveDuration } from "@/features/executions/components/live-duration";
 import type { ExecutionStep } from "@/features/executions/types";
 
@@ -8,17 +9,19 @@ type StepDetailsProps = {
 };
 
 export function StepDetails({ step }: StepDetailsProps) {
+  const t = useTranslations("executions.stepDetails");
+  const stepTitle = useStepTitle();
   const hasData = step.input || step.output || step.error;
 
   return (
     <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-[18px]">
       <div>
-        <p className="text-xs text-fg-muted">Step {step.position}</p>
-        <h2 className="font-mono text-base font-semibold">{getStepTitle(step)}</h2>
+        <p className="text-xs text-fg-muted">{t("step", { position: step.position })}</p>
+        <h2 className="font-mono text-base font-semibold">{stepTitle(step)}</h2>
       </div>
 
       <dl className="grid grid-cols-[88px_1fr] gap-x-3 gap-y-2 text-[13px]">
-        <dt className="text-fg-muted">Duration</dt>
+        <dt className="text-fg-muted">{t("duration")}</dt>
         <dd className="font-mono">
           <LiveDuration
             startedAt={step.startedAt}
@@ -26,7 +29,7 @@ export function StepDetails({ step }: StepDetailsProps) {
             running={step.status === "RUNNING"}
           />
         </dd>
-        <dt className="text-fg-muted">Attempt</dt>
+        <dt className="text-fg-muted">{t("attempt")}</dt>
         <dd className="font-mono">{step.attempt}</dd>
       </dl>
 
@@ -38,21 +41,21 @@ export function StepDetails({ step }: StepDetailsProps) {
 
       {step.input && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-xs font-medium text-fg-muted">Input</h3>
+          <h3 className="text-xs font-medium text-fg-muted">{t("input")}</h3>
           <JsonBlock value={step.input} />
         </div>
       )}
 
       {step.output && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-xs font-medium text-fg-muted">Output</h3>
+          <h3 className="text-xs font-medium text-fg-muted">{t("output")}</h3>
           <JsonBlock value={step.output} />
         </div>
       )}
 
       {!hasData && (
         <p className="text-[13px] text-fg-muted">
-          No input or output recorded for this step.
+          {t("noData")}
         </p>
       )}
     </section>

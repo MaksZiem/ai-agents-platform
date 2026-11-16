@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service.js';
 import { RegisterDto } from './dto/register.dto.js';
@@ -12,6 +13,7 @@ import type { JwtPayload } from './jwt-payload.js';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
+import { errorBody } from '../common/error-body.js';
 
 const SOCKET_TOKEN_TTL_SECONDS = 60;
 
@@ -74,7 +76,13 @@ export class AuthService {
 
     // 400, not 401: the session is fine, only the typed password is wrong.
     if (!(await argon2.verify(user.passwordHash, dto.currentPassword))) {
-      throw new BadRequestException('Current password is incorrect');
+      throw new BadRequestException(
+        errorBody(
+          HttpStatus.BAD_REQUEST,
+          'CURRENT_PASSWORD_INCORRECT',
+          'Current password is incorrect',
+        ),
+      );
     }
 
     await this.usersService.updatePasswordHash(

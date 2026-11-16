@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
-import { formatExecutionDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
 type RecentExecutionsProps = {
@@ -10,23 +11,26 @@ type RecentExecutionsProps = {
 
 export function RecentExecutions({
   executions,
-  title = "Recent executions",
+  title,
 }: RecentExecutionsProps) {
+  const t = useTranslations("executions.recent");
+  const format = useFormat();
+
   return (
     <section className="rounded-xl border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border px-[18px] py-3">
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h2 className="text-base font-semibold">{title ?? t("title")}</h2>
         <Link
           href="/executions"
           className="text-[13px] text-fg-muted transition-colors hover:text-fg"
         >
-          View all
+          {t("viewAll")}
         </Link>
       </div>
 
       {executions.length === 0 ? (
         <p className="px-[18px] py-8 text-center text-fg-muted">
-          No executions yet. Start a task from one of your agents.
+          {t("empty")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -44,7 +48,7 @@ export function RecentExecutions({
                 </div>
                 <ExecutionStatusBadge status={execution.status} fixedWidth />
                 <span className="text-right font-mono text-xs text-fg-muted">
-                  {formatExecutionDate(execution.createdAt)}
+                  {format.executionDate(execution.createdAt)}
                 </span>
               </Link>
             </li>

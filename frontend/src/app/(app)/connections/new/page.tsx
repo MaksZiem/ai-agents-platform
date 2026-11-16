@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { createConnection } from "@/features/connections/actions";
 import { ConnectionForm } from "@/features/connections/components/connection-form";
 import { EMPTY_CONNECTION_FORM } from "@/features/connections/form";
 
-export const metadata: Metadata = {
-  title: "New connection",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("connections");
+  return { title: t("new") };
+}
 
-export default function NewConnectionPage() {
+export default async function NewConnectionPage() {
+  const t = await getTranslations("connections");
+
   return (
     <div>
       <PageHeader
-        title="New connection"
-        description="Give agents controlled access to an HTTP API."
+        title={t("new")}
+        description={t("form.newLead")}
       />
 
       <div className="p-6">
@@ -21,8 +25,8 @@ export default function NewConnectionPage() {
           action={createConnection}
           initialValues={EMPTY_CONNECTION_FORM}
           secretStored={false}
-          submitLabel="Create connection"
-          pendingLabel="Creating…"
+          submitLabel={t("form.create")}
+          pendingLabel={t("form.creating")}
         />
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 type ErrorPageProps = {
@@ -9,25 +10,23 @@ type ErrorPageProps = {
 };
 
 export default function ErrorPage({ error, retry }: ErrorPageProps) {
+  const t = useTranslations();
+
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
     <div className="flex min-h-full flex-col items-center justify-center gap-3 p-6 text-center">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Something went wrong
-      </h1>
-      <p className="max-w-sm text-fg-muted">
-        This page could not be loaded. The backend may be unavailable.
-      </p>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("errors.title")}</h1>
+      <p className="max-w-sm text-fg-muted">{t("errors.description")}</p>
       {error.digest && (
         <p className="font-mono text-xs text-fg-muted">
-          Error ID: {error.digest}
+          {t("errors.errorId", { id: error.digest })}
         </p>
       )}
       <Button variant="primary" onClick={retry}>
-        Try again
+        {t("common.retry")}
       </Button>
     </div>
   );

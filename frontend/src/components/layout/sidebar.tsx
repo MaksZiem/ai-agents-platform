@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   LayoutDashboard,
   Bot,
@@ -20,23 +21,24 @@ import {
 } from "lucide-react";
 import { logout } from "@/features/auth/actions";
 import type { User } from "@/features/auth/types";
+import { LocaleSwitcher } from "./locale-switcher";
 
 type NavItem = {
   href: string;
-  label: string;
+  key: "dashboard" | "agents" | "executions" | "knowledge" | "files" | "connections" | "tools" | "approvals" | "settings";
   icon: LucideIcon;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/agents", label: "Agents", icon: Bot },
-  { href: "/executions", label: "Executions", icon: ListChecks },
-  { href: "/knowledge", label: "Knowledge", icon: BookOpen },
-  { href: "/files", label: "Files", icon: Files },
-  { href: "/connections", label: "Connections", icon: Plug },
-  { href: "/tools", label: "Tools", icon: Wrench },
-  { href: "/approvals", label: "Approvals", icon: ShieldCheck },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/", key: "dashboard", icon: LayoutDashboard },
+  { href: "/agents", key: "agents", icon: Bot },
+  { href: "/executions", key: "executions", icon: ListChecks },
+  { href: "/knowledge", key: "knowledge", icon: BookOpen },
+  { href: "/files", key: "files", icon: Files },
+  { href: "/connections", key: "connections", icon: Plug },
+  { href: "/tools", key: "tools", icon: Wrench },
+  { href: "/approvals", key: "approvals", icon: ShieldCheck },
+  { href: "/settings", key: "settings", icon: Settings },
 ];
 
 const ICON_BUTTON =
@@ -48,6 +50,7 @@ function isActive(pathname: string, href: string) {
 }
 
 function Brand() {
+  const t = useTranslations("meta");
   return (
     <div className="flex items-center gap-2">
       <span
@@ -56,7 +59,7 @@ function Brand() {
       >
         <Bot className="size-3.5" strokeWidth={2} />
       </span>
-      <span className="font-semibold">Agent Platform</span>
+      <span className="font-semibold">{t("title")}</span>
     </div>
   );
 }
@@ -67,6 +70,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ user, pendingApprovals }: SidebarProps) {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -88,7 +92,7 @@ export function Sidebar({ user, pendingApprovals }: SidebarProps) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open menu"
+          aria-label={t("openMenu")}
           aria-expanded={open}
           aria-controls="app-sidebar"
           className={ICON_BUTTON}
@@ -116,15 +120,15 @@ export function Sidebar({ user, pendingApprovals }: SidebarProps) {
           <button
             type="button"
             onClick={() => setOpen(false)}
-            aria-label="Close menu"
+            aria-label={t("closeMenu")}
             className={`${ICON_BUTTON} md:hidden`}
           >
             <X className="size-4" strokeWidth={1.75} aria-hidden />
           </button>
         </div>
 
-        <nav className="flex flex-col gap-0.5">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+        <nav aria-label={t("label")} className="flex flex-col gap-0.5">
+          {NAV_ITEMS.map(({ href, key, icon: Icon }) => {
             const active = isActive(pathname, href);
             const count = href === "/approvals" ? pendingApprovals : 0;
 
@@ -141,7 +145,7 @@ export function Sidebar({ user, pendingApprovals }: SidebarProps) {
                 }`}
               >
                 <Icon className="size-4" strokeWidth={1.75} aria-hidden />
-                {label}
+                {t(key)}
                 {count > 0 && (
                   <span className="ml-auto rounded-full bg-accent px-1.5 font-mono text-[11px] text-white">
                     {count}
@@ -152,13 +156,15 @@ export function Sidebar({ user, pendingApprovals }: SidebarProps) {
           })}
         </nav>
 
-        <div className="mt-auto flex items-center gap-2 border-t border-border px-2.5 pt-3">
+        <LocaleSwitcher className="mx-2.5 mt-auto mb-3 self-start" />
+
+        <div className="flex items-center gap-2 border-t border-border px-2.5 pt-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-medium">{user.name}</p>
             <p className="truncate text-xs text-fg-muted">{user.email}</p>
           </div>
           <form action={logout}>
-            <button type="submit" aria-label="Sign out" className={ICON_BUTTON}>
+            <button type="submit" aria-label={t("signOut")} className={ICON_BUTTON}>
               <LogOut className="size-4" strokeWidth={1.75} aria-hidden />
             </button>
           </form>

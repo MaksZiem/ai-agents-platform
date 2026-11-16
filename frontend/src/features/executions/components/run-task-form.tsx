@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, type KeyboardEvent, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,13 +32,15 @@ export function RunTaskForm({
   agentName,
   disabled,
   initialTask = "",
-  title = `What would you like ${agentName} to do?`,
+  title,
   description,
-  submitLabel = "Run agent",
+  submitLabel,
   icon,
   onCancel,
   autoFocus = false,
 }: RunTaskFormProps) {
+  const t = useTranslations("executions.run");
+  const tCommon = useTranslations("common");
   const [state, formAction] = useActionState(action, {
     error: null,
     task: initialTask,
@@ -52,7 +55,7 @@ export function RunTaskForm({
         >
           <label className="flex flex-col gap-2">
             <span className="flex flex-col gap-0.5">
-              <span className="text-base font-semibold">{title}</span>
+              <span className="text-base font-semibold">{title ?? t("title", { agent: agentName })}</span>
               {description && (
                 <span className="text-[13px] text-fg-muted">{description}</span>
               )}
@@ -62,7 +65,7 @@ export function RunTaskForm({
               rows={4}
               maxLength={4000}
               defaultValue={state.task}
-              placeholder="Analyze our Q1 spending and compare it with Q4. Find unusual expenses and create a report."
+              placeholder={t("placeholder")}
               onKeyDown={submitOnCmdEnter}
               autoFocus={autoFocus}
               aria-invalid={Boolean(state.error)}
@@ -78,17 +81,17 @@ export function RunTaskForm({
           <div className="flex items-center justify-end gap-3">
             {disabled && (
               <p className="mr-auto text-xs text-fg-muted">
-                Activate this agent to run tasks.
+                {t("inactive")}
               </p>
             )}
             {onCancel && (
               <Button variant="ghost" onClick={onCancel}>
-                Cancel
+                {tCommon("cancel")}
               </Button>
             )}
-            <SubmitButton variant="primary" pendingLabel="Starting…">
+            <SubmitButton variant="primary" pendingLabel={t("starting")}>
               {icon}
-              {submitLabel}
+              {submitLabel ?? t("submit")}
             </SubmitButton>
           </div>
         </fieldset>

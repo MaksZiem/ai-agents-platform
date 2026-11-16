@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { updateAgent } from "@/features/agents/actions";
 import { AgentForm } from "@/features/agents/components/agent-form";
@@ -6,21 +7,25 @@ import { getAgent } from "@/features/agents/queries";
 
 export default async function EditAgentPage({ params }: PageProps<"/agents/[id]/edit">) {
   const { id } = await params;
-  const agent = await getAgent(id);
+  const [agent, t, tCommon] = await Promise.all([
+    getAgent(id),
+    getTranslations("agents.form"),
+    getTranslations("common"),
+  ]);
 
   return (
     <div>
       <PageHeader
-        title={`Edit ${agent.name}`}
-        description="Update the agent's identity, model and instructions."
+        title={t("editTitle", { name: agent.name })}
+        description={t("editLead")}
       />
 
       <div className="p-6">
         <AgentForm
           action={updateAgent.bind(null, agent.id)}
           initialValues={agentToFormValues(agent)}
-          submitLabel="Save changes"
-          pendingLabel="Saving…"
+          submitLabel={t("saveChanges")}
+          pendingLabel={tCommon("saving")}
           cancelHref={`/agents/${agent.id}`}
         />
       </div>

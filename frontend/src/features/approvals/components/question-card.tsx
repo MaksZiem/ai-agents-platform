@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MessageCircleQuestionMark } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { answerQuestion } from "@/features/approvals/actions";
 import { QuestionAnswerForm } from "@/features/approvals/components/question-answer-form";
@@ -21,6 +22,7 @@ function readQuestion(input: Record<string, unknown>) {
 }
 
 export function QuestionCard({ approval, execution }: QuestionCardProps) {
+  const t = useTranslations("approvals.question");
   const titleId = `question-${approval.id}`;
   const { question, options } = readQuestion(approval.input);
   const answer = answerQuestion.bind(null, approval.id);
@@ -41,7 +43,7 @@ export function QuestionCard({ approval, execution }: QuestionCardProps) {
         )}
         <span className="flex items-center gap-1.5 text-xs font-medium text-accent">
           <MessageCircleQuestionMark className="size-3.5" strokeWidth={2} aria-hidden />
-          The agent has a question
+          {t("label")}
         </span>
         <h2 id={titleId} className="whitespace-pre-wrap text-base font-semibold">
           {question}
@@ -56,7 +58,7 @@ export function QuestionCard({ approval, execution }: QuestionCardProps) {
           {options.map((option) => (
             <form key={option} action={answer}>
               <input type="hidden" name="answer" value={option} />
-              <SubmitButton pendingLabel="Sending…">{option}</SubmitButton>
+              <SubmitButton pendingLabel={t("sending")}>{option}</SubmitButton>
             </form>
           ))}
         </div>

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { Download, FileText, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { uploadedFileHref } from "@/features/files/entries";
 import { deleteDocument } from "@/features/knowledge/actions";
-import { formatBytes, formatShortDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { LibraryDocument } from "@/features/knowledge/types";
 
 type DocumentLibraryProps = {
@@ -13,10 +14,13 @@ type DocumentLibraryProps = {
 };
 
 export function DocumentLibrary({ documents }: DocumentLibraryProps) {
+  const t = useTranslations();
+  const format = useFormat();
+
   if (documents.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-surface px-6 py-8 text-center text-fg-muted">
-        No documents yet. Upload one above.
+        {t("knowledge.empty")}
       </p>
     );
   }
@@ -42,8 +46,9 @@ export function DocumentLibrary({ documents }: DocumentLibraryProps) {
                 {document.name}
               </Link>
               <p className="font-mono text-xs text-fg-muted">
-                {formatBytes(document.sizeBytes)} · {document.chunkCount} chunks
-                · {formatShortDate(document.createdAt)}
+                {format.bytes(document.sizeBytes)} ·{" "}
+                {t("agentKnowledge.chunks", { count: document.chunkCount })} ·{" "}
+                {format.shortDate(document.createdAt)}
               </p>
             </div>
           </div>
@@ -51,31 +56,31 @@ export function DocumentLibrary({ documents }: DocumentLibraryProps) {
           <p className="hidden truncate text-[13px] text-fg-muted md:block">
             {document.agents.length > 0
               ? document.agents.map((agent) => agent.name).join(", ")
-              : "Not used by any agent"}
+              : t("knowledge.notUsed")}
           </p>
 
           <div className="flex items-center gap-1">
             <a
               href={`/api/knowledge/${document.id}/download`}
               className={buttonClasses("ghost")}
-              aria-label={`Download ${document.name}`}
+              aria-label={t("files.download", { name: document.name })}
             >
               <Download className="size-4" strokeWidth={1.75} aria-hidden />
             </a>
             <ConfirmForm
               action={deleteDocument.bind(null, document.id)}
-              title={`Delete "${document.name}"?`}
+              title={t("files.delete.title", { name: document.name })}
               message={
                 document.agents.length > 0
-                  ? `The document is removed from your library and from ${document.agents.length} ${document.agents.length === 1 ? "agent" : "agents"} that use it. To take it away from one agent only, use Remove on that agent's page. This cannot be undone.`
-                  : "The document is removed from your library. This cannot be undone."
+                  ? t("files.delete.usedBy", { count: document.agents.length })
+                  : t("files.delete.unused")
               }
-              confirmLabel="Delete document"
+              confirmLabel={t("files.delete.document")}
             >
               <SubmitButton
                 variant="ghost"
                 pendingLabel="…"
-                aria-label={`Delete ${document.name}`}
+                aria-label={t("files.delete.label", { name: document.name })}
               >
                 <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
               </SubmitButton>

@@ -1,4 +1,4 @@
-import { EXECUTION_STATUS_LABELS } from "@/features/executions/labels";
+import { useTranslations } from "next-intl";
 import type { ExecutionStatus } from "@/features/executions/types";
 
 const STATUS_CONFIG: Record<ExecutionStatus, { badge: string; dot: string }> = {
@@ -37,8 +37,9 @@ export function ExecutionStatusBadge({
   status,
   fixedWidth = false,
 }: ExecutionStatusBadgeProps) {
+  const t = useTranslations("executions.status");
   const { badge, dot } = STATUS_CONFIG[status];
-  const label = EXECUTION_STATUS_LABELS[status];
+  const label = t(status);
 
   return (
     <span

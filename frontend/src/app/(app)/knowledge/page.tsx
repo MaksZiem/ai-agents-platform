@@ -1,22 +1,27 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { DocumentLibrary } from "@/features/knowledge/components/document-library";
 import { UploadDocumentForm } from "@/features/knowledge/components/upload-document-form";
 import { apiFetch } from "@/lib/api";
 import type { LibraryDocument } from "@/features/knowledge/types";
 
-export const metadata: Metadata = {
-  title: "Knowledge",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("knowledge");
+  return { title: t("title") };
+}
 
 export default async function KnowledgePage() {
-  const documents = await apiFetch<LibraryDocument[]>("/knowledge");
+  const [documents, t] = await Promise.all([
+    apiFetch<LibraryDocument[]>("/knowledge"),
+    getTranslations("knowledge"),
+  ]);
 
   return (
     <div>
       <PageHeader
-        title="Knowledge"
-        description="Documents your agents can read. Attach them to an agent on its page. Uploaded files are also listed in Files."
+        title={t("title")}
+        description={t("lead")}
       />
 
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 p-6">
@@ -24,7 +29,7 @@ export default async function KnowledgePage() {
 
         <section className="flex flex-col gap-3">
           <h2 className="text-base font-semibold">
-            Library{" "}
+            {t("library")}{" "}
             <span className="font-mono text-fg-muted">{documents.length}</span>
           </h2>
           <DocumentLibrary documents={documents} />

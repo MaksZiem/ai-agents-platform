@@ -1,0 +1,735 @@
+{
+  "agentConnections": {
+    "title": "Connections",
+    "lead": "APIs this agent can call with the httpRequest tool. Remove only detaches the connection from this agent.",
+    "empty": "No connections attached.",
+    "remove": "Remove",
+    "removing": "Removing…",
+    "removeHint": "Detach from this agent. The connection stays available for other agents.",
+    "none": "No connections yet.",
+    "add": "Add one",
+    "allAttached": "Every connection is attached."
+  },
+  "agentKnowledge": {
+    "title": "Knowledge",
+    "lead": "Documents this agent can read with the readDocument and searchDocuments tools. Remove only detaches a document from this agent; it stays in your library for other agents.",
+    "empty": "No documents attached.",
+    "chunks": "{count, plural, one {# chunk} other {# chunks}}",
+    "remove": "Remove",
+    "removing": "Removing…",
+    "removeHint": "Detach from this agent. The document stays in your library.",
+    "libraryEmpty": "Your library is empty.",
+    "upload": "Upload a document",
+    "allAttached": "Every document in your library is attached."
+  },
+  "agents": {
+    "title": "Agents",
+    "lead": "Agents you have configured and what they are allowed to do.",
+    "workingNow": "{working} of {total, plural, one {# agent is} other {# agents are}} working right now.",
+    "new": "New agent",
+    "matchCount": "{visible} of {total, plural, one {# agent} other {# agents}}",
+    "noMatchTitle": "No agents match “{query}”",
+    "noMatchHint": "Search looks at agent names, descriptions and models.",
+    "clearSearch": "Clear search",
+    "search": {
+      "placeholder": "Search agents by name, description or model…",
+      "label": "Search agents",
+      "clear": "Clear search"
+    },
+    "views": {
+      "label": "View",
+      "grid": "Tiles",
+      "list": "List"
+    },
+    "empty": {
+      "title": "No agents yet",
+      "body": "Create an agent, give it tools and permissions, then delegate a task."
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
+    "columns": {
+      "agent": "Agent",
+      "model": "Model",
+      "activity": "Activity",
+      "status": "Status",
+      "created": "Created"
+    },
+    "activity": {
+      "starting": "Starting",
+      "needsApproval": "Needs approval",
+      "waitingForYou": "Waiting for your approval",
+      "idleSince": "Idle · {date}",
+      "idleLastRun": "Idle · last run {date}",
+      "neverRun": "Never run",
+      "ready": "Ready for its first task",
+      "review": "Review",
+      "watch": "Watch live"
+    },
+    "card": {
+      "noDescription": "No description.",
+      "runs": "Runs",
+      "success": "Success",
+      "failed": "Failed"
+    },
+    "detail": {
+      "activate": "Activate",
+      "activating": "Activating…",
+      "deactivate": "Deactivate",
+      "deactivating": "Deactivating…",
+      "duplicate": "Duplicate",
+      "duplicating": "Duplicating…",
+      "edit": "Edit",
+      "instructions": "Instructions",
+      "history": "Execution history",
+      "model": "Model",
+      "provider": "Provider",
+      "temperature": "Temperature",
+      "maxOutputTokens": "Max output tokens",
+      "created": "Created",
+      "dangerZone": "Danger zone",
+      "dangerBody": "Deleting an agent removes its configuration and execution history.",
+      "delete": "Delete agent",
+      "deleting": "Deleting…",
+      "deleteConfirm": "Delete “{name}”? Its execution history will be deleted too."
+    },
+    "form": {
+      "newTitle": "New agent",
+      "newLead": "Define who the agent is, which model it uses and how it should behave.",
+      "create": "Create agent",
+      "creating": "Creating…",
+      "editTitle": "Edit {name}",
+      "editLead": "Update the agent's identity, model and instructions.",
+      "saveChanges": "Save changes",
+      "identity": "Identity",
+      "name": "Name",
+      "namePlaceholder": "Financial Analyst",
+      "description": "Description",
+      "descriptionPlaceholder": "Analyzes spending and prepares financial reports",
+      "model": "Model",
+      "provider": "Provider: Google Gemini",
+      "temperature": "Temperature",
+      "temperatureHint": "0 precise · 2 creative",
+      "maxOutputTokens": "Max output tokens",
+      "instructions": "Instructions",
+      "instructionsLead": "The system instruction the agent follows on every task.",
+      "systemInstruction": "System instruction",
+      "instructionsPlaceholder": "You are a financial analyst.\n\nAnalyze financial data carefully.\nNever invent financial information.",
+      "saveFailed": "Could not save the agent. Try again.",
+      "errors": {
+        "nameRequired": "Name is required.",
+        "nameTooLong": "Name must be at most 100 characters.",
+        "descriptionTooLong": "Description must be at most 500 characters.",
+        "modelRequired": "Choose a model.",
+        "temperatureRange": "Temperature must be between 0 and 2.",
+        "maxOutputTokensRange": "Use a whole number between 1 and {max}.",
+        "instructionsRequired": "Instructions are required."
+      }
+    }
+  },
+  "approvals": {
+    "title": "Approvals",
+    "lead": "Sensitive actions wait here until you approve or reject them.",
+    "pending": "Pending",
+    "nothingPending": "Nothing is waiting for you.",
+    "history": "History",
+    "noDecisions": "No decisions yet.",
+    "answer": "Answer: {answer}",
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "card": {
+      "wantsToRun": "The agent wants to run <code>{tool}</code>",
+      "reason": "Reason",
+      "reject": "Reject",
+      "rejecting": "Rejecting…",
+      "approve": "Approve",
+      "approving": "Approving…"
+    },
+    "question": {
+      "label": "The agent has a question",
+      "sending": "Sending…",
+      "ownAnswer": "Or write your own answer…",
+      "yourAnswer": "Your answer…",
+      "skip": "Skip question",
+      "skipping": "Skipping…",
+      "skipHint": "The agent continues without an answer and states its assumption.",
+      "send": "Send answer",
+      "errors": {
+        "empty": "Write an answer or skip the question.",
+        "tooLong": "Keep the answer under {max} characters."
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in",
+      "lead": "Use your Agent Platform account.",
+      "submit": "Sign in",
+      "pending": "Signing in…",
+      "noAccount": "No account yet?",
+      "toSignUp": "Create one"
+    },
+    "signUp": {
+      "title": "Create account",
+      "lead": "Set up your workspace and build your first agent.",
+      "submit": "Create account",
+      "pending": "Creating account…",
+      "hasAccount": "Already have an account?",
+      "toSignIn": "Sign in"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least {min} characters."
+    },
+    "errors": {
+      "nameRequired": "Enter your name.",
+      "nameTooLong": "Use at most {max} characters.",
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "Enter a valid email, e.g. name@company.com.",
+      "passwordRequired": "Enter a password.",
+      "passwordLength": "Use {min} to {max} characters.",
+      "invalidCredentials": "Invalid email or password.",
+      "emailTaken": "An account with this email already exists."
+    }
+  },
+  "common": {
+    "language": "Language",
+    "languages": {
+      "pl": "Polski",
+      "en": "English"
+    },
+    "loading": "Loading…",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "retry": "Try again",
+    "save": "Save",
+    "saving": "Saving…",
+    "backToDashboard": "Back to dashboard",
+    "empty": "—"
+  },
+  "connections": {
+    "title": "Connections",
+    "lead": "APIs your agents can call with the httpRequest tool. Attach a connection to an agent on its page.",
+    "new": "New connection",
+    "empty": {
+      "title": "No connections yet",
+      "body": "Connect an API so agents can call it with the httpRequest tool."
+    },
+    "columns": {
+      "connection": "Connection",
+      "auth": "Authentication",
+      "methods": "Methods"
+    },
+    "authTypes": {
+      "none": "No authentication",
+      "bearer": "Bearer token",
+      "header": "API key header"
+    },
+    "delete": {
+      "title": "Delete “{name}”?",
+      "message": "The connection and its saved secret are removed and every agent loses access to this API. This cannot be undone.",
+      "confirm": "Delete connection",
+      "button": "Delete",
+      "pending": "Deleting…"
+    },
+    "form": {
+      "newLead": "Give agents controlled access to an HTTP API.",
+      "create": "Create connection",
+      "creating": "Creating…",
+      "saveChanges": "Save changes",
+      "api": "API",
+      "name": "Name",
+      "nameHint": "The agent refers to the connection by this name.",
+      "description": "Description",
+      "descriptionHint": "Tell the agent what this API is for and which endpoints are useful.",
+      "descriptionPlaceholder": "CRM with customers and deals. GET /deals?status=open lists open deals.",
+      "baseUrl": "Base URL",
+      "baseUrlHint": "Requests can only go to paths under this URL. Private and local addresses are blocked.",
+      "auth": "Authentication",
+      "authLead": "The secret is encrypted and added by the backend. The agent never sees it.",
+      "type": "Type",
+      "headerName": "Header name",
+      "token": "Token",
+      "apiKey": "API key",
+      "secretStored": "A secret is saved. Leave empty to keep it.",
+      "methods": "Allowed methods",
+      "methodsLead": "GET runs immediately. POST, PUT, PATCH and DELETE always wait for your approval, and need the Connections · Modify permission.",
+      "saveFailed": "Could not save the connection. Try again.",
+      "errors": {
+        "name": "Start with a letter; use lowercase letters, digits, - or _ (max 64).",
+        "descriptionTooLong": "Description must be at most 500 characters.",
+        "urlProtocol": "Use an http:// or https:// URL.",
+        "urlInvalid": "Enter a full URL, e.g. https://api.example.com/v1.",
+        "headerName": "Enter a header name, e.g. X-API-Key.",
+        "secretRequired": "Enter the token or key.",
+        "methodsRequired": "Allow at least one method.",
+        "CONNECTION_NAME_TAKEN": "A connection named “{name}” already exists.",
+        "CONNECTION_HEADER_RESERVED": "{header} cannot be used as the authentication header."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "lead": "Overview of your agents and executions.",
+    "viewExecutions": "View executions",
+    "stats": {
+      "agents": "Agents",
+      "tasksToday": "Tasks today",
+      "running": "Running",
+      "waiting": "Waiting for approval"
+    },
+    "activity": {
+      "title": "Activity",
+      "lead": "Executions in the last 14 days",
+      "runs": "Runs",
+      "completed": "Completed",
+      "perDay": "Runs per day",
+      "noRuns": "no runs",
+      "day": "{date}: {parts}",
+      "segments": {
+        "completed": "Completed",
+        "failed": "Failed",
+        "cancelled": "Cancelled",
+        "active": "In progress"
+      },
+      "segmentCount": "{count} {segment}"
+    },
+    "usage": {
+      "title": "Usage",
+      "period": "Last 7 days",
+      "tokens": "Tokens",
+      "avgDuration": "Avg duration",
+      "llmCalls": "LLM calls",
+      "retries": "Retries"
+    },
+    "quota": {
+      "today": "Tokens used today",
+      "progress": "Daily token limit used",
+      "reached": "Daily limit reached. New tasks start again after midnight.",
+      "info": "Each task can use up to {budget} tokens; up to {concurrent} tasks run at once."
+    },
+    "agentsNow": {
+      "title": "Agents now",
+      "working": "{count, plural, one {# working} other {# working}}",
+      "quiet": "All quiet",
+      "viewAll": "View all",
+      "none": "No agents yet.",
+      "create": "Create one"
+    },
+    "topTools": {
+      "title": "Top tools",
+      "lead": "Calls in the last 7 days",
+      "none": "No tool calls yet.",
+      "failedShare": "{percent} failed"
+    },
+    "attention": {
+      "title": "Needs your attention",
+      "question": "Question",
+      "hasQuestion": "The agent has a question",
+      "sending": "Sending…",
+      "answer": "Answer",
+      "approvalRequired": "Approval required",
+      "run": "Run <code>{tool}</code>",
+      "failed": "Failed",
+      "failedAt": "Failed {date}",
+      "review": "Review & retry"
+    }
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "description": "This page could not be loaded. The backend may be unavailable.",
+    "errorId": "Error ID: {id}",
+    "notFoundTitle": "Page not found",
+    "notFoundDescription": "This page does not exist, or it belongs to another account.",
+    "unreachable": "Could not reach the server. Try again.",
+    "validation": "Check the data and try again.",
+    "unknown": "Something went wrong. Try again in a moment."
+  },
+  "executions": {
+    "title": "Executions",
+    "status": {
+      "QUEUED": "Queued",
+      "RUNNING": "Running",
+      "WAITING_FOR_APPROVAL": "Waiting for approval",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed",
+      "CANCELLED": "Cancelled"
+    },
+    "filter": {
+      "label": "Filter by status",
+      "all": "All"
+    },
+    "columns": {
+      "task": "Task",
+      "agent": "Agent",
+      "status": "Status",
+      "duration": "Duration",
+      "started": "Started"
+    },
+    "delete": {
+      "title": "Delete this execution?",
+      "message": "Its steps, approvals and the files it created are deleted too. This cannot be undone.",
+      "confirm": "Delete execution",
+      "label": "Delete execution"
+    },
+    "recent": {
+      "title": "Recent executions",
+      "viewAll": "View all",
+      "empty": "No executions yet. Start a task from one of your agents."
+    },
+    "details": {
+      "title": "Details",
+      "agent": "Agent",
+      "provider": "Provider",
+      "model": "Model",
+      "created": "Created"
+    },
+    "metrics": {
+      "duration": "Duration",
+      "llmCalls": "LLM calls",
+      "toolCalls": "Tool calls",
+      "retries": "Retries",
+      "tokens": "Tokens"
+    },
+    "run": {
+      "title": "What would you like {agent} to do?",
+      "placeholder": "Analyze our Q1 spending and compare it with Q4. Find unusual expenses and create a report.",
+      "submit": "Run agent",
+      "starting": "Starting…",
+      "inactive": "Activate this agent to run tasks.",
+      "errors": {
+        "empty": "Describe what the agent should do.",
+        "tooLong": "Keep the task under {max} characters.",
+        "agentInactive": "This agent is inactive. Activate it to run tasks.",
+        "failed": "Could not start the execution. Try again.",
+        "RATE_LIMIT_STARTS": "You can start at most {limit} tasks per minute. Wait a moment and try again.",
+        "RATE_LIMIT_CONCURRENT": "You already have {active} tasks running or queued (limit {limit}). Wait for one to finish or cancel it.",
+        "DAILY_TOKEN_LIMIT": "You have used today's token limit ({limit} tokens). It resets at midnight."
+      }
+    },
+    "steps": {
+      "plan": "Planning",
+      "final": "Final result",
+      "toolCall": "Tool call"
+    },
+    "lead": "Every task your agents have run, newest first.",
+    "emptyAll": "No executions yet. Run a task from one of your agents.",
+    "emptyStatus": "No executions with status “{status}”.",
+    "page": {
+      "delete": "Delete",
+      "deleting": "Deleting…",
+      "stopTitle": "Stop this execution?",
+      "stopMessage": "The agent stops immediately and no further steps will run.",
+      "stop": "Stop execution",
+      "stopping": "Stopping…",
+      "failed": "Execution failed",
+      "steps": "Steps",
+      "live": "Live"
+    },
+    "task": {
+      "title": "Task",
+      "retry": "Retry execution",
+      "retryTitle": "Retry this execution",
+      "retryLead": "Starts a new execution of {agent} with the task below and the agent's current configuration. Edit the task first if you want to change it. This execution stays in the history."
+    },
+    "stepStatus": {
+      "PENDING": "Pending",
+      "RUNNING": "Running",
+      "WAITING_FOR_APPROVAL": "Waiting for approval",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed",
+      "SKIPPED": "Skipped"
+    },
+    "stepDescription": {
+      "running": "Running…",
+      "planCreated": "Created execution plan",
+      "finalProduced": "Produced final result"
+    },
+    "attempt": "Attempt {attempt}",
+    "preparing": "The agent is preparing a plan…",
+    "stepDetails": {
+      "step": "Step {position}",
+      "duration": "Duration",
+      "attempt": "Attempt",
+      "input": "Input",
+      "output": "Output",
+      "noData": "No input or output recorded for this step."
+    },
+    "result": {
+      "title": "Result",
+      "pending": "The answer appears here when the agent finishes",
+      "cancelled": "The execution was cancelled before the agent answered.",
+      "noAnswer": "The agent did not produce an answer.",
+      "reports": "Reports",
+      "charts": "{count, plural, one {# chart} other {# charts}}",
+      "open": "Open",
+      "download": "Download",
+      "preview": "Preview of {name}",
+      "emails": "Emails sent",
+      "sentTo": "Sent to {to}",
+      "calculations": "Calculations",
+      "name": "Name",
+      "formula": "Formula",
+      "value": "Value",
+      "answers": "Your answers",
+      "apiWrites": "Changes made through APIs",
+      "sources": "Sources"
+    }
+  },
+  "files": {
+    "title": "Files",
+    "lead": "Files you uploaded as knowledge and files your agents created during executions.",
+    "empty": {
+      "all": "No files yet. Upload a document in Knowledge or run an agent that creates a report.",
+      "uploaded": "You have not uploaded any files yet. Upload them in Knowledge.",
+      "generated": "No files yet. Reports created by agents will appear here."
+    },
+    "filter": {
+      "label": "Filter by source",
+      "all": "All",
+      "uploaded": "Uploaded by you",
+      "generated": "Generated by agents"
+    },
+    "source": {
+      "uploaded": "Uploaded",
+      "generated": "Generated"
+    },
+    "columns": {
+      "name": "Name",
+      "source": "Source",
+      "agent": "Agent"
+    },
+    "knowledgeOf": "Knowledge of {agents}",
+    "notAttached": "Not attached to any agent",
+    "download": "Download {name}",
+    "delete": {
+      "title": "Delete “{name}”?",
+      "label": "Delete {name}",
+      "generated": "The file is removed permanently and can no longer be downloaded.",
+      "usedBy": "The document is removed from your library and from {count, plural, one {# agent that uses it} other {# agents that use it}}. To take it away from one agent only, use Remove on that agent's page. This cannot be undone.",
+      "unused": "The document is removed from your library. This cannot be undone.",
+      "document": "Delete document",
+      "file": "Delete file"
+    },
+    "execution": "Files"
+  },
+  "format": {
+    "today": "Today {time}",
+    "yesterday": "Yesterday {time}",
+    "milliseconds": "{value}ms",
+    "seconds": "{value}s",
+    "minutes": "{minutes}m {seconds}s",
+    "bytes": "{value} B",
+    "kilobytes": "{value} KB",
+    "megabytes": "{value} MB"
+  },
+  "knowledge": {
+    "title": "Knowledge",
+    "lead": "Documents your agents can read. Attach them to an agent on its page. Uploaded files are also listed in Files.",
+    "library": "Library",
+    "empty": "No documents yet. Upload one above.",
+    "notUsed": "Not used by any agent",
+    "upload": {
+      "title": "Upload a document",
+      "lead": "PDF, TXT, Markdown, CSV or JSON, up to 5 MB. The text is split into chunks your agents can search.",
+      "field": "Document",
+      "submit": "Upload",
+      "pending": "Uploading…",
+      "done": "Uploaded {name}.",
+      "errors": {
+        "noFile": "Choose a file to upload.",
+        "tooLarge": "Files can be at most 5 MB.",
+        "FILE_NO_TEXT": "The file contains no text.",
+        "PDF_UNREADABLE": "Could not read the PDF file.",
+        "FILE_TYPE_UNSUPPORTED": "Unsupported file type. Supported: {types}.",
+        "invalid": "This file could not be uploaded."
+      }
+    }
+  },
+  "meta": {
+    "title": "Agent Platform",
+    "description": "Create, run and supervise AI agents."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "dashboard": "Dashboard",
+    "agents": "Agents",
+    "executions": "Executions",
+    "knowledge": "Knowledge",
+    "files": "Files",
+    "connections": "Connections",
+    "tools": "Tools",
+    "approvals": "Approvals",
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "signOut": "Sign out"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "lead": "Enforced by the backend on every tool call, whatever the model decides.",
+    "save": "Save permissions"
+  },
+  "picker": {
+    "found": "found",
+    "selectAll": "Select all",
+    "clear": "Clear",
+    "noMatch": "Nothing matches “{query}”.",
+    "attaching": "Attaching…",
+    "documents": {
+      "open": "Add documents",
+      "search": "Search documents",
+      "count": "{count, plural, one {# document} other {# documents}}",
+      "attach": "{count, plural, =0 {Attach} one {Attach # document} other {Attach # documents}}"
+    },
+    "connections": {
+      "open": "Add connections",
+      "search": "Search connections",
+      "count": "{count, plural, one {# connection} other {# connections}}",
+      "attach": "{count, plural, =0 {Attach} one {Attach # connection} other {Attach # connections}}"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "lead": "Your account and security.",
+    "account": "Account",
+    "name": "Name",
+    "email": "Email",
+    "language": "Interface language",
+    "password": {
+      "title": "Password",
+      "lead": "Use at least {min} characters. You stay signed in on this device.",
+      "current": "Current password",
+      "new": "New password",
+      "newHint": "At least {min} characters.",
+      "confirm": "Confirm new password",
+      "submit": "Change password",
+      "changed": "Password changed.",
+      "errors": {
+        "currentRequired": "Enter your current password.",
+        "sameAsCurrent": "Choose a password different from the current one.",
+        "confirmRequired": "Repeat the new password.",
+        "mismatch": "The passwords do not match.",
+        "CURRENT_PASSWORD_INCORRECT": "Current password is incorrect."
+      }
+    }
+  },
+  "tools": {
+    "title": "Tools",
+    "lead": "Everything an agent can be allowed to do. Enable tools per agent on the agent's page; the backend checks the permission on every call.",
+    "categoriesLabel": "Tool categories",
+    "categories": {
+      "documents": {
+        "label": "Documents",
+        "description": "Read, search and compare the files in the agent's knowledge base."
+      },
+      "analysis": {
+        "label": "Analysis & reports",
+        "description": "Exact calculations and reports the agent saves to Files."
+      },
+      "web": {
+        "label": "Web & APIs",
+        "description": "Search the internet, read pages and call your connected APIs."
+      },
+      "communication": {
+        "label": "Communication",
+        "description": "Reach people outside the run: email, or a question for you."
+      }
+    },
+    "resources": {
+      "financial_data": "Financial data",
+      "documents": "Documents",
+      "reports": "Reports",
+      "email": "Email",
+      "web": "Web",
+      "connections": "Connections"
+    },
+    "actions": {
+      "read": "Read",
+      "search": "Search",
+      "modify": "Modify",
+      "delete": "Delete",
+      "create": "Create",
+      "send": "Send"
+    },
+    "permission": "{resource} · {action}",
+    "noPermission": "No permission needed",
+    "waitsForAnswer": "Waits for your answer",
+    "alwaysApproval": "Always requires approval",
+    "card": {
+      "permission": "Permission",
+      "noneNeeded": "None needed",
+      "approval": "Approval",
+      "approvalAlways": "Always, for every call",
+      "approvalOptional": "Optional, set per agent",
+      "input": "Input",
+      "noFields": "No fields",
+      "outputFields": "Output fields",
+      "field": "Field",
+      "type": "Type"
+    },
+    "agent": {
+      "title": "Tools",
+      "lead": "The agent can only call the tools you enable here.",
+      "enabledCount": "{enabled}/{total} enabled",
+      "all": "All tools",
+      "enable": "Enable {name}",
+      "needsPermission": "Needs {permission} in Permissions below.",
+      "approval": "Approval",
+      "requireApproval": "Require approval for {name}"
+    },
+    "catalog": {
+      "askUser": {
+        "summary": "Pauses the run to ask you a question.",
+        "description": "Asks you a question and pauses the execution until you answer. The agent uses it only when the task is ambiguous or it needs information it cannot get from documents or other tools, e.g. which period to analyze or who should receive a report. It can suggest up to 6 answers. You can skip the question: the agent then continues with its best judgement and states the assumption."
+      },
+      "calculate": {
+        "summary": "Computes sums, averages and percentage changes exactly.",
+        "description": "Evaluates arithmetic exactly instead of the model calculating in its head: totals, differences, ratios, growth and forecasts. It takes the numbers found as variables and a list of named calculations, each of which can use the results of earlier ones. Supports + - * / % ^, parentheses and functions such as pct, pct_change and cagr."
+      },
+      "compareDocuments": {
+        "summary": "Shows what changed between two versions of a document.",
+        "description": "Compares two documents attached to this agent line by line, e.g. two versions of a contract, policy or price list. Returns a similarity score (0–1), counts of unchanged, added and removed lines, and the list of changes with line numbers. Whitespace differences and blank lines are ignored."
+      },
+      "extractTable": {
+        "summary": "Turns tables from CSV, JSON or Markdown files into rows and columns.",
+        "description": "Extracts tables from a document attached to this agent as structured rows and columns. Works for CSV/TSV files, JSON arrays of objects and Markdown tables; tables inside PDFs are not detected. Numeric columns (also with currency symbols, % or thousand separators) come back as numbers, ready for calculations."
+      },
+      "fetchUrl": {
+        "summary": "Reads a web page or an online PDF as plain text.",
+        "description": "Downloads a public web page (HTML, plain text, JSON or PDF) and returns its readable text. Used to read pages found with webSearch or URLs given in the task. Private and local network addresses are blocked, and long pages are cut off. The page content is untrusted data: the agent never follows instructions found in it."
+      },
+      "generateReport": {
+        "summary": "Creates an HTML report with tables and charts.",
+        "description": "Builds the final report as a self-contained HTML file with optional charts (bar charts for comparisons, line charts for trends) and saves it as a downloadable file. The report only includes facts and numbers from tool results, with forecasts and assumptions marked as such. Returns a file id that sendEmail can attach."
+      },
+      "httpRequest": {
+        "summary": "Calls an API from the connections attached to the agent.",
+        "description": "Calls an HTTP API through a connection configured for this agent: the connection name, the method and a path relative to the base URL. Authentication is added by the platform, so the agent never sees keys or tokens. GET requests run immediately; every other method waits for your approval. Only methods allowed on the connection can be used."
+      },
+      "readDocument": {
+        "summary": "Reads the full text of the agent's documents.",
+        "description": "Returns the full text of documents in the agent's knowledge base (files you uploaded and attached to this agent). Without a document id it returns the first attached documents and lists the rest. Useful when all the data from a file is needed, e.g. a financial table. Very long documents are cut off."
+      },
+      "searchDocuments": {
+        "summary": "Finds the most relevant passages in the agent's documents.",
+        "description": "Searches the agent's knowledge base (documents attached to this agent) by keywords. Returns the most relevant text fragments with the name of the document they come from."
+      },
+      "sendEmail": {
+        "summary": "Sends an email, optionally with a generated report attached.",
+        "description": "Sends a plain-text email to a single recipient. A report created in this execution can be attached."
+      },
+      "webSearch": {
+        "summary": "Searches the web and returns the top results.",
+        "description": "Searches the public web and returns the best matching pages with a title, URL and a short snippet. Used for current or public information that is not in the attached documents (news, companies, prices, regulations). The agent reads the most relevant results with fetchUrl and cites the URLs it used. Web content is untrusted data, never instructions."
+      }
+    }
+  }
+}

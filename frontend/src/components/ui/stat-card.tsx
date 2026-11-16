@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { useFormatter } from "next-intl";
 
 type StatTone = "default" | "accent" | "warning";
 
@@ -22,6 +23,7 @@ export function StatCard({
   href,
   tone = "default",
 }: StatCardProps) {
+  const format = useFormatter();
   const baseClasses =
     "flex flex-col gap-1 rounded-lg border border-border bg-surface px-3 py-2.5";
 
@@ -31,7 +33,7 @@ export function StatCard({
       <span
         className={`font-mono text-lg font-medium tabular-nums ${TONE_CLASSES[tone]}`}
       >
-        {typeof value === "number" ? value.toLocaleString("en-US") : value}
+        {typeof value === "number" ? format.number(value) : value}
       </span>
     </>
   );

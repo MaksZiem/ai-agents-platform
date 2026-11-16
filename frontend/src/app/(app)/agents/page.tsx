@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SearchX } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { buttonClasses } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { AgentGrid } from "@/features/agents/components/agent-grid";
@@ -13,9 +14,10 @@ import { agentsHref, matchesAgentQuery } from "@/features/agents/search";
 import { apiFetch } from "@/lib/api";
 import type { Agent, AgentActivity, AgentView } from "@/features/agents/types";
 
-export const metadata: Metadata = {
-  title: "Agents",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("agents");
+  return { title: t("title") };
+}
 
 const STATE_ORDER = { working: 0, waiting: 1, idle: 2, new: 3 };
 
@@ -24,9 +26,10 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
   const view: AgentView = viewParam === "list" ? "list" : "grid";
   const query = typeof q === "string" ? q.trim() : "";
 
-  const [agents, activity] = await Promise.all([
+  const [agents, activity, t] = await Promise.all([
     apiFetch<Agent[]>("/agents"),
     apiFetch<AgentActivity[]>("/executions/activity"),
+    getTranslations("agents"),
   ]);
   const activityByAgent = new Map(activity.map((item) => [item.agentId, item]));
   const withActivity = agents
@@ -44,17 +47,17 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
     <div>
       <AgentsLiveUpdates />
       <PageHeader
-        title="Agents"
+        title={t("title")}
         description={
           working > 0
-            ? `${working} of ${agents.length} ${agents.length === 1 ? "agent is" : "agents are"} working right now.`
-            : "Agents you have configured and what they are allowed to do."
+            ? t("workingNow", { working, total: agents.length })
+            : t("lead")
         }
         actions={
           <>
             {agents.length > 0 && <AgentViewToggle active={view} query={query} />}
             <Link href="/agents/new" className={buttonClasses("primary")}>
-              New agent
+              {t("new")}
             </Link>
           </>
         }
@@ -66,9 +69,7 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
             <AgentSearch query={query} view={view} />
             {query && (
               <p className="text-[13px] text-fg-muted" aria-live="polite">
-                <span className="font-mono tabular-nums">{visible.length}</span> of{" "}
-                <span className="font-mono tabular-nums">{agents.length}</span>{" "}
-                {agents.length === 1 ? "agent" : "agents"}
+                {t("matchCount", { visible: visible.length, total: agents.length })}
               </p>
             )}
           </div>
@@ -80,13 +81,11 @@ export default async function AgentsPage({ searchParams }: PageProps<"/agents">)
           <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-6 py-12 text-center">
             <SearchX className="size-6 text-fg-muted" strokeWidth={1.75} aria-hidden />
             <div>
-              <p className="text-sm">No agents match &ldquo;{query}&rdquo;</p>
-              <p className="text-[13px] text-fg-muted">
-                Search looks at agent names, descriptions and models.
-              </p>
+              <p className="text-sm">{t("noMatchTitle", { query })}</p>
+              <p className="text-[13px] text-fg-muted">{t("noMatchHint")}</p>
             </div>
             <Link href={agentsHref({ view })} className={buttonClasses("secondary")}>
-              Clear search
+              {t("clearSearch")}
             </Link>
           </div>
         ) : view === "list" ? (

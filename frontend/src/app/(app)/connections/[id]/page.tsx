@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -13,7 +14,11 @@ export default async function ConnectionPage({
   params,
 }: PageProps<"/connections/[id]">) {
   const { id } = await params;
-  const connection = await getConnection(id);
+  const [connection, t, tCommon] = await Promise.all([
+    getConnection(id),
+    getTranslations("connections"),
+    getTranslations("common"),
+  ]);
 
   return (
     <div>
@@ -23,11 +28,11 @@ export default async function ConnectionPage({
         actions={
           <ConfirmForm
             action={deleteConnection.bind(null, connection.id)}
-            title={`Delete "${connection.name}"?`}
-            message="The connection and its saved secret are removed and every agent loses access to this API. This cannot be undone."
-            confirmLabel="Delete connection"
+            title={t("delete.title", { name: connection.name })}
+            message={t("delete.message")}
+            confirmLabel={t("delete.confirm")}
           >
-            <SubmitButton pendingLabel="Deleting…">Delete</SubmitButton>
+            <SubmitButton pendingLabel={t("delete.pending")}>{t("delete.button")}</SubmitButton>
           </ConfirmForm>
         }
       />
@@ -41,8 +46,8 @@ export default async function ConnectionPage({
           )}
           initialValues={connectionToFormValues(connection)}
           secretStored={connection.hasSecret}
-          submitLabel="Save changes"
-          pendingLabel="Saving…"
+          submitLabel={t("form.saveChanges")}
+          pendingLabel={tCommon("saving")}
         />
       </div>
     </div>

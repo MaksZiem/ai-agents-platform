@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
@@ -9,12 +10,13 @@ import { login, type LoginState } from "./actions";
 const INITIAL_STATE: LoginState = { email: "", errors: {}, formError: null };
 
 export function LoginForm() {
+  const t = useTranslations("auth");
   const [state, formAction, pending] = useActionState(login, INITIAL_STATE);
   const { errors } = state;
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-4">
-      <FormField label="Email" error={errors.email}>
+      <FormField label={t("fields.email")} error={errors.email}>
         <Input
           type="email"
           name="email"
@@ -24,7 +26,7 @@ export function LoginForm() {
         />
       </FormField>
 
-      <FormField label="Password" error={errors.password}>
+      <FormField label={t("fields.password")} error={errors.password}>
         <Input
           type="password"
           name="password"
@@ -43,7 +45,7 @@ export function LoginForm() {
       )}
 
       <Button type="submit" variant="primary" disabled={pending}>
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? t("signIn.pending") : t("signIn.submit")}
       </Button>
     </form>
   );

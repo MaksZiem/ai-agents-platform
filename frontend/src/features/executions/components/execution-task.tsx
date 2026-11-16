@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import type { RunTaskState } from "@/features/executions/actions";
@@ -19,6 +20,7 @@ export function ExecutionTask({
   canRetry,
   retryAction,
 }: ExecutionTaskProps) {
+  const t = useTranslations("executions.task");
   const [retrying, setRetrying] = useState(false);
   const retryIcon = <RotateCcw className="size-4" strokeWidth={1.75} aria-hidden />;
 
@@ -27,12 +29,12 @@ export function ExecutionTask({
       <section className="rounded-xl border border-border bg-surface p-[18px]">
         <div className="mb-6 flex items-center justify-between gap-3">
           <h2 className="text-xs font-medium uppercase tracking-wide text-fg-muted">
-            Task
+            {t("title")}
           </h2>
           {canRetry && !retrying && (
             <Button onClick={() => setRetrying(true)}>
               {retryIcon}
-              Retry execution
+              {t("retry")}
             </Button>
           )}
         </div>
@@ -47,9 +49,9 @@ export function ExecutionTask({
           agentName={agentName}
           disabled={false}
           initialTask={task}
-          title="Retry this execution"
-          description={`Starts a new execution of ${agentName} with the task below and the agent's current configuration. Edit the task first if you want to change it. This execution stays in the history.`}
-          submitLabel="Retry execution"
+          title={t("retryTitle")}
+          description={t("retryLead", { agent: agentName })}
+          submitLabel={t("retry")}
           icon={retryIcon}
           onCancel={() => setRetrying(false)}
           autoFocus

@@ -2,6 +2,7 @@
 
 import { useId, useState, type ReactNode } from "react";
 import { Plus, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 
@@ -15,9 +16,7 @@ type ItemPickerProps = {
   items: PickerItem[];
   action: (formData: FormData) => Promise<void>;
   icon?: ReactNode;
-  openLabel: string;
-  searchLabel: string;
-  noun: { one: string; other: string };
+  kind: "documents" | "connections";
 };
 
 function matches(item: PickerItem, query: string) {
@@ -33,10 +32,12 @@ export function ItemPicker({
   items,
   action,
   icon,
-  openLabel,
-  searchLabel,
-  noun,
+  kind,
 }: ItemPickerProps) {
+  const t = useTranslations("picker");
+  const tCommon = useTranslations("common");
+  const openLabel = t(`${kind}.open`);
+  const searchLabel = t(`${kind}.search`);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -120,9 +121,8 @@ export function ItemPicker({
       <div className="rounded-lg border border-border">
         <div className="flex items-center justify-between border-b border-border px-3 py-1.5 text-xs text-fg-muted">
           <span>
-            <span className="font-mono tabular-nums">{visible.length}</span>{" "}
-            {visible.length === 1 ? noun.one : noun.other}
-            {query && " found"}
+            {t(`${kind}.count`, { count: visible.length })}
+            {query && ` ${t("found")}`}
           </span>
           {visible.length > 1 && (
             <button
@@ -130,14 +130,14 @@ export function ItemPicker({
               onClick={toggleVisible}
               className="font-medium transition-colors hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
             >
-              {allVisibleSelected ? "Clear" : "Select all"}
+              {allVisibleSelected ? t("clear") : t("selectAll")}
             </button>
           )}
         </div>
 
         {visible.length === 0 ? (
           <p className="px-3 py-6 text-center text-[13px] text-fg-muted">
-            Nothing matches &ldquo;{query}&rdquo;.
+            {t("noMatch", { query })}
           </p>
         ) : (
           <ul id={listId} className="max-h-64 overflow-y-auto py-1">
@@ -168,16 +168,14 @@ export function ItemPicker({
 
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={close}>
-          Cancel
+          {tCommon("cancel")}
         </Button>
         <SubmitButton
           variant="primary"
-          pendingLabel="Attaching…"
+          pendingLabel={t("attaching")}
           disabled={count === 0}
         >
-          {count === 0
-            ? "Attach"
-            : `Attach ${count} ${count === 1 ? noun.one : noun.other}`}
+          {t(`${kind}.attach`, { count })}
         </SubmitButton>
       </div>
     </form>

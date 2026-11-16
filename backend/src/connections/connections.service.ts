@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -20,6 +21,7 @@ import {
 } from './entities/connection.entity.js';
 import { buildRequestUrl, RequestUrlError } from './request-url.js';
 import { SecretCipher } from './secret-cipher.js';
+import { errorBody } from '../common/error-body.js';
 
 export interface ConnectionRequest {
   connection: string;
@@ -304,7 +306,12 @@ export class ConnectionsService {
       RESERVED_HEADERS.has(authHeaderName?.toLowerCase() ?? '')
     ) {
       throw new BadRequestException(
-        `${authHeaderName} cannot be used as the authentication header`,
+        errorBody(
+          HttpStatus.BAD_REQUEST,
+          'CONNECTION_HEADER_RESERVED',
+          `${authHeaderName} cannot be used as the authentication header`,
+          { header: authHeaderName ?? '' },
+        ),
       );
     }
 
@@ -318,7 +325,12 @@ export class ConnectionsService {
   private async assertNameFree(name: string, userId: string) {
     if (await this.connectionsRepository.existsBy({ name, userId })) {
       throw new ConflictException(
-        `A connection named "${name}" already exists`,
+        errorBody(
+          HttpStatus.CONFLICT,
+          'CONNECTION_NAME_TAKEN',
+          `A connection named "${name}" already exists`,
+          { name },
+        ),
       );
     }
   }

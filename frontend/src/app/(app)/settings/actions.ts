@@ -1,6 +1,12 @@
 "use server";
 
-import { hasErrors, newPasswordError } from "@/features/auth/validation";
+import { getTranslations } from "next-intl/server";
+import {
+  hasErrors,
+  newPasswordError,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+} from "@/features/auth/validation";
 import { ApiError, apiFetch } from "@/lib/api";
 
 export type ChangePasswordState = {
@@ -17,21 +23,24 @@ export async function changePassword(
   _prevState: ChangePasswordState,
   formData: FormData,
 ): Promise<ChangePasswordState> {
+  const t = await getTranslations();
+  const tPassword = await getTranslations("settings.password.errors");
   const currentPassword = String(formData.get("currentPassword") ?? "");
   const newPassword = String(formData.get("newPassword") ?? "");
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
+  const newPasswordKey = newPasswordError(newPassword);
   const errors = {
-    currentPassword: currentPassword ? undefined : "Enter your current password.",
-    newPassword:
-      newPasswordError(newPassword) ??
-      (newPassword === currentPassword
-        ? "Choose a password different from the current one."
-        : undefined),
+    currentPassword: currentPassword ? undefined : tPassword("currentRequired"),
+    newPassword: newPasswordKey
+      ? t(`auth.errors.${newPasswordKey}`, { min: PASSWORD_MIN, max: PASSWORD_MAX })
+      : newPassword === currentPassword
+        ? tPassword("sameAsCurrent")
+        : undefined,
     confirmPassword: !confirmPassword
-      ? "Repeat the new password."
+      ? tPassword("confirmRequired")
       : confirmPassword !== newPassword
-        ? "The passwords do not match."
+        ? tPassword("mismatch")
         : undefined,
   };
 
@@ -46,7 +55,11 @@ export async function changePassword(
     });
   } catch (error) {
     if (error instanceof ApiError && error.status === 400) {
-      return { errors: {}, formError: error.message, success: false };
+      const formError =
+        error.code === "CURRENT_PASSWORD_INCORRECT"
+          ? tPassword("CURRENT_PASSWORD_INCORRECT")
+          : t("errors.validation");
+      return { errors: {}, formError, success: false };
     }
     throw error;
   }

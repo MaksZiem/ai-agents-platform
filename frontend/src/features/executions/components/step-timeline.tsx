@@ -1,59 +1,55 @@
 import Link from "next/link";
 import { Check, Clock, Loader2, Minus, X, type LucideIcon } from "lucide-react";
-import { getStepTitle } from "@/features/executions/steps";
+import { useTranslations } from "next-intl";
+import { useStepTitle } from "@/features/executions/steps";
 import { LiveDuration } from "@/features/executions/components/live-duration";
 import type { ExecutionStep, StepStatus } from "@/features/executions/types";
 
 const STEP_STATUS_CONFIG: Record<
   StepStatus,
-  { label: string; icon: LucideIcon | null; circle: string; iconClass?: string }
+  { icon: LucideIcon | null; circle: string; iconClass?: string }
 > = {
-  PENDING: { label: "Pending", icon: null, circle: "border-border" },
+  PENDING: { icon: null, circle: "border-border" },
   RUNNING: {
-    label: "Running",
     icon: Loader2,
     circle: "border-accent/40 bg-accent/10 text-accent",
     iconClass: "animate-spin motion-reduce:animate-none",
   },
   WAITING_FOR_APPROVAL: {
-    label: "Waiting for approval",
     icon: Clock,
     circle: "border-warning/40 bg-warning/10 text-warning",
   },
   COMPLETED: {
-    label: "Completed",
     icon: Check,
     circle: "border-success/40 bg-success/10 text-success",
   },
   FAILED: {
-    label: "Failed",
     icon: X,
     circle: "border-danger/40 bg-danger/10 text-danger",
   },
   SKIPPED: {
-    label: "Skipped",
     icon: Minus,
     circle: "border-border text-fg-subtle",
   },
 };
 
-function describeStep(step: ExecutionStep) {
-  switch (step.status) {
-    case "PENDING":
-      return "Pending";
-    case "RUNNING":
-      return "Running…";
-    case "WAITING_FOR_APPROVAL":
-      return "Waiting for approval";
-    case "FAILED":
-      return step.error ?? "Failed";
-    case "SKIPPED":
-      return "Skipped";
-    case "COMPLETED":
-      if (step.type === "PLAN") return "Created execution plan";
-      if (step.type === "FINAL_ANSWER") return "Produced final result";
-      return "Completed";
-  }
+function useDescribeStep() {
+  const t = useTranslations("executions");
+
+  return (step: ExecutionStep) => {
+    switch (step.status) {
+      case "RUNNING":
+        return t("stepDescription.running");
+      case "FAILED":
+        return step.error ?? t("stepStatus.FAILED");
+      case "COMPLETED":
+        if (step.type === "PLAN") return t("stepDescription.planCreated");
+        if (step.type === "FINAL_ANSWER") return t("stepDescription.finalProduced");
+        return t("stepStatus.COMPLETED");
+      default:
+        return t(`stepStatus.${step.status}`);
+    }
+  };
 }
 
 type StepRowProps = {
@@ -63,12 +59,11 @@ type StepRowProps = {
 };
 
 function StepRow({ step, isLast, isSelected }: StepRowProps) {
-  const {
-    label,
-    icon: Icon,
-    circle,
-    iconClass,
-  } = STEP_STATUS_CONFIG[step.status];
+  const t = useTranslations("executions");
+  const stepTitle = useStepTitle();
+  const describeStep = useDescribeStep();
+  const { icon: Icon, circle, iconClass } = STEP_STATUS_CONFIG[step.status];
+  const label = t(`stepStatus.${step.status}`);
   return (
     <li className="relative">
       {!isLast && (
@@ -101,12 +96,12 @@ function StepRow({ step, isLast, isSelected }: StepRowProps) {
 
         <div className="min-w-0">
           <p className="font-mono text-[13px] font-medium">
-            {getStepTitle(step)}
+            {stepTitle(step)}
           </p>
           <p className="text-[13px] text-fg-muted">{describeStep(step)}</p>
           {step.attempt > 1 && (
             <span className="mt-1 inline-block rounded bg-warning/10 px-1.5 text-[11px] text-warning">
-              Attempt {step.attempt}
+              {t("attempt", { attempt: step.attempt })}
             </span>
           )}
         </div>
@@ -129,10 +124,12 @@ type StepTimelineProps = {
 };
 
 export function StepTimeline({ steps, selectedStepId }: StepTimelineProps) {
+  const t = useTranslations("executions");
+
   if (steps.length === 0) {
     return (
       <p className="py-8 text-center text-fg-muted">
-        The agent is preparing a plan…
+        {t("preparing")}
       </p>
     );
   }

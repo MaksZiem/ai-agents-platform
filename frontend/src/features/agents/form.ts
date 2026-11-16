@@ -19,11 +19,22 @@ export type AgentFormValues = {
 
 export type AgentFormField = keyof AgentFormValues;
 
+export type AgentFormErrorKey =
+  | "nameRequired"
+  | "nameTooLong"
+  | "descriptionTooLong"
+  | "modelRequired"
+  | "temperatureRange"
+  | "maxOutputTokensRange"
+  | "instructionsRequired";
+
 export type AgentFormState = {
   values: AgentFormValues;
   errors: Partial<Record<AgentFormField, string>>;
   formError: string | null;
 };
+
+type AgentFormErrors = Partial<Record<AgentFormField, AgentFormErrorKey>>;
 
 export type AgentPayload = Pick<
   Agent,
@@ -57,21 +68,19 @@ export function readAgentForm(formData: FormData): AgentFormValues {
 
 type ValidationResult =
   | { payload: AgentPayload; errors: null }
-  | { payload: null; errors: AgentFormState["errors"] };
+  | { payload: null; errors: AgentFormErrors };
 
 export function validateAgentForm(values: AgentFormValues): ValidationResult {
-  const errors: AgentFormState["errors"] = {};
+  const errors: AgentFormErrors = {};
 
-  if (!values.name) errors.name = "Name is required.";
-  else if (values.name.length > 100)
-    errors.name = "Name must be at most 100 characters.";
+  if (!values.name) errors.name = "nameRequired";
+  else if (values.name.length > 100) errors.name = "nameTooLong";
 
   if (values.description.length > 500) {
-    errors.description = "Description must be at most 500 characters.";
+    errors.description = "descriptionTooLong";
   }
 
-
-  if (!values.model) errors.model = "Choose a model.";
+  if (!values.model) errors.model = "modelRequired";
 
   const temperature = Number(values.temperature);
   if (
@@ -80,7 +89,7 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
     temperature < 0 ||
     temperature > 2
   ) {
-    errors.temperature = "Temperature must be between 0 and 2.";
+    errors.temperature = "temperatureRange";
   }
 
   const maxOutputTokens = Number(values.maxOutputTokens);
@@ -89,10 +98,10 @@ export function validateAgentForm(values: AgentFormValues): ValidationResult {
     maxOutputTokens < 1 ||
     maxOutputTokens > MAX_OUTPUT_TOKENS
   ) {
-    errors.maxOutputTokens = `Use a whole number between 1 and ${MAX_OUTPUT_TOKENS.toLocaleString("en-US")}.`;
+    errors.maxOutputTokens = "maxOutputTokensRange";
   }
 
-  if (!values.instructions) errors.instructions = "Instructions are required.";
+  if (!values.instructions) errors.instructions = "instructionsRequired";
 
   if (Object.keys(errors).length > 0) return { payload: null, errors };
 

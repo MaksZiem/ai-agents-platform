@@ -2,7 +2,9 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
+  MAX_OUTPUT_TOKENS,
   readAgentForm,
   validateAgentForm,
   type AgentFormState,
@@ -19,13 +21,20 @@ async function saveAgent(
   method: "POST" | "PATCH",
   formData: FormData,
 ): Promise<SaveResult> {
+  const t = await getTranslations();
   const values = readAgentForm(formData);
   const result = validateAgentForm(values);
 
   if (!result.payload) {
+    const errors: AgentFormState["errors"] = {};
+    for (const [field, key] of Object.entries(result.errors)) {
+      errors[field as keyof typeof result.errors] = t(`agents.form.errors.${key}`, {
+        max: MAX_OUTPUT_TOKENS,
+      });
+    }
     return {
       agent: null,
-      state: { values, errors: result.errors, formError: null },
+      state: { values, errors, formError: null },
     };
   }
 
@@ -40,9 +49,7 @@ async function saveAgent(
           values,
           errors: {},
           formError:
-            error.status === 400
-              ? error.message
-              : "Could not save the agent. Try again.",
+            error.status === 400 ? t("errors.validation") : t("agents.form.saveFailed"),
         },
       };
     }

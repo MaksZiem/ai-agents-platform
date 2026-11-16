@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SchemaTable } from "@/features/tools/components/schema-table";
-import { alwaysPausesLabel, permissionLabel } from "@/features/tools/labels";
+import { useToolLabels } from "@/features/tools/labels";
 import { getSchemaFields } from "@/features/tools/schema";
 import type { Tool } from "@/features/tools/types";
 
@@ -12,6 +13,8 @@ const CHIP_CLASSES =
   "rounded border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px]";
 
 export function ToolCard({ tool }: ToolCardProps) {
+  const t = useTranslations("tools.card");
+  const labels = useToolLabels();
   const inputFields = getSchemaFields(tool.inputSchema);
 
   return (
@@ -24,43 +27,43 @@ export function ToolCard({ tool }: ToolCardProps) {
           <h3 className="font-mono text-sm font-semibold">{tool.name}</h3>
           {tool.requiresApproval && (
             <span className="rounded border border-warning/30 bg-warning/10 px-1.5 py-0.5 text-[11px] text-warning">
-              {alwaysPausesLabel(tool.name)}
+              {labels.alwaysPauses(tool.name)}
             </span>
           )}
         </div>
-        <p className="text-sm">{tool.summary}</p>
+        <p className="text-sm">{labels.summary(tool)}</p>
       </div>
 
       <p className="px-[18px] pt-2 pb-4 text-[13px] leading-relaxed text-fg-muted">
-        {tool.description}
+        {labels.description(tool)}
       </p>
 
       <dl className="mt-auto grid grid-cols-[84px_1fr] items-baseline gap-x-3 gap-y-2.5 border-t border-border px-[18px] py-3 text-[13px]">
-        <dt className="text-xs font-medium text-fg-muted">Permission</dt>
+        <dt className="text-xs font-medium text-fg-muted">{t("permission")}</dt>
         <dd>
           {tool.permission ? (
             <span className={CHIP_CLASSES}>
               {tool.permission.resource}:{tool.permission.action}
             </span>
           ) : (
-            <span className="text-fg-muted">None needed</span>
+            <span className="text-fg-muted">{t("noneNeeded")}</span>
           )}
           {tool.permission && (
             <span className="ml-2 text-xs text-fg-muted">
-              {permissionLabel(tool.permission)}
+              {labels.permission(tool.permission)}
             </span>
           )}
         </dd>
 
-        <dt className="text-xs font-medium text-fg-muted">Approval</dt>
+        <dt className="text-xs font-medium text-fg-muted">{t("approval")}</dt>
         <dd className="text-fg-muted">
-          {tool.requiresApproval ? "Always, for every call" : "Optional, set per agent"}
+          {tool.requiresApproval ? t("approvalAlways") : t("approvalOptional")}
         </dd>
 
-        <dt className="text-xs font-medium text-fg-muted">Input</dt>
+        <dt className="text-xs font-medium text-fg-muted">{t("input")}</dt>
         <dd className="flex flex-wrap gap-1">
           {inputFields.length === 0 ? (
-            <span className="text-fg-muted">No fields</span>
+            <span className="text-fg-muted">{t("noFields")}</span>
           ) : (
             inputFields.map((field) => (
               <span key={field.name} className={CHIP_CLASSES} title={field.type}>
@@ -81,7 +84,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             strokeWidth={2}
             aria-hidden
           />
-          Output fields
+          {t("outputFields")}
         </summary>
         <div className="mt-3">
           <SchemaTable schema={tool.outputSchema} />

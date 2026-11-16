@@ -3,29 +3,49 @@ import { getAccessToken } from "@/lib/session";
 
 const API_URL = process.env.API_URL ?? "http://localhost:3001/api";
 
+export type ApiErrorParams = Record<string, string | number>;
+
 export class ApiError extends Error {
   status: number;
+  code: string | null;
+  params: ApiErrorParams;
 
-  constructor(status: number, message: string) {
+  constructor(
+    status: number,
+    message: string,
+    code: string | null = null,
+    params: ApiErrorParams = {},
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.code = code;
+    this.params = params;
   }
 }
 
-async function readErrorMessage(response: Response) {
+async function readError(response: Response) {
   const fallback = response.statusText || "Request failed";
 
   try {
     const body: unknown = await response.json();
-    if (typeof body !== "object" || body === null || !("message" in body)) {
-      return fallback;
+    if (typeof body !== "object" || body === null) {
+      return new ApiError(response.status, fallback);
     }
-    const { message } = body;
-    if (Array.isArray(message)) return message.join(", ");
-    return typeof message === "string" ? message : fallback;
+    const { message, code, params } = body as Record<string, unknown>;
+    const text = Array.isArray(message)
+      ? message.join(", ")
+      : typeof message === "string"
+        ? message
+        : fallback;
+    return new ApiError(
+      response.status,
+      text,
+      typeof code === "string" ? code : null,
+      typeof params === "object" && params !== null ? (params as ApiErrorParams) : {},
+    );
   } catch {
-    return fallback;
+    return new ApiError(response.status, fallback);
   }
 }
 
@@ -60,7 +80,7 @@ export async function apiFetch<T>(
   if (auth && response.status === 401) redirect("/login");
 
   if (!response.ok) {
-    throw new ApiError(response.status, await readErrorMessage(response));
+    throw await readError(response);
   }
 
   if (response.status === 204) return undefined as T;

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, ILike, In, Repository } from 'typeorm';
@@ -18,6 +19,7 @@ import {
   searchTerms,
 } from './knowledge-search.js';
 import { extractDocumentText } from './text-extraction.js';
+import { errorBody } from '../common/error-body.js';
 
 // Upper bound of candidate chunks loaded for ranking in a single search.
 const MAX_SEARCH_CANDIDATES = 200;
@@ -59,7 +61,13 @@ export class KnowledgeService {
     const chunks = chunkText(text);
 
     if (chunks.length === 0) {
-      throw new BadRequestException('The file contains no text');
+      throw new BadRequestException(
+        errorBody(
+          HttpStatus.BAD_REQUEST,
+          'FILE_NO_TEXT',
+          'The file contains no text',
+        ),
+      );
     }
 
     return this.dataSource.transaction(async (manager) => {

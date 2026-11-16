@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import {
   ArrowUpRight,
   Calculator,
@@ -20,7 +21,7 @@ import {
   type ReportArtifact,
 } from "@/features/executions/result";
 import { isActiveStatus } from "@/features/executions/labels";
-import { formatBytes, formatExecutionDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { ExecutionDetail } from "@/features/executions/types";
 
 const ICON_CLASSES = "size-4 shrink-0 text-fg-muted";
@@ -51,6 +52,8 @@ function Block({
 }
 
 function ReportCard({ report }: { report: ReportArtifact }) {
+  const t = useTranslations("executions.result");
+  const format = useFormat();
   const previewHref = `/api/files/${report.fileId}/preview`;
 
   return (
@@ -59,9 +62,8 @@ function ReportCard({ report }: { report: ReportArtifact }) {
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{report.title || report.fileName}</p>
           <p className="truncate font-mono text-xs text-fg-muted">
-            {report.fileName} · {formatBytes(report.sizeBytes)}
-            {report.chartCount > 0 &&
-              ` · ${report.chartCount} ${report.chartCount === 1 ? "chart" : "charts"}`}
+            {report.fileName} · {format.bytes(report.sizeBytes)}
+            {report.chartCount > 0 && ` · ${t("charts", { count: report.chartCount })}`}
           </p>
         </div>
         <div className="flex gap-2">
@@ -72,17 +74,17 @@ function ReportCard({ report }: { report: ReportArtifact }) {
             className={buttonClasses("ghost")}
           >
             <ArrowUpRight className="size-4" strokeWidth={1.75} aria-hidden />
-            Open
+            {t("open")}
           </a>
           <a href={`/api/files/${report.fileId}/download`} className={buttonClasses("secondary")}>
             <Download className="size-4" strokeWidth={1.75} aria-hidden />
-            Download
+            {t("download")}
           </a>
         </div>
       </div>
       <iframe
         src={previewHref}
-        title={`Preview of ${report.title || report.fileName}`}
+        title={t("preview", { name: report.title || report.fileName })}
         sandbox=""
         loading="lazy"
         className="block h-[480px] w-full border-t border-border bg-white"
@@ -91,11 +93,9 @@ function ReportCard({ report }: { report: ReportArtifact }) {
   );
 }
 
-function formatNumber(value: number) {
-  return value.toLocaleString("en-US", { maximumFractionDigits: 6 });
-}
-
 export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
+  const t = useTranslations("executions.result");
+  const format = useFormat();
   const artifacts = extractArtifacts(execution.steps);
   const answer = execution.result?.trim() ?? "";
   const active = isActiveStatus(execution.status);
@@ -107,11 +107,11 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
     >
       <div className="flex items-center justify-between gap-3 px-[18px] pt-[18px] pb-3">
         <h2 id="result-title" className="text-base font-semibold">
-          Result
+          {t("title")}
         </h2>
         {execution.status === "COMPLETED" && execution.finishedAt && (
           <span className="font-mono text-xs text-fg-muted">
-            {formatExecutionDate(execution.finishedAt)}
+            {format.executionDate(execution.finishedAt)}
           </span>
         )}
       </div>
@@ -121,14 +121,12 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           <Markdown>{answer}</Markdown>
         ) : active ? (
           <p className="flex items-center gap-2 text-[13px] text-fg-muted">
-            The answer appears here when the agent finishes
+            {t("pending")}
             <ThinkingDots />
           </p>
         ) : (
           <p className="text-[13px] text-fg-muted">
-            {execution.status === "CANCELLED"
-              ? "The execution was cancelled before the agent answered."
-              : "The agent did not produce an answer."}
+            {execution.status === "CANCELLED" ? t("cancelled") : t("noAnswer")}
           </p>
         )}
       </div>
@@ -138,7 +136,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           {artifacts.reports.length > 0 && (
             <Block
               icon={<FileChartColumn className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />}
-              title="Reports"
+              title={t("reports")}
               count={artifacts.reports.length}
             >
               <div className="flex flex-col gap-3">
@@ -152,7 +150,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           {artifacts.emails.length > 0 && (
             <Block
               icon={<Mail className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />}
-              title="Emails sent"
+              title={t("emails")}
               count={artifacts.emails.length}
             >
               <ul className="flex flex-col gap-2">
@@ -164,7 +162,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
                     <Send className="mt-0.5 size-4 shrink-0 text-success" strokeWidth={1.75} aria-hidden />
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px]">
-                        Sent to <span className="font-mono">{email.to}</span>
+                        {t("sentTo", { to: email.to })}
                       </p>
                       <p className="truncate text-[13px] text-fg-muted">{email.subject}</p>
                       {email.attachment && (
@@ -176,7 +174,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
                     </div>
                     {email.sentAt && (
                       <span className="shrink-0 font-mono text-xs text-fg-muted">
-                        {formatExecutionDate(email.sentAt)}
+                        {format.executionDate(email.sentAt)}
                       </span>
                     )}
                   </li>
@@ -188,15 +186,15 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           {artifacts.calculations.length > 0 && (
             <Block
               icon={<Calculator className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />}
-              title="Calculations"
+              title={t("calculations")}
             >
               <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-[13px]">
                   <thead className="sr-only">
                     <tr>
-                      <th>Name</th>
-                      <th>Formula</th>
-                      <th>Value</th>
+                      <th>{t("name")}</th>
+                      <th>{t("formula")}</th>
+                      <th>{t("value")}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -210,7 +208,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
                           {calculation.expression}
                         </td>
                         <td className="px-3 py-2 text-right font-mono font-medium tabular-nums">
-                          {formatNumber(calculation.value)}
+                          {format.number(calculation.value, { maximumFractionDigits: 6 })}
                         </td>
                       </tr>
                     ))}
@@ -225,7 +223,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
               icon={
                 <MessageCircleQuestionMark className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />
               }
-              title="Your answers"
+              title={t("answers")}
             >
               <dl className="flex flex-col gap-2 text-[13px]">
                 {artifacts.answers.map((item, index) => (
@@ -241,7 +239,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           {artifacts.apiWrites.length > 0 && (
             <Block
               icon={<Plug className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />}
-              title="Changes made through APIs"
+              title={t("apiWrites")}
             >
               <ul className="flex flex-col gap-1.5">
                 {artifacts.apiWrites.map((write, index) => (
@@ -268,7 +266,7 @@ export function ExecutionResult({ execution }: { execution: ExecutionDetail }) {
           {artifacts.sources.length > 0 && (
             <Block
               icon={<Globe className={ICON_CLASSES} strokeWidth={1.75} aria-hidden />}
-              title="Sources"
+              title={t("sources")}
               count={artifacts.sources.length}
             >
               <ul className="flex flex-col gap-1">

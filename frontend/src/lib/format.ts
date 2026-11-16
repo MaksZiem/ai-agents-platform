@@ -1,33 +1,7 @@
-const TIME_FORMAT: Intl.DateTimeFormatOptions = {
-  hour: "2-digit",
-  minute: "2-digit",
-};
+import { useFormatter, useTranslations, type NumberFormatOptions } from "next-intl";
 
-export function formatExecutionDate(iso: string, now = new Date()) {
-  const date = new Date(iso);
-  const time = date.toLocaleTimeString("en-GB", TIME_FORMAT);
-
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
-
-  const startOfYesterday = new Date(startOfToday);
-  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-
-  if (date >= startOfToday) return `Today ${time}`;
-  if (date >= startOfYesterday) return `Yesterday ${time}`;
-
-  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-}
-
-export function formatDuration(ms: number) {
-  if (ms < 1000) return `${ms}ms`;
-
-  const seconds = ms / 1000;
-  if (seconds < 60) return `${seconds.toFixed(1)}s`;
-
-  const minutes = Math.floor(seconds / 60);
-  return `${minutes}m ${Math.round(seconds % 60)}s`;
-}
+type Formatter = ReturnType<typeof useFormatter>;
+type FormatMessages = ReturnType<typeof useTranslations<"format">>;
 
 type TimeRange = {
   startedAt: string | null;
@@ -46,16 +20,62 @@ export function formatValue(value: unknown) {
   return String(value);
 }
 
-export function formatShortDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+export function createFormat(format: Formatter, t: FormatMessages) {
+  function number(value: number, options?: NumberFormatOptions) {
+    return format.number(value, options);
+  }
+
+  function executionDate(iso: string, now = new Date()) {
+    const date = new Date(iso);
+    const time = format.dateTime(date, { hour: "2-digit", minute: "2-digit" });
+
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+
+    if (date >= startOfToday) return t("today", { time });
+    if (date >= startOfYesterday) return t("yesterday", { time });
+
+    return format.dateTime(date, { day: "numeric", month: "short" });
+  }
+
+  function shortDate(iso: string) {
+    return format.dateTime(new Date(iso), { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function duration(ms: number) {
+    if (ms < 1000) return t("milliseconds", { value: ms });
+
+    const seconds = ms / 1000;
+    if (seconds < 60) {
+      return t("seconds", { value: number(seconds, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
+    }
+
+    return t("minutes", { minutes: Math.floor(seconds / 60), seconds: Math.round(seconds % 60) });
+  }
+
+  function bytes(value: number) {
+    const oneDecimal = { minimumFractionDigits: 1, maximumFractionDigits: 1 };
+    if (value < 1024) return t("bytes", { value });
+    if (value < 1024 * 1024) return t("kilobytes", { value: number(value / 1024, oneDecimal) });
+    return t("megabytes", { value: number(value / (1024 * 1024), oneDecimal) });
+  }
+
+  function weekday(date: Date) {
+    return format.dateTime(date, { weekday: "short", month: "short", day: "numeric" });
+  }
+
+  function compact(value: number) {
+    return number(value, { notation: "compact", maximumFractionDigits: 1 });
+  }
+
+  return { number, executionDate, shortDate, weekday, duration, bytes, compact };
 }
 
-export function formatBytes(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+export type Format = ReturnType<typeof createFormat>;
+
+export function useFormat(): Format {
+  return createFormat(useFormatter(), useTranslations("format"));
 }

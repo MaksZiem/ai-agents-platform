@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CircleX, MessageCircleQuestionMark, ShieldAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import {
@@ -9,7 +10,7 @@ import {
   rejectApproval,
 } from "@/features/approvals/actions";
 import { ASK_USER_TOOL } from "@/features/tools/types";
-import { formatExecutionDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { ApprovalWithExecution } from "@/features/approvals/types";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
@@ -49,6 +50,8 @@ function RowText({
 }
 
 function ApprovalRow({ approval }: { approval: ApprovalWithExecution }) {
+  const t = useTranslations("dashboard.attention");
+  const tCard = useTranslations("approvals.card");
   const { execution } = approval;
   const href = `/executions/${execution.id}`;
   const meta = `${execution.agent.name} · ${execution.task}`;
@@ -61,20 +64,20 @@ function ApprovalRow({ approval }: { approval: ApprovalWithExecution }) {
         <MessageCircleQuestionMark
           className={`${ICON_CLASSES} text-accent`}
           strokeWidth={1.75}
-          aria-label="Question"
+          aria-label={t("question")}
         />
-        <RowText href={href} title={question || "The agent has a question"} meta={meta} />
+        <RowText href={href} title={question || t("hasQuestion")} meta={meta} />
         <div className="col-span-2 flex flex-wrap justify-end gap-2 md:col-span-1">
           {options.slice(0, MAX_OPTIONS).map((option) => (
             <form key={option} action={answerQuestion.bind(null, approval.id)}>
               <input type="hidden" name="answer" value={option} />
-              <SubmitButton pendingLabel="Sending…" className="max-w-[160px]">
+              <SubmitButton pendingLabel={t("sending")} className="max-w-[160px]">
                 <span className="truncate">{option}</span>
               </SubmitButton>
             </form>
           ))}
           <Link href={href} className={buttonClasses("ghost")}>
-            Answer
+            {t("answer")}
           </Link>
         </div>
       </li>
@@ -86,13 +89,16 @@ function ApprovalRow({ approval }: { approval: ApprovalWithExecution }) {
       <ShieldAlert
         className={`${ICON_CLASSES} text-warning`}
         strokeWidth={1.75}
-        aria-label="Approval required"
+        aria-label={t("approvalRequired")}
       />
       <RowText
         href={href}
         title={
           <>
-            Run <span className="font-mono">{approval.toolName}</span>
+            {t.rich("run", {
+              tool: approval.toolName,
+              code: (chunks) => <span className="font-mono">{chunks}</span>,
+            })}
             {approval.reason ? ` · ${approval.reason}` : ""}
           </>
         }
@@ -100,11 +106,11 @@ function ApprovalRow({ approval }: { approval: ApprovalWithExecution }) {
       />
       <div className="col-span-2 flex justify-end gap-2 md:col-span-1">
         <form action={rejectApproval.bind(null, approval.id)}>
-          <SubmitButton pendingLabel="Rejecting…">Reject</SubmitButton>
+          <SubmitButton pendingLabel={tCard("rejecting")}>{tCard("reject")}</SubmitButton>
         </form>
         <form action={approveApproval.bind(null, approval.id)}>
-          <SubmitButton variant="primary" pendingLabel="Approving…">
-            Approve
+          <SubmitButton variant="primary" pendingLabel={tCard("approving")}>
+            {tCard("approve")}
           </SubmitButton>
         </form>
       </div>
@@ -113,6 +119,8 @@ function ApprovalRow({ approval }: { approval: ApprovalWithExecution }) {
 }
 
 function FailureRow({ execution }: { execution: ExecutionWithAgent }) {
+  const t = useTranslations("dashboard.attention");
+  const format = useFormat();
   const href = `/executions/${execution.id}`;
 
   return (
@@ -120,18 +128,18 @@ function FailureRow({ execution }: { execution: ExecutionWithAgent }) {
       <CircleX
         className={`${ICON_CLASSES} text-danger`}
         strokeWidth={1.75}
-        aria-label="Failed"
+        aria-label={t("failed")}
       />
       <RowText
         href={href}
         title={`${execution.agent.name} · ${execution.task}`}
-        meta={`Failed ${formatExecutionDate(execution.finishedAt ?? execution.createdAt)}${
-          execution.error ? ` · ${execution.error}` : ""
-        }`}
+        meta={`${t("failedAt", {
+          date: format.executionDate(execution.finishedAt ?? execution.createdAt),
+        })}${execution.error ? ` · ${execution.error}` : ""}`}
       />
       <div className="col-span-2 flex justify-end gap-2 md:col-span-1">
         <Link href={href} className={buttonClasses("secondary")}>
-          Review &amp; retry
+          {t("review")}
         </Link>
       </div>
     </li>
@@ -139,6 +147,7 @@ function FailureRow({ execution }: { execution: ExecutionWithAgent }) {
 }
 
 export function NeedsAttention({ approvals, failures }: NeedsAttentionProps) {
+  const t = useTranslations("dashboard.attention");
   const count = approvals.length + failures.length;
   if (count === 0) return null;
 
@@ -149,7 +158,7 @@ export function NeedsAttention({ approvals, failures }: NeedsAttentionProps) {
     >
       <div className="flex items-center gap-2 border-b border-border px-[18px] py-3">
         <h2 id="attention-title" className="text-base font-semibold">
-          Needs your attention
+          {t("title")}
         </h2>
         <span className="rounded-full bg-warning/10 px-1.5 font-mono text-[11px] text-warning tabular-nums">
           {count}

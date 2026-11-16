@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { agentsHref } from "@/features/agents/search";
 import type { AgentView } from "@/features/agents/types";
 
@@ -14,6 +15,7 @@ type AgentSearchProps = {
 };
 
 export function AgentSearch({ query, view }: AgentSearchProps) {
+  const t = useTranslations("agents.search");
   const router = useRouter();
   const [value, setValue] = useState(query);
   const [syncedQuery, setSyncedQuery] = useState(query);
@@ -71,8 +73,8 @@ export function AgentSearch({ query, view }: AgentSearchProps) {
           }
           if (event.key === "Enter") navigate(value);
         }}
-        placeholder="Search agents by name, description or model…"
-        aria-label="Search agents"
+        placeholder={t("placeholder")}
+        aria-label={t("label")}
         className={`h-[34px] w-full rounded-md border border-border-strong bg-bg pr-8 pl-8 text-sm placeholder:text-fg-subtle focus:border-accent focus:ring-2 focus:ring-accent/25 focus:outline-none [&::-webkit-search-cancel-button]:hidden ${
           pending ? "opacity-70" : ""
         }`}
@@ -81,7 +83,7 @@ export function AgentSearch({ query, view }: AgentSearchProps) {
         <button
           type="button"
           onClick={clear}
-          aria-label="Clear search"
+          aria-label={t("clear")}
           className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded text-fg-muted transition-colors hover:bg-surface-hover hover:text-fg focus-visible:outline-2 focus-visible:outline-accent"
         >
           <X className="size-3.5" strokeWidth={2} aria-hidden />

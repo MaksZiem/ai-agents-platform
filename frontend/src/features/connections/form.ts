@@ -6,12 +6,6 @@ import {
   type HttpMethod,
 } from "@/features/connections/types";
 
-export const AUTH_TYPE_LABELS: Record<AuthType, string> = {
-  none: "No authentication",
-  bearer: "Bearer token",
-  header: "API key header",
-};
-
 export type ConnectionFormValues = {
   name: string;
   description: string;
@@ -23,6 +17,17 @@ export type ConnectionFormValues = {
 };
 
 export type ConnectionFormField = keyof ConnectionFormValues;
+
+export type ConnectionFormErrorKey =
+  | "name"
+  | "descriptionTooLong"
+  | "urlProtocol"
+  | "urlInvalid"
+  | "headerName"
+  | "secretRequired"
+  | "methodsRequired";
+
+type ConnectionFormErrors = Partial<Record<ConnectionFormField, ConnectionFormErrorKey>>;
 
 export type ConnectionFormState = {
   values: ConnectionFormValues;
@@ -79,45 +84,44 @@ export function readConnectionForm(formData: FormData): ConnectionFormValues {
 
 type ValidationResult =
   | { payload: ConnectionPayload; errors: null }
-  | { payload: null; errors: ConnectionFormState["errors"] };
+  | { payload: null; errors: ConnectionFormErrors };
 
 export function validateConnectionForm(
   values: ConnectionFormValues,
   { secretStored }: { secretStored: boolean },
 ): ValidationResult {
-  const errors: ConnectionFormState["errors"] = {};
+  const errors: ConnectionFormErrors = {};
 
   if (!/^[a-z][a-z0-9_-]{0,63}$/.test(values.name)) {
-    errors.name =
-      "Start with a letter; use lowercase letters, digits, - or _ (max 64).";
+    errors.name = "name";
   }
 
   if (values.description.length > 500) {
-    errors.description = "Description must be at most 500 characters.";
+    errors.description = "descriptionTooLong";
   }
 
   try {
     const url = new URL(values.baseUrl);
     if (url.protocol !== "http:" && url.protocol !== "https:") {
-      errors.baseUrl = "Use an http:// or https:// URL.";
+      errors.baseUrl = "urlProtocol";
     }
   } catch {
-    errors.baseUrl = "Enter a full URL, e.g. https://api.example.com/v1.";
+    errors.baseUrl = "urlInvalid";
   }
 
   if (
     values.authType === "header" &&
     !/^[A-Za-z0-9-]{1,100}$/.test(values.authHeaderName)
   ) {
-    errors.authHeaderName = "Enter a header name, e.g. X-API-Key.";
+    errors.authHeaderName = "headerName";
   }
 
   if (values.authType !== "none" && !values.secret && !secretStored) {
-    errors.secret = "Enter the token or key.";
+    errors.secret = "secretRequired";
   }
 
   if (values.allowedMethods.length === 0) {
-    errors.allowedMethods = "Allow at least one method.";
+    errors.allowedMethods = "methodsRequired";
   }
 
   if (Object.keys(errors).length > 0) return { payload: null, errors };

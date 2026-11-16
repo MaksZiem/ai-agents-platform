@@ -3,16 +3,26 @@ export const PASSWORD_MAX = 128;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function emailError(email: string): string | undefined {
-  if (!email) return "Enter your email.";
-  if (!EMAIL_PATTERN.test(email)) return "Enter a valid email, e.g. name@company.com.";
+export type AuthErrorKey =
+  | "nameRequired"
+  | "nameTooLong"
+  | "emailRequired"
+  | "emailInvalid"
+  | "passwordRequired"
+  | "passwordLength"
+  | "invalidCredentials"
+  | "emailTaken";
+
+export function emailError(email: string): AuthErrorKey | undefined {
+  if (!email) return "emailRequired";
+  if (!EMAIL_PATTERN.test(email)) return "emailInvalid";
   return undefined;
 }
 
-export function newPasswordError(password: string): string | undefined {
-  if (!password) return "Enter a password.";
+export function newPasswordError(password: string): AuthErrorKey | undefined {
+  if (!password) return "passwordRequired";
   if (password.length < PASSWORD_MIN || password.length > PASSWORD_MAX) {
-    return `Use ${PASSWORD_MIN} to ${PASSWORD_MAX} characters.`;
+    return "passwordLength";
   }
   return undefined;
 }

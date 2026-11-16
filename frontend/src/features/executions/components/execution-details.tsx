@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AgentAvatar } from "@/features/agents/components/agent-avatar";
-import { formatShortDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
 type ExecutionDetailsProps = {
@@ -8,11 +9,14 @@ type ExecutionDetailsProps = {
 };
 
 export function ExecutionDetails({ execution }: ExecutionDetailsProps) {
+  const t = useTranslations("executions.details");
+  const format = useFormat();
+
   return (
     <section className="rounded-xl border border-border bg-surface p-[18px]">
-      <h2 className="mb-3 text-base font-semibold">Details</h2>
+      <h2 className="mb-3 text-base font-semibold">{t("title")}</h2>
       <dl className="grid grid-cols-[96px_1fr] items-center gap-x-3 gap-y-2 text-[13px]">
-        <dt className="text-fg-muted">Agent</dt>
+        <dt className="text-fg-muted">{t("agent")}</dt>
         <dd className="min-w-0">
           <Link
             href={`/agents/${execution.agent.id}`}
@@ -22,12 +26,12 @@ export function ExecutionDetails({ execution }: ExecutionDetailsProps) {
             <span className="truncate">{execution.agent.name}</span>
           </Link>
         </dd>
-        <dt className="text-fg-muted">Provider</dt>
+        <dt className="text-fg-muted">{t("provider")}</dt>
         <dd>Google Gemini</dd>
-        <dt className="text-fg-muted">Model</dt>
+        <dt className="text-fg-muted">{t("model")}</dt>
         <dd className="font-mono">{execution.model ?? "—"}</dd>
-        <dt className="text-fg-muted">Created</dt>
-        <dd className="font-mono">{formatShortDate(execution.createdAt)}</dd>
+        <dt className="text-fg-muted">{t("created")}</dt>
+        <dd className="font-mono">{format.shortDate(execution.createdAt)}</dd>
       </dl>
     </section>
   );

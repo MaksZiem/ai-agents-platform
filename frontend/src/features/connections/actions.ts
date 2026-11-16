@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   readConnectionForm,
   validateConnectionForm,
@@ -16,12 +17,17 @@ async function saveConnection(
   formData: FormData,
   secretStored: boolean,
 ): Promise<ConnectionFormState | null> {
+  const t = await getTranslations();
   const values = readConnectionForm(formData);
   const result = validateConnectionForm(values, { secretStored });
   const safeValues = { ...values, secret: "" };
 
   if (!result.payload) {
-    return { values: safeValues, errors: result.errors, formError: null };
+    const errors: ConnectionFormState["errors"] = {};
+    for (const [field, key] of Object.entries(result.errors)) {
+      errors[field as keyof typeof result.errors] = t(`connections.form.errors.${key}`);
+    }
+    return { values: safeValues, errors, formError: null };
   }
 
   try {
@@ -33,9 +39,14 @@ async function saveConnection(
         values: safeValues,
         errors: {},
         formError:
-          error.status === 400 || error.status === 409
-            ? error.message
-            : "Could not save the connection. Try again.",
+          error.code === "CONNECTION_NAME_TAKEN" || error.code === "CONNECTION_HEADER_RESERVED"
+            ? t(`connections.form.errors.${error.code}`, {
+                name: String(error.params.name ?? values.name),
+                header: String(error.params.header ?? values.authHeaderName),
+              })
+            : error.status === 400
+              ? t("errors.validation")
+              : t("connections.form.saveFailed"),
       };
     }
     throw error;

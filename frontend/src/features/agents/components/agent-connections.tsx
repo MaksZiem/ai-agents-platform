@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plug } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ItemPicker } from "@/components/ui/item-picker";
 import { SubmitButton } from "@/components/ui/submit-button";
 import {
@@ -22,6 +23,7 @@ export function AgentConnections({
   attached,
   library,
 }: AgentConnectionsProps) {
+  const t = useTranslations("agentConnections");
   const attachedIds = new Set(attached.map((connection) => connection.id));
   const available = library.filter(
     (connection) => !attachedIds.has(connection.id),
@@ -30,16 +32,13 @@ export function AgentConnections({
   return (
     <section className="rounded-xl border border-border bg-surface">
       <div className="border-b border-border px-[18px] py-3">
-        <h2 className="text-base font-semibold">Connections</h2>
-        <p className="text-[13px] text-fg-muted">
-          APIs this agent can call with the httpRequest tool. Remove only
-          detaches the connection from this agent.
-        </p>
+        <h2 className="text-base font-semibold">{t("title")}</h2>
+        <p className="text-[13px] text-fg-muted">{t("lead")}</p>
       </div>
 
       {attached.length === 0 ? (
         <p className="px-[18px] py-4 text-[13px] text-fg-muted">
-          No connections attached.
+          {t("empty")}
         </p>
       ) : (
         <ul className="max-h-[360px] divide-y divide-border overflow-y-auto">
@@ -72,10 +71,10 @@ export function AgentConnections({
               >
                 <SubmitButton
                   variant="ghost"
-                  pendingLabel="Removing…"
-                  title="Detach from this agent. The connection stays available for other agents."
+                  pendingLabel={t("removing")}
+                  title={t("removeHint")}
                 >
-                  Remove
+                  {t("remove")}
                 </SubmitButton>
               </form>
             </li>
@@ -99,25 +98,22 @@ export function AgentConnections({
                 aria-hidden
               />
             }
-            openLabel="Add connections"
-            searchLabel="Search connections by name or URL…"
-            noun={{ one: "connection", other: "connections" }}
+            kind="connections"
           />
         ) : (
           <p className="text-[13px] text-fg-muted">
             {library.length === 0 ? (
               <>
-                No connections yet.{" "}
+                {t("none")}{" "}
                 <Link
                   href="/connections/new"
                   className="text-accent hover:underline"
                 >
-                  Add one
+                  {t("add")}
                 </Link>
-                .
               </>
             ) : (
-              "Every connection is attached."
+              t("allAttached")
             )}
           </p>
         )}

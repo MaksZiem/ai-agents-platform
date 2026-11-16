@@ -1,13 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SubmitSwitch } from "@/components/ui/submit-switch";
 import { disableTool, enableTool } from "@/features/agents/actions";
 import { ToolCategoryIcon } from "@/features/tools/components/tool-category-icon";
-import {
-  alwaysPausesLabel,
-  groupToolsByCategory,
-  permissionLabel,
-} from "@/features/tools/labels";
+import { groupToolsByCategory, useToolLabels } from "@/features/tools/labels";
 import type { AgentTool, ResourcePermissions } from "@/features/agents/types";
 import type { Tool } from "@/features/tools/types";
 
@@ -24,6 +21,8 @@ export function AgentTools({
   enabledTools,
   permissions,
 }: AgentToolsProps) {
+  const t = useTranslations("tools.agent");
+  const labels = useToolLabels();
   const enabledByName = new Map(enabledTools.map((tool) => [tool.toolName, tool]));
   const granted = new Set(
     permissions.flatMap(({ resource, actions }) =>
@@ -38,20 +37,18 @@ export function AgentTools({
     <section className="rounded-xl border border-border bg-surface">
       <div className="flex items-start justify-between gap-4 border-b border-border px-[18px] py-3">
         <div>
-          <h2 className="text-base font-semibold">Tools</h2>
-          <p className="text-[13px] text-fg-muted">
-            The agent can only call the tools you enable here.
-          </p>
+          <h2 className="text-base font-semibold">{t("title")}</h2>
+          <p className="text-[13px] text-fg-muted">{t("lead")}</p>
         </div>
         <div className="flex shrink-0 items-center gap-3 pt-0.5">
           <span className="font-mono text-xs text-fg-muted tabular-nums">
-            {enabledTools.length}/{tools.length} enabled
+            {t("enabledCount", { enabled: enabledTools.length, total: tools.length })}
           </span>
           <Link
             href="/tools"
             className="flex items-center gap-1 text-xs font-medium text-fg-muted transition-colors hover:text-fg"
           >
-            All tools
+            {t("all")}
             <ArrowUpRight className="size-3.5" strokeWidth={1.75} aria-hidden />
           </Link>
         </div>
@@ -62,7 +59,7 @@ export function AgentTools({
           <div key={group.category} className="pb-2">
             <h3 className="flex items-center gap-2 px-[18px] pt-3 pb-1 text-xs font-medium text-fg-muted">
               <ToolCategoryIcon category={group.category} className="size-3.5" />
-              {group.label}
+              {labels.category(group.category)}
             </h3>
 
             <ul>
@@ -87,7 +84,7 @@ export function AgentTools({
                     >
                       <SubmitSwitch
                         checked={Boolean(enabled)}
-                        label={`Enable ${tool.name}`}
+                        label={t("enable", { name: tool.name })}
                       />
                     </form>
 
@@ -100,19 +97,19 @@ export function AgentTools({
                       >
                         {tool.name}
                       </Link>
-                      <p className="truncate text-[13px] text-fg-muted" title={tool.summary}>
-                        {tool.summary}
+                      <p className="truncate text-[13px] text-fg-muted" title={labels.summary(tool)}>
+                        {labels.summary(tool)}
                       </p>
                       {missingPermission && tool.permission && (
                         <p className="mt-0.5 text-xs text-warning">
-                          Needs {permissionLabel(tool.permission)} in Permissions below.
+                          {t("needsPermission", { permission: labels.permission(tool.permission) })}
                         </p>
                       )}
                     </div>
 
                     {tool.requiresApproval ? (
                       <span className="rounded border border-warning/30 bg-warning/10 px-1.5 py-0.5 text-[11px] whitespace-nowrap text-warning">
-                        {alwaysPausesLabel(tool.name)}
+                        {labels.alwaysPauses(tool.name)}
                       </span>
                     ) : enabled ? (
                       <form
@@ -125,11 +122,11 @@ export function AgentTools({
                         className="flex items-center gap-2"
                       >
                         <span className="hidden text-xs text-fg-muted sm:inline">
-                          Approval
+                          {t("approval")}
                         </span>
                         <SubmitSwitch
                           checked={enabled.requiresApproval}
-                          label={`Require approval for ${tool.name}`}
+                          label={t("requireApproval", { name: tool.name })}
                         />
                       </form>
                     ) : (

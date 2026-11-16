@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { Execution } from "@/features/executions/types";
 
@@ -39,11 +40,12 @@ export async function runTask(
   _prevState: RunTaskState,
   formData: FormData,
 ): Promise<RunTaskState> {
+  const t = await getTranslations("executions.run.errors");
   const task = String(formData.get("task") ?? "").trim();
 
-  if (!task) return { error: "Describe what the agent should do.", task };
+  if (!task) return { error: t("empty"), task };
   if (task.length > MAX_TASK_LENGTH) {
-    return { error: `Keep the task under ${MAX_TASK_LENGTH} characters.`, task };
+    return { error: t("tooLong", { max: MAX_TASK_LENGTH }), task };
   }
 
   let execution: Execution;
@@ -55,12 +57,16 @@ export async function runTask(
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;
     if (error.status === 409) {
-      return { error: "This agent is inactive. Activate it to run tasks.", task };
+      return { error: t("agentInactive"), task };
     }
-    if (error.status === 400 || error.status === 429) {
-      return { error: error.message, task };
+    if (
+      error.code === "RATE_LIMIT_STARTS" ||
+      error.code === "RATE_LIMIT_CONCURRENT" ||
+      error.code === "DAILY_TOKEN_LIMIT"
+    ) {
+      return { error: t(error.code, error.params), task };
     }
-    return { error: "Could not start the execution. Try again.", task };
+    return { error: t("failed"), task };
   }
 
   redirect(`/executions/${execution.id}`);

@@ -1,7 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { emailError, hasErrors } from "@/features/auth/validation";
+import { getTranslations } from "next-intl/server";
+import {
+  emailError,
+  hasErrors,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+  type AuthErrorKey,
+} from "@/features/auth/validation";
 import { ApiError, apiFetch } from "@/lib/api";
 import { setAccessToken } from "@/lib/session";
 import type { AuthResponse } from "@/features/auth/types";
@@ -16,12 +23,16 @@ export async function login(
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
+  const t = await getTranslations();
+  const message = (key: AuthErrorKey | undefined) =>
+    key ? t(`auth.errors.${key}`, { min: PASSWORD_MIN, max: PASSWORD_MAX }) : undefined;
+
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
   const errors = {
-    email: emailError(email),
-    password: password ? undefined : "Enter your password.",
+    email: message(emailError(email)),
+    password: message(password ? undefined : "passwordRequired"),
   };
 
   if (hasErrors(errors)) {
@@ -37,13 +48,9 @@ export async function login(
     await setAccessToken(accessToken);
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
-      return { email, errors: {}, formError: "Invalid email or password." };
+      return { email, errors: {}, formError: t("auth.errors.invalidCredentials") };
     }
-    return {
-      email,
-      errors: {},
-      formError: "Could not reach the server. Try again.",
-    };
+    return { email, errors: {}, formError: t("errors.unreachable") };
   }
 
   redirect("/");

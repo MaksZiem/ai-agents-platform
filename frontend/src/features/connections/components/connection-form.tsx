@@ -2,16 +2,13 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { SubmitButton } from "@/components/ui/submit-button";
-import {
-  AUTH_TYPE_LABELS,
-  type ConnectionFormState,
-  type ConnectionFormValues,
-} from "@/features/connections/form";
+import type { ConnectionFormState, ConnectionFormValues } from "@/features/connections/form";
 import { AUTH_TYPES, HTTP_METHODS, type AuthType } from "@/features/connections/types";
 
 type ConnectionFormProps = {
@@ -35,6 +32,8 @@ export function ConnectionForm({
   submitLabel,
   pendingLabel,
 }: ConnectionFormProps) {
+  const t = useTranslations("connections");
+  const tCommon = useTranslations("common");
   const [state, formAction] = useActionState(action, {
     values: initialValues,
     errors: {},
@@ -50,11 +49,11 @@ export function ConnectionForm({
       className="mx-auto flex w-full max-w-[720px] flex-col gap-6"
     >
       <section className={SECTION_CLASSES}>
-        <h2 className="text-base font-semibold">API</h2>
+        <h2 className="text-base font-semibold">{t("form.api")}</h2>
 
         <FormField
-          label="Name"
-          hint="The agent refers to the connection by this name."
+          label={t("form.name")}
+          hint={t("form.nameHint")}
           error={errors.name}
         >
           <Input
@@ -68,22 +67,22 @@ export function ConnectionForm({
         </FormField>
 
         <FormField
-          label="Description"
-          hint="Tell the agent what this API is for and which endpoints are useful."
+          label={t("form.description")}
+          hint={t("form.descriptionHint")}
           error={errors.description}
         >
           <Input
             name="description"
             defaultValue={values.description}
             maxLength={500}
-            placeholder="CRM with customers and deals. GET /deals?status=open lists open deals."
+            placeholder={t("form.descriptionPlaceholder")}
             aria-invalid={Boolean(errors.description)}
           />
         </FormField>
 
         <FormField
-          label="Base URL"
-          hint="Requests can only go to paths under this URL. Private and local addresses are blocked."
+          label={t("form.baseUrl")}
+          hint={t("form.baseUrlHint")}
           error={errors.baseUrl}
         >
           <Input
@@ -100,15 +99,12 @@ export function ConnectionForm({
 
       <section className={SECTION_CLASSES}>
         <div>
-          <h2 className="text-base font-semibold">Authentication</h2>
-          <p className="text-[13px] text-fg-muted">
-            The secret is encrypted and added by the backend. The agent never
-            sees it.
-          </p>
+          <h2 className="text-base font-semibold">{t("form.auth")}</h2>
+          <p className="text-[13px] text-fg-muted">{t("form.authLead")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField label="Type">
+          <FormField label={t("form.type")}>
             <Select
               name="authType"
               value={authType}
@@ -116,14 +112,14 @@ export function ConnectionForm({
             >
               {AUTH_TYPES.map((type) => (
                 <option key={type} value={type}>
-                  {AUTH_TYPE_LABELS[type]}
+                  {t(`authTypes.${type}`)}
                 </option>
               ))}
             </Select>
           </FormField>
 
           {authType === "header" && (
-            <FormField label="Header name" error={errors.authHeaderName}>
+            <FormField label={t("form.headerName")} error={errors.authHeaderName}>
               <Input
                 name="authHeaderName"
                 defaultValue={values.authHeaderName}
@@ -137,12 +133,8 @@ export function ConnectionForm({
 
         {authType !== "none" && (
           <FormField
-            label={authType === "bearer" ? "Token" : "API key"}
-            hint={
-              secretStored
-                ? "A secret is saved. Leave empty to keep it."
-                : undefined
-            }
+            label={authType === "bearer" ? t("form.token") : t("form.apiKey")}
+            hint={secretStored ? t("form.secretStored") : undefined}
             error={errors.secret}
           >
             <Input
@@ -160,16 +152,13 @@ export function ConnectionForm({
 
       <section className={SECTION_CLASSES}>
         <div>
-          <h2 className="text-base font-semibold">Allowed methods</h2>
-          <p className="text-[13px] text-fg-muted">
-            GET runs immediately. POST, PUT, PATCH and DELETE always wait for
-            your approval, and need the Connections · Modify permission.
-          </p>
+          <h2 className="text-base font-semibold">{t("form.methods")}</h2>
+          <p className="text-[13px] text-fg-muted">{t("form.methodsLead")}</p>
         </div>
 
         <div
           role="group"
-          aria-label="Allowed methods"
+          aria-label={t("form.methods")}
           className="flex flex-wrap gap-x-5 gap-y-2"
         >
           {HTTP_METHODS.map((method) => (
@@ -204,7 +193,7 @@ export function ConnectionForm({
 
       <div className="flex justify-end gap-2">
         <Link href="/connections" className={buttonClasses("secondary")}>
-          Cancel
+          {tCommon("cancel")}
         </Link>
         <SubmitButton variant="primary" pendingLabel={pendingLabel}>
           {submitLabel}

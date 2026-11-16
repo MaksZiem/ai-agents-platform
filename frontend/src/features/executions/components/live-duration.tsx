@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { formatDuration } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 
 type LiveDurationProps = {
   startedAt: string | null;
@@ -12,6 +12,7 @@ type LiveDurationProps = {
 const TICK_MS = 100;
 
 export function LiveDuration({ startedAt, finishedAt, running }: LiveDurationProps) {
+  const format = useFormat();
   const [now, setNow] = useState<number | null>(null);
   const ticking = running && startedAt !== null && finishedAt === null;
 
@@ -33,5 +34,5 @@ export function LiveDuration({ startedAt, finishedAt, running }: LiveDurationPro
 
   if (end === null) return <>—</>;
 
-  return <>{formatDuration(Math.max(0, end - start))}</>;
+  return <>{format.duration(Math.max(0, end - start))}</>;
 }

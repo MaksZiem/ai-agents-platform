@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ItemPicker } from "@/components/ui/item-picker";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { uploadedFileHref } from "@/features/files/entries";
-import { formatBytes } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import { attachDocuments, detachDocument } from "@/features/knowledge/actions";
 import type { AgentDocument, KnowledgeDocument } from "@/features/knowledge/types";
 
@@ -18,23 +19,21 @@ export function AgentKnowledge({
   attached,
   library,
 }: AgentKnowledgeProps) {
+  const t = useTranslations("agentKnowledge");
+  const format = useFormat();
   const attachedIds = new Set(attached.map((document) => document.id));
   const available = library.filter((document) => !attachedIds.has(document.id));
 
   return (
     <section className="rounded-xl border border-border bg-surface">
       <div className="border-b border-border px-[18px] py-3">
-        <h2 className="text-base font-semibold">Knowledge</h2>
-        <p className="text-[13px] text-fg-muted">
-          Documents this agent can read with the readDocument and
-          searchDocuments tools. Remove only detaches a document from this
-          agent; it stays in your library for other agents.
-        </p>
+        <h2 className="text-base font-semibold">{t("title")}</h2>
+        <p className="text-[13px] text-fg-muted">{t("lead")}</p>
       </div>
 
       {attached.length === 0 ? (
         <p className="px-[18px] py-4 text-[13px] text-fg-muted">
-          No documents attached.
+          {t("empty")}
         </p>
       ) : (
         <ul className="max-h-[360px] divide-y divide-border overflow-y-auto">
@@ -55,15 +54,15 @@ export function AgentKnowledge({
                 {document.name}
               </Link>
               <span className="font-mono text-xs text-fg-muted">
-                {document.chunkCount} chunks
+                {t("chunks", { count: document.chunkCount })}
               </span>
               <form action={detachDocument.bind(null, agentId, document.id)}>
                 <SubmitButton
                   variant="ghost"
-                  pendingLabel="Removing…"
-                  title="Detach from this agent. The document stays in your library."
+                  pendingLabel={t("removing")}
+                  title={t("removeHint")}
                 >
-                  Remove
+                  {t("remove")}
                 </SubmitButton>
               </form>
             </li>
@@ -77,7 +76,7 @@ export function AgentKnowledge({
             items={available.map((document) => ({
               id: document.id,
               label: document.name,
-              meta: `${formatBytes(document.sizeBytes)} · ${document.chunkCount} chunks`,
+              meta: `${format.bytes(document.sizeBytes)} · ${t("chunks", { count: document.chunkCount })}`,
             }))}
             action={attachDocuments.bind(null, agentId)}
             icon={
@@ -87,22 +86,19 @@ export function AgentKnowledge({
                 aria-hidden
               />
             }
-            openLabel="Add documents"
-            searchLabel="Search your library…"
-            noun={{ one: "document", other: "documents" }}
+            kind="documents"
           />
         ) : (
           <p className="text-[13px] text-fg-muted">
             {library.length === 0 ? (
               <>
-                Your library is empty.{" "}
+                {t("libraryEmpty")}{" "}
                 <Link href="/knowledge" className="text-accent hover:underline">
-                  Upload a document
+                  {t("upload")}
                 </Link>
-                .
               </>
             ) : (
-              "Every document in your library is attached."
+              t("allAttached")
             )}
           </p>
         )}

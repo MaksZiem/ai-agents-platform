@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ export function AgentForm({
   pendingLabel,
   cancelHref,
 }: AgentFormProps) {
+  const t = useTranslations("agents.form");
+  const tCommon = useTranslations("common");
   const [state, formAction] = useActionState(action, {
     values: initialValues,
     errors: {},
@@ -43,24 +46,24 @@ export function AgentForm({
   return (
     <form action={formAction} noValidate className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <section className={SECTION_CLASSES}>
-        <h2 className="text-base font-semibold">Identity</h2>
+        <h2 className="text-base font-semibold">{t("identity")}</h2>
 
-        <FormField label="Name" error={errors.name}>
+        <FormField label={t("name")} error={errors.name}>
           <Input
             name="name"
             defaultValue={values.name}
             maxLength={100}
-            placeholder="Financial Analyst"
+            placeholder={t("namePlaceholder")}
             aria-invalid={Boolean(errors.name)}
           />
         </FormField>
 
-        <FormField label="Description" error={errors.description}>
+        <FormField label={t("description")} error={errors.description}>
           <Input
             name="description"
             defaultValue={values.description}
             maxLength={500}
-            placeholder="Analyzes spending and prepares financial reports"
+            placeholder={t("descriptionPlaceholder")}
             aria-invalid={Boolean(errors.description)}
           />
         </FormField>
@@ -68,12 +71,12 @@ export function AgentForm({
 
       <section className={SECTION_CLASSES}>
         <div>
-          <h2 className="text-base font-semibold">Model</h2>
-          <p className="text-[13px] text-fg-muted">Provider: Google Gemini</p>
+          <h2 className="text-base font-semibold">{t("model")}</h2>
+          <p className="text-[13px] text-fg-muted">{t("provider")}</p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <FormField label="Model" error={errors.model}>
+          <FormField label={t("model")} error={errors.model}>
             <Select
               name="model"
               defaultValue={values.model}
@@ -87,8 +90,8 @@ export function AgentForm({
             </Select>
           </FormField>
           <FormField
-            label="Temperature"
-            hint="0 precise · 2 creative"
+            label={t("temperature")}
+            hint={t("temperatureHint")}
             error={errors.temperature}
           >
             <Input
@@ -101,7 +104,7 @@ export function AgentForm({
               aria-invalid={Boolean(errors.temperature)}
             />
           </FormField>
-          <FormField label="Max output tokens" error={errors.maxOutputTokens}>
+          <FormField label={t("maxOutputTokens")} error={errors.maxOutputTokens}>
             <Input
               type="number"
               name="maxOutputTokens"
@@ -117,20 +120,16 @@ export function AgentForm({
 
       <section className={SECTION_CLASSES}>
         <div>
-          <h2 className="text-base font-semibold">Instructions</h2>
-          <p className="text-[13px] text-fg-muted">
-            The system instruction the agent follows on every task.
-          </p>
+          <h2 className="text-base font-semibold">{t("instructions")}</h2>
+          <p className="text-[13px] text-fg-muted">{t("instructionsLead")}</p>
         </div>
 
-        <FormField label="System instruction" error={errors.instructions}>
+        <FormField label={t("systemInstruction")} error={errors.instructions}>
           <Textarea
             name="instructions"
             defaultValue={values.instructions}
             rows={14}
-            placeholder={
-              "You are a financial analyst.\n\nAnalyze financial data carefully.\nNever invent financial information."
-            }
+            placeholder={t("instructionsPlaceholder")}
             className="min-h-80 font-mono text-[13px] leading-relaxed"
             aria-invalid={Boolean(errors.instructions)}
           />
@@ -148,7 +147,7 @@ export function AgentForm({
 
       <div className="flex justify-end gap-2">
         <Link href={cancelHref} className={buttonClasses("secondary")}>
-          Cancel
+          {tCommon("cancel")}
         </Link>
         <SubmitButton variant="primary" pendingLabel={pendingLabel}>
           {submitLabel}

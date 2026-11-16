@@ -1,7 +1,11 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useFormat } from "@/lib/format";
 import type { ToolUsage } from "@/features/dashboard/types";
 
 export function TopTools({ tools }: { tools: ToolUsage[] }) {
+  const t = useTranslations("dashboard.topTools");
+  const format = useFormat();
   const max = Math.max(1, ...tools.map((tool) => tool.calls));
 
   return (
@@ -11,14 +15,14 @@ export function TopTools({ tools }: { tools: ToolUsage[] }) {
     >
       <div className="border-b border-border px-[18px] py-3">
         <h2 id="top-tools-title" className="text-base font-semibold">
-          Top tools
+          {t("title")}
         </h2>
-        <p className="text-[13px] text-fg-muted">Calls in the last 7 days</p>
+        <p className="text-[13px] text-fg-muted">{t("lead")}</p>
       </div>
 
       {tools.length === 0 ? (
         <p className="px-[18px] py-6 text-center text-[13px] text-fg-muted">
-          No tool calls yet.
+          {t("none")}
         </p>
       ) : (
         <ul className="flex flex-col gap-3 px-[18px] py-3">
@@ -39,7 +43,7 @@ export function TopTools({ tools }: { tools: ToolUsage[] }) {
                     {tool.failed > 0 && (
                       <span className="text-danger">
                         {" "}
-                        · {Math.round(failedShare * 100)}% failed
+                        · {t("failedShare", { percent: format.number(failedShare, { style: "percent" }) })}
                       </span>
                     )}
                   </span>

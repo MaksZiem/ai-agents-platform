@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { EXECUTION_STATUS_LABELS } from "@/features/executions/labels";
+import { useTranslations } from "next-intl";
 import type { ExecutionStatus } from "@/features/executions/types";
 
 const FILTERS: (ExecutionStatus | null)[] = [
@@ -17,8 +17,10 @@ type ExecutionStatusFilterProps = {
 };
 
 export function ExecutionStatusFilter({ active }: ExecutionStatusFilterProps) {
+  const t = useTranslations("executions");
+
   return (
-    <nav aria-label="Filter by status" className="flex flex-wrap gap-1">
+    <nav aria-label={t("filter.label")} className="flex flex-wrap gap-1">
       {FILTERS.map((status) => {
         const isActive = status === active;
 
@@ -33,7 +35,7 @@ export function ExecutionStatusFilter({ active }: ExecutionStatusFilterProps) {
                 : "text-fg-muted hover:bg-surface-hover hover:text-fg"
             }`}
           >
-            {status ? EXECUTION_STATUS_LABELS[status] : "All"}
+            {status ? t(`status.${status}`) : t("filter.all")}
           </Link>
         );
       })}

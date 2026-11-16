@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bot } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { AgentAvatar } from "@/features/agents/components/agent-avatar";
 import { AgentStatusBadge } from "@/features/agents/components/agent-status-badge";
@@ -7,40 +8,43 @@ import {
   AgentActivityInline,
   getAgentState,
 } from "@/features/agents/components/agent-activity";
-import { formatShortDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { AgentWithActivity } from "@/features/agents/types";
 
 const ROW_GRID =
   "grid grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_170px_190px_96px_112px]";
 
 export function AgentsEmptyState() {
+  const t = useTranslations("agents");
+
   return (
     <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-6 py-12 text-center">
       <Bot className="size-6 text-fg-muted" strokeWidth={1.75} aria-hidden />
       <div>
-        <p className="text-sm">No agents yet</p>
-        <p className="text-[13px] text-fg-muted">
-          Create an agent, give it tools and permissions, then delegate a task.
-        </p>
+        <p className="text-sm">{t("empty.title")}</p>
+        <p className="text-[13px] text-fg-muted">{t("empty.body")}</p>
       </div>
       <Link href="/agents/new" className={buttonClasses("primary")}>
-        New agent
+        {t("new")}
       </Link>
     </div>
   );
 }
 
 export function AgentList({ agents }: { agents: AgentWithActivity[] }) {
+  const t = useTranslations("agents.columns");
+  const format = useFormat();
+
   return (
     <div className="rounded-xl border border-border bg-surface">
       <div
         className={`${ROW_GRID} border-b border-border px-[18px] py-2.5 text-xs font-medium text-fg-muted`}
       >
-        <span>Agent</span>
-        <span className="hidden md:block">Model</span>
-        <span className="hidden md:block">Activity</span>
-        <span>Status</span>
-        <span className="hidden text-right md:block">Created</span>
+        <span>{t("agent")}</span>
+        <span className="hidden md:block">{t("model")}</span>
+        <span className="hidden md:block">{t("activity")}</span>
+        <span>{t("status")}</span>
+        <span className="hidden text-right md:block">{t("created")}</span>
       </div>
 
       <ul className="divide-y divide-border">
@@ -82,7 +86,7 @@ export function AgentList({ agents }: { agents: AgentWithActivity[] }) {
                 </span>
                 <AgentStatusBadge status={agent.status} />
                 <span className="hidden text-right font-mono text-xs text-fg-muted md:block">
-                  {formatShortDate(agent.createdAt)}
+                  {format.shortDate(agent.createdAt)}
                 </span>
               </Link>
             </li>

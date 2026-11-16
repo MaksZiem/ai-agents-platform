@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, type FormEvent, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 type ConfirmFormProps = {
@@ -17,11 +18,12 @@ export function ConfirmForm({
   action,
   title,
   message,
-  confirmLabel = "Confirm",
+  confirmLabel,
   tone = "danger",
   children,
   className,
 }: ConfirmFormProps) {
+  const t = useTranslations("common");
   const formRef = useRef<HTMLFormElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const confirmed = useRef(false);
@@ -72,10 +74,10 @@ export function ConfirmForm({
 
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={close} autoFocus>
-              Cancel
+              {t("cancel")}
             </Button>
             <Button variant={tone} onClick={confirm}>
-              {confirmLabel}
+              {confirmLabel ?? t("confirm")}
             </Button>
           </div>
         </div>

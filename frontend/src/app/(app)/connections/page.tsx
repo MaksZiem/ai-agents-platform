@@ -1,26 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { buttonClasses } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { ConnectionList } from "@/features/connections/components/connection-list";
 import { apiFetch } from "@/lib/api";
 import type { Connection } from "@/features/connections/types";
 
-export const metadata: Metadata = {
-  title: "Connections",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("connections");
+  return { title: t("title") };
+}
 
 export default async function ConnectionsPage() {
-  const connections = await apiFetch<Connection[]>("/connections");
+  const [connections, t] = await Promise.all([
+    apiFetch<Connection[]>("/connections"),
+    getTranslations("connections"),
+  ]);
 
   return (
     <div>
       <PageHeader
-        title="Connections"
-        description="APIs your agents can call with the httpRequest tool. Attach a connection to an agent on its page."
+        title={t("title")}
+        description={t("lead")}
         actions={
           <Link href="/connections/new" className={buttonClasses("primary")}>
-            New connection
+            {t("new")}
           </Link>
         }
       />

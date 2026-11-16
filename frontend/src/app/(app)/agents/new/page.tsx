@@ -1,27 +1,31 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { createAgent } from "@/features/agents/actions";
 import { AgentForm } from "@/features/agents/components/agent-form";
 import { EMPTY_AGENT_FORM } from "@/features/agents/form";
 
-export const metadata: Metadata = {
-  title: "New agent",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("agents.form");
+  return { title: t("newTitle") };
+}
 
-export default function NewAgentPage() {
+export default async function NewAgentPage() {
+  const t = await getTranslations("agents.form");
+
   return (
     <div>
       <PageHeader
-        title="New agent"
-        description="Define who the agent is, which model it uses and how it should behave."
+        title={t("newTitle")}
+        description={t("newLead")}
       />
 
       <div className="p-6">
         <AgentForm
           action={createAgent}
           initialValues={EMPTY_AGENT_FORM}
-          submitLabel="Create agent"
-          pendingLabel="Creating…"
+          submitLabel={t("create")}
+          pendingLabel={t("creating")}
           cancelHref="/agents"
         />
       </div>

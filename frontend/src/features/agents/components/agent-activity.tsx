@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { formatExecutionDate } from "@/lib/format";
+import { useTranslations } from "next-intl";
+import { useFormat } from "@/lib/format";
 import type { AgentActivity } from "@/features/agents/types";
 
 type AgentState = "working" | "waiting" | "idle" | "new";
@@ -40,6 +41,8 @@ function PulseDot({ tone }: { tone: "accent" | "warning" }) {
 }
 
 export function AgentActivityInline({ activity }: { activity: AgentActivity | null }) {
+  const t = useTranslations("agents.activity");
+  const format = useFormat();
   const state = getAgentState(activity);
 
   if (state === "working") {
@@ -47,7 +50,7 @@ export function AgentActivityInline({ activity }: { activity: AgentActivity | nu
       <span className="inline-flex min-w-0 items-center gap-2 text-[13px] text-accent">
         <PulseDot tone="accent" />
         <span className="truncate font-mono">
-          {activity?.current?.step ?? "Starting"}
+          {activity?.current?.step ?? t("starting")}
         </span>
         <ThinkingDots />
       </span>
@@ -58,7 +61,7 @@ export function AgentActivityInline({ activity }: { activity: AgentActivity | nu
     return (
       <span className="inline-flex items-center gap-2 text-[13px] text-warning">
         <PulseDot tone="warning" />
-        Needs approval
+        {t("needsApproval")}
       </span>
     );
   }
@@ -66,13 +69,15 @@ export function AgentActivityInline({ activity }: { activity: AgentActivity | nu
   return (
     <span className="text-[13px] text-fg-muted">
       {state === "idle" && activity?.lastRunAt
-        ? `Idle · ${formatExecutionDate(activity.lastRunAt)}`
-        : "Never run"}
+        ? t("idleSince", { date: format.executionDate(activity.lastRunAt) })
+        : t("neverRun")}
     </span>
   );
 }
 
 export function AgentActivityPanel({ activity }: { activity: AgentActivity | null }) {
+  const t = useTranslations("agents.activity");
+  const format = useFormat();
   const state = getAgentState(activity);
   const current = activity?.current;
 
@@ -94,10 +99,10 @@ export function AgentActivityPanel({ activity }: { activity: AgentActivity | nul
         >
           <PulseDot tone={isWaiting ? "warning" : "accent"} />
           {isWaiting ? (
-            "Waiting for your approval"
+            t("waitingForYou")
           ) : (
             <>
-              <span className="font-mono">{current.step ?? "Starting"}</span>
+              <span className="font-mono">{current.step ?? t("starting")}</span>
               <ThinkingDots />
             </>
           )}
@@ -107,7 +112,7 @@ export function AgentActivityPanel({ activity }: { activity: AgentActivity | nul
           href={`/executions/${current.executionId}`}
           className="relative z-10 inline-flex w-fit items-center gap-1 rounded-md text-xs font-medium text-fg hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
-          {isWaiting ? "Review" : "Watch live"}
+          {isWaiting ? t("review") : t("watch")}
           <ArrowRight className="size-3" strokeWidth={2} aria-hidden />
         </Link>
       </div>
@@ -118,8 +123,8 @@ export function AgentActivityPanel({ activity }: { activity: AgentActivity | nul
     <div className="flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2.5 text-[13px] text-fg-muted">
       <span className="size-2 rounded-full bg-fg-subtle" aria-hidden />
       {state === "idle" && activity?.lastRunAt
-        ? `Idle · last run ${formatExecutionDate(activity.lastRunAt)}`
-        : "Ready for its first task"}
+        ? t("idleLastRun", { date: format.executionDate(activity.lastRunAt) })
+        : t("ready")}
     </div>
   );
 }

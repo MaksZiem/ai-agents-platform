@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Bot, Download, FileText, Trash2, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { deleteFile } from "@/features/files/actions";
 import { fileAnchorId } from "@/features/files/entries";
 import { deleteDocument } from "@/features/knowledge/actions";
-import { formatBytes, formatExecutionDate } from "@/lib/format";
+import { useFormat } from "@/lib/format";
 import type { FileEntry } from "@/features/files/types";
 
 const ROW_GRID =
@@ -19,11 +20,13 @@ type FileListProps = {
 };
 
 function SourceBadge({ source }: { source: FileEntry["source"] }) {
+  const t = useTranslations("files.source");
+
   if (source === "uploaded") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-2 py-0.5 text-xs text-fg-muted">
         <Upload className="size-3" strokeWidth={2} aria-hidden />
-        Uploaded
+        {t("uploaded")}
       </span>
     );
   }
@@ -31,12 +34,14 @@ function SourceBadge({ source }: { source: FileEntry["source"] }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-xs text-accent">
       <Bot className="size-3" strokeWidth={2} aria-hidden />
-      Generated
+      {t("generated")}
     </span>
   );
 }
 
 function FileContext({ file }: { file: FileEntry }) {
+  const t = useTranslations("files");
+
   if (file.source === "generated") {
     return (
       <Link
@@ -52,13 +57,14 @@ function FileContext({ file }: { file: FileEntry }) {
   return (
     <p className="hidden min-w-0 truncate text-[13px] text-fg-muted md:block">
       {file.agents.length > 0
-        ? `Knowledge of ${file.agents.map((agent) => agent.name).join(", ")}`
-        : "Not attached to any agent"}
+        ? t("knowledgeOf", { agents: file.agents.map((agent) => agent.name).join(", ") })
+        : t("notAttached")}
     </p>
   );
 }
 
 function DeleteFileButton({ file }: { file: FileEntry }) {
+  const t = useTranslations("files.delete");
   const usedBy = file.source === "uploaded" ? file.agents.length : 0;
 
   return (
@@ -68,22 +74,20 @@ function DeleteFileButton({ file }: { file: FileEntry }) {
           ? deleteDocument.bind(null, file.id)
           : deleteFile.bind(null, file.id)
       }
-      title={`Delete "${file.name}"?`}
+      title={t("title", { name: file.name })}
       message={
         file.source === "generated"
-          ? "The file is removed permanently and can no longer be downloaded."
+          ? t("generated")
           : usedBy > 0
-            ? `The document is removed from your library and from ${usedBy} ${usedBy === 1 ? "agent" : "agents"} that use it. To take it away from one agent only, use Remove on that agent's page. This cannot be undone.`
-            : "The document is removed from your library. This cannot be undone."
+            ? t("usedBy", { count: usedBy })
+            : t("unused")
       }
-      confirmLabel={
-        file.source === "uploaded" ? "Delete document" : "Delete file"
-      }
+      confirmLabel={file.source === "uploaded" ? t("document") : t("file")}
     >
       <SubmitButton
         variant="ghost"
         pendingLabel="…"
-        aria-label={`Delete ${file.name}`}
+        aria-label={t("label", { name: file.name })}
       >
         <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
       </SubmitButton>
@@ -96,6 +100,9 @@ export function FileList({
   highlightedId,
   emptyMessage,
 }: FileListProps) {
+  const t = useTranslations("files");
+  const format = useFormat();
+
   if (files.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-surface px-6 py-8 text-center text-fg-muted">
@@ -109,9 +116,9 @@ export function FileList({
       <div
         className={`${ROW_GRID} border-b border-border px-[18px] py-2.5 text-xs font-medium text-fg-muted`}
       >
-        <span>Name</span>
-        <span className="hidden md:block">Source</span>
-        <span className="hidden md:block">Agent</span>
+        <span>{t("columns.name")}</span>
+        <span className="hidden md:block">{t("columns.source")}</span>
+        <span className="hidden md:block">{t("columns.agent")}</span>
         <span />
       </div>
 
@@ -133,8 +140,8 @@ export function FileList({
               <div className="min-w-0">
                 <p className="truncate font-medium">{file.name}</p>
                 <p className="font-mono text-xs text-fg-muted">
-                  {formatBytes(file.sizeBytes)} ·{" "}
-                  {formatExecutionDate(file.createdAt)}
+                  {format.bytes(file.sizeBytes)} ·{" "}
+                  {format.executionDate(file.createdAt)}
                 </p>
               </div>
             </div>
@@ -149,7 +156,7 @@ export function FileList({
               <a
                 href={file.downloadHref}
                 className={buttonClasses("ghost")}
-                aria-label={`Download ${file.name}`}
+                aria-label={t("download", { name: file.name })}
               >
                 <Download className="size-4" strokeWidth={1.75} aria-hidden />
               </a>

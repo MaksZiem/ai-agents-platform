@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useId } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,6 +24,7 @@ export function QuestionAnswerForm({
   hasOptions,
   labelledBy,
 }: QuestionAnswerFormProps) {
+  const t = useTranslations("approvals.question");
   const formId = useId();
   const errorId = useId();
   const [state, formAction, pending] = useActionState(
@@ -37,7 +39,7 @@ export function QuestionAnswerForm({
           name="answer"
           rows={3}
           maxLength={4000}
-          placeholder={hasOptions ? "Or write your own answer…" : "Your answer…"}
+          placeholder={hasOptions ? t("ownAnswer") : t("yourAnswer")}
           aria-labelledby={labelledBy}
           aria-invalid={Boolean(state.error)}
           aria-describedby={state.error ? errorId : undefined}
@@ -52,11 +54,11 @@ export function QuestionAnswerForm({
       <div className="grid grid-cols-2 gap-2">
         <form action={rejectApproval.bind(null, approvalId)}>
           <SubmitButton
-            pendingLabel="Skipping…"
+            pendingLabel={t("skipping")}
             className="w-full"
-            title="The agent continues without an answer and states its assumption."
+            title={t("skipHint")}
           >
-            Skip question
+            {t("skip")}
           </SubmitButton>
         </form>
         <Button
@@ -66,7 +68,7 @@ export function QuestionAnswerForm({
           disabled={pending}
           className="w-full"
         >
-          {pending ? "Sending…" : "Send answer"}
+          {pending ? t("sending") : t("send")}
         </Button>
       </div>
     </>

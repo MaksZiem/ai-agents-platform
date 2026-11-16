@@ -1,5 +1,6 @@
 import { Download, FileText } from "lucide-react";
-import { formatBytes } from "@/lib/format";
+import { useTranslations } from "next-intl";
+import { useFormat } from "@/lib/format";
 import type { GeneratedFile } from "@/features/files/types";
 
 type ExecutionFilesProps = {
@@ -7,12 +8,15 @@ type ExecutionFilesProps = {
 };
 
 export function ExecutionFiles({ files }: ExecutionFilesProps) {
+  const t = useTranslations("files");
+  const format = useFormat();
+
   if (files.length === 0) return null;
 
   return (
     <section className="rounded-xl border border-border bg-surface p-[18px]">
       <h2 className="mb-3 text-base font-semibold">
-        Files <span className="font-mono text-fg-muted">{files.length}</span>
+        {t("execution")} <span className="font-mono text-fg-muted">{files.length}</span>
       </h2>
       <ul className="flex flex-col gap-1">
         {files.map((file) => (
@@ -28,7 +32,7 @@ export function ExecutionFiles({ files }: ExecutionFilesProps) {
               />
               <span className="min-w-0 flex-1 truncate">{file.name}</span>
               <span className="font-mono text-xs text-fg-muted">
-                {formatBytes(file.sizeBytes)}
+                {format.bytes(file.sizeBytes)}
               </span>
               <Download
                 className="size-4 shrink-0 text-fg-muted"

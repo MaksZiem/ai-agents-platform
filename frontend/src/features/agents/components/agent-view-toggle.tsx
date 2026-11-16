@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { LayoutGrid, List } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { agentsHref } from "@/features/agents/search";
 import type { AgentView } from "@/features/agents/types";
 
-const VIEWS: { view: AgentView; label: string; icon: typeof List }[] = [
-  { view: "grid", label: "Tiles", icon: LayoutGrid },
-  { view: "list", label: "List", icon: List },
+const VIEWS: { view: AgentView; icon: typeof List }[] = [
+  { view: "grid", icon: LayoutGrid },
+  { view: "list", icon: List },
 ];
 
 export function AgentViewToggle({
@@ -15,13 +16,16 @@ export function AgentViewToggle({
   active: AgentView;
   query: string;
 }) {
+  const t = useTranslations("agents.views");
+
   return (
     <nav
-      aria-label="View"
+      aria-label={t("label")}
       className="flex items-center rounded-md border border-border bg-surface p-0.5"
     >
-      {VIEWS.map(({ view, label, icon: Icon }) => {
+      {VIEWS.map(({ view, icon: Icon }) => {
         const isActive = view === active;
+        const label = t(view);
 
         return (
           <Link

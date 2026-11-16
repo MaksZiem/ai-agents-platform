@@ -1,71 +1,49 @@
+import { useMessages, useTranslations } from "next-intl";
 import {
   ASK_USER_TOOL,
   type Tool,
-  type ToolAction,
   type ToolCategory,
   type ToolPermission,
-  type ToolResource,
 } from "@/features/tools/types";
 
-export const TOOL_CATEGORIES: {
-  category: ToolCategory;
-  label: string;
-  description: string;
-}[] = [
-  {
-    category: "documents",
-    label: "Documents",
-    description: "Read, search and compare the files in the agent's knowledge base.",
-  },
-  {
-    category: "analysis",
-    label: "Analysis & reports",
-    description: "Exact calculations and reports the agent saves to Files.",
-  },
-  {
-    category: "web",
-    label: "Web & APIs",
-    description: "Search the internet, read pages and call your connected APIs.",
-  },
-  {
-    category: "communication",
-    label: "Communication",
-    description: "Reach people outside the run: email, or a question for you.",
-  },
+export const TOOL_CATEGORIES: ToolCategory[] = [
+  "documents",
+  "analysis",
+  "web",
+  "communication",
 ];
 
 export function groupToolsByCategory(tools: Tool[]) {
-  return TOOL_CATEGORIES.map((group) => ({
-    ...group,
-    tools: tools.filter((tool) => tool.category === group.category),
+  return TOOL_CATEGORIES.map((category) => ({
+    category,
+    tools: tools.filter((tool) => tool.category === category),
   })).filter((group) => group.tools.length > 0);
 }
 
-export const RESOURCE_LABELS: Record<ToolResource, string> = {
-  financial_data: "Financial data",
-  documents: "Documents",
-  reports: "Reports",
-  email: "Email",
-  web: "Web",
-  connections: "Connections",
-};
+type CatalogEntry = { summary: string; description: string };
 
-export const ACTION_LABELS: Record<ToolAction, string> = {
-  read: "Read",
-  search: "Search",
-  modify: "Modify",
-  delete: "Delete",
-  create: "Create",
-  send: "Send",
-};
+export function useToolLabels() {
+  const t = useTranslations("tools");
+  const catalog: Record<string, CatalogEntry | undefined> = useMessages().tools.catalog;
 
-export function permissionLabel(permission: ToolPermission | null) {
-  if (!permission) return "No permission needed";
-  return `${RESOURCE_LABELS[permission.resource]} · ${ACTION_LABELS[permission.action]}`;
-}
+  function permission(value: ToolPermission | null) {
+    if (!value) return t("noPermission");
+    return t("permission", {
+      resource: t(`resources.${value.resource}`),
+      action: t(`actions.${value.action}`),
+    });
+  }
 
-export function alwaysPausesLabel(toolName: string) {
-  return toolName === ASK_USER_TOOL
-    ? "Waits for your answer"
-    : "Always requires approval";
+  return {
+    category: (category: ToolCategory) => t(`categories.${category}.label`),
+    categoryDescription: (category: ToolCategory) =>
+      t(`categories.${category}.description`),
+    permission,
+    alwaysPauses: (toolName: string) =>
+      toolName === ASK_USER_TOOL ? t("waitsForAnswer") : t("alwaysApproval"),
+    summary: (tool: { name: string; summary: string }) =>
+      catalog[tool.name]?.summary ?? tool.summary,
+    description: (tool: { name: string; description: string }) =>
+      catalog[tool.name]?.description ?? tool.description,
+  };
 }

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Square, Trash2 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -61,9 +62,10 @@ export default async function ExecutionPage({
   const { step: stepParam } = await searchParams;
 
   const execution = await getExecution(id);
-  const [approval, files] = await Promise.all([
+  const [approval, files, t] = await Promise.all([
     getPendingApproval(id),
     apiFetch<GeneratedFile[]>(`/files?executionId=${execution.id}`),
+    getTranslations("executions"),
   ]);
 
   const isActive = isActiveStatus(execution.status);
@@ -82,30 +84,30 @@ export default async function ExecutionPage({
             {!isActive && (
               <ConfirmForm
                 action={deleteExecution.bind(null, execution.id, "/executions")}
-                title="Delete this execution?"
-                message="Its steps, approvals and the files it created are deleted too. This cannot be undone."
-                confirmLabel="Delete execution"
+                title={t("delete.title")}
+                message={t("delete.message")}
+                confirmLabel={t("delete.confirm")}
               >
-                <SubmitButton variant="danger" pendingLabel="Deleting…">
+                <SubmitButton variant="danger" pendingLabel={t("page.deleting")}>
                   <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-                  Delete
+                  {t("page.delete")}
                 </SubmitButton>
               </ConfirmForm>
             )}
             {isActive && (
               <ConfirmForm
                 action={cancelExecution.bind(null, execution.id)}
-                title="Stop this execution?"
-                message="The agent stops immediately and no further steps will run."
-                confirmLabel="Stop execution"
+                title={t("page.stopTitle")}
+                message={t("page.stopMessage")}
+                confirmLabel={t("page.stop")}
               >
-                <SubmitButton variant="danger" pendingLabel="Stopping…">
+                <SubmitButton variant="danger" pendingLabel={t("page.stopping")}>
                   <Square
                     className="size-3.5 fill-current"
                     strokeWidth={1.75}
                     aria-hidden
                   />
-                  Stop execution
+                  {t("page.stop")}
                 </SubmitButton>
               </ConfirmForm>
             )}
@@ -127,7 +129,7 @@ export default async function ExecutionPage({
             className="flex flex-col gap-1 rounded-xl border border-danger/30 bg-danger/10 p-[18px]"
           >
             <h2 className="text-base font-semibold text-danger">
-              Execution failed
+              {t("page.failed")}
             </h2>
             <p className="whitespace-pre-wrap break-words font-mono text-[13px] text-danger">
               {execution.error}
@@ -145,7 +147,7 @@ export default async function ExecutionPage({
         <div className="grid items-start gap-6 lg:grid-cols-[1fr_400px]">
           <div className="flex min-w-0 flex-col gap-6">
             <section className="rounded-xl border border-border bg-surface px-2.5 py-3">
-              <h2 className="px-2 pb-2 text-base font-semibold">Steps</h2>
+              <h2 className="px-2 pb-2 text-base font-semibold">{t("page.steps")}</h2>
               <StepTimeline
                 steps={execution.steps}
                 selectedStepId={selectedStep?.id ?? null}

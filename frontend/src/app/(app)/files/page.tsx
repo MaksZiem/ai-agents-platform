@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/page-header";
 import { FileList } from "@/features/files/components/file-list";
 import { FileSourceFilter } from "@/features/files/components/file-source-filter";
@@ -7,23 +8,19 @@ import { apiFetch } from "@/lib/api";
 import type { GeneratedFile } from "@/features/files/types";
 import type { LibraryDocument } from "@/features/knowledge/types";
 
-export const metadata: Metadata = {
-  title: "Files",
-};
-
-const EMPTY_MESSAGES = {
-  all: "No files yet. Upload a document in Knowledge or run an agent that creates a report.",
-  uploaded: "You have not uploaded any files yet. Upload them in Knowledge.",
-  generated: "No files yet. Reports created by agents will appear here.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("files");
+  return { title: t("title") };
+}
 
 export default async function FilesPage({ searchParams }: PageProps<"/files">) {
   const { source, highlight } = await searchParams;
   const activeSource = isFileSource(source) ? source : null;
 
-  const [documents, generated] = await Promise.all([
+  const [documents, generated, t] = await Promise.all([
     apiFetch<LibraryDocument[]>("/knowledge"),
     apiFetch<GeneratedFile[]>("/files"),
+    getTranslations("files"),
   ]);
   const entries = toFileEntries(documents, generated);
   const visible = activeSource
@@ -33,8 +30,8 @@ export default async function FilesPage({ searchParams }: PageProps<"/files">) {
   return (
     <div>
       <PageHeader
-        title="Files"
-        description="Files you uploaded as knowledge and files your agents created during executions."
+        title={t("title")}
+        description={t("lead")}
       />
 
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 p-6">
@@ -49,7 +46,7 @@ export default async function FilesPage({ searchParams }: PageProps<"/files">) {
         <FileList
           files={visible}
           highlightedId={typeof highlight === "string" ? highlight : null}
-          emptyMessage={EMPTY_MESSAGES[activeSource ?? "all"]}
+          emptyMessage={t(`empty.${activeSource ?? "all"}`)}
         />
       </div>
     </div>

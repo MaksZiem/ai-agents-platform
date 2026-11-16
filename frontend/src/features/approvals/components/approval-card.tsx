@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { approveApproval, rejectApproval } from "@/features/approvals/actions";
 import { QuestionCard } from "@/features/approvals/components/question-card";
@@ -18,6 +19,11 @@ export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
     return <QuestionCard approval={approval} execution={execution} />;
   }
 
+  return <ToolApprovalCard approval={approval} execution={execution} />;
+}
+
+function ToolApprovalCard({ approval, execution }: ApprovalCardProps) {
+  const t = useTranslations("approvals.card");
   const titleId = `approval-${approval.id}`;
 
   return (
@@ -36,8 +42,10 @@ export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
         )}
         <ExecutionStatusBadge status="WAITING_FOR_APPROVAL" />
         <h2 id={titleId} className="text-base font-semibold">
-          The agent wants to run{" "}
-          <span className="font-mono">{approval.toolName}</span>
+          {t.rich("wantsToRun", {
+            tool: approval.toolName,
+            code: (chunks) => <span className="font-mono">{chunks}</span>,
+          })}
         </h2>
       </div>
 
@@ -50,7 +58,7 @@ export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
         ))}
         {approval.reason && (
           <div className="contents">
-            <dt className="text-fg-muted">Reason</dt>
+            <dt className="text-fg-muted">{t("reason")}</dt>
             <dd>{approval.reason}</dd>
           </div>
         )}
@@ -58,13 +66,13 @@ export function ApprovalCard({ approval, execution }: ApprovalCardProps) {
 
       <div className="grid grid-cols-2 gap-2">
         <form action={rejectApproval.bind(null, approval.id)}>
-          <SubmitButton pendingLabel="Rejecting…" className="w-full">
-            Reject
+          <SubmitButton pendingLabel={t("rejecting")} className="w-full">
+            {t("reject")}
           </SubmitButton>
         </form>
         <form action={approveApproval.bind(null, approval.id)}>
-          <SubmitButton variant="primary" pendingLabel="Approving…" className="w-full">
-            Approve
+          <SubmitButton variant="primary" pendingLabel={t("approving")} className="w-full">
+            {t("approve")}
           </SubmitButton>
         </form>
       </div>

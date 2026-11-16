@@ -1,10 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   emailError,
   hasErrors,
   newPasswordError,
+  PASSWORD_MAX,
+  PASSWORD_MIN,
+  type AuthErrorKey,
 } from "@/features/auth/validation";
 import { ApiError, apiFetch } from "@/lib/api";
 import { setAccessToken } from "@/lib/session";
@@ -23,19 +27,24 @@ export async function register(
   _prevState: RegisterState,
   formData: FormData,
 ): Promise<RegisterState> {
+  const t = await getTranslations();
+  const message = (key: AuthErrorKey | undefined) =>
+    key
+      ? t(`auth.errors.${key}`, {
+          min: PASSWORD_MIN,
+          max: key === "nameTooLong" ? NAME_MAX : PASSWORD_MAX,
+        })
+      : undefined;
+
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
   const entered = { name, email };
   const errors = {
-    name: !name
-      ? "Enter your name."
-      : name.length > NAME_MAX
-        ? `Use at most ${NAME_MAX} characters.`
-        : undefined,
-    email: emailError(email),
-    password: newPasswordError(password),
+    name: message(!name ? "nameRequired" : name.length > NAME_MAX ? "nameTooLong" : undefined),
+    email: message(emailError(email)),
+    password: message(newPasswordError(password)),
   };
 
   if (hasErrors(errors)) {
@@ -53,18 +62,14 @@ export async function register(
     if (error instanceof ApiError && error.status === 409) {
       return {
         ...entered,
-        errors: { email: "An account with this email already exists." },
+        errors: { email: t("auth.errors.emailTaken") },
         formError: null,
       };
     }
     if (error instanceof ApiError && error.status === 400) {
-      return { ...entered, errors: {}, formError: error.message };
+      return { ...entered, errors: {}, formError: t("errors.validation") };
     }
-    return {
-      ...entered,
-      errors: {},
-      formError: "Could not reach the server. Try again.",
-    };
+    return { ...entered, errors: {}, formError: t("errors.unreachable") };
   }
 
   redirect("/");

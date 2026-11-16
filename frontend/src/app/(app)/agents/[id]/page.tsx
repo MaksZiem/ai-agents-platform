@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { buttonClasses } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -14,7 +15,7 @@ import { runTask } from "@/features/executions/actions";
 import { RecentExecutions } from "@/features/executions/components/recent-executions";
 import { RunTaskForm } from "@/features/executions/components/run-task-form";
 import { apiFetch } from "@/lib/api";
-import { formatShortDate } from "@/lib/format";
+import { getFormat } from "@/lib/format-server";
 import type { AgentTool, ResourcePermissions } from "@/features/agents/types";
 import type { AgentConnection, Connection } from "@/features/connections/types";
 import type { ExecutionWithAgent } from "@/features/executions/types";
@@ -26,6 +27,7 @@ const CARD_CLASSES = "rounded-xl border border-border bg-surface p-[18px]";
 export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
   const { id } = await params;
   const agent = await getAgent(id);
+  const [t, format] = await Promise.all([getTranslations("agents.detail"), getFormat()]);
   const [
     executions,
     tools,
@@ -64,19 +66,19 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
               )}
             >
               <SubmitButton
-                pendingLabel={isActive ? "Deactivating…" : "Activating…"}
+                pendingLabel={isActive ? t("deactivating") : t("activating")}
               >
-                {isActive ? "Deactivate" : "Activate"}
+                {isActive ? t("deactivate") : t("activate")}
               </SubmitButton>
             </form>
             <form action={duplicateAgent.bind(null, agent.id)}>
-              <SubmitButton pendingLabel="Duplicating…">Duplicate</SubmitButton>
+              <SubmitButton pendingLabel={t("duplicating")}>{t("duplicate")}</SubmitButton>
             </form>
             <Link
               href={`/agents/${agent.id}/edit`}
               className={buttonClasses("primary")}
             >
-              Edit
+              {t("edit")}
             </Link>
           </>
         }
@@ -91,7 +93,7 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
           />
 
           <section className={CARD_CLASSES}>
-            <h2 className="mb-3 text-base font-semibold">Instructions</h2>
+            <h2 className="mb-3 text-base font-semibold">{t("instructions")}</h2>
             <pre className="whitespace-pre-wrap font-mono text-[13px] leading-relaxed text-fg-muted">
               {agent.instructions}
             </pre>
@@ -117,37 +119,34 @@ export default async function AgentPage({ params }: PageProps<"/agents/[id]">) {
           />
 
           <RecentExecutions
-            title="Execution history"
+            title={t("history")}
             executions={executions.slice(0, 10)}
           />
         </div>
 
         <aside className="flex flex-col gap-6">
           <section className={CARD_CLASSES}>
-            <h2 className="mb-3 text-base font-semibold">Model</h2>
+            <h2 className="mb-3 text-base font-semibold">{t("model")}</h2>
             <dl className="grid grid-cols-[120px_1fr] gap-x-3 gap-y-2 text-[13px]">
-              <dt className="text-fg-muted">Provider</dt>
+              <dt className="text-fg-muted">{t("provider")}</dt>
               <dd>Google Gemini</dd>
-              <dt className="text-fg-muted">Model</dt>
+              <dt className="text-fg-muted">{t("model")}</dt>
               <dd className="font-mono">{agent.model}</dd>
-              <dt className="text-fg-muted">Temperature</dt>
+              <dt className="text-fg-muted">{t("temperature")}</dt>
               <dd className="font-mono">{agent.temperature}</dd>
-              <dt className="text-fg-muted">Max output tokens</dt>
+              <dt className="text-fg-muted">{t("maxOutputTokens")}</dt>
               <dd className="font-mono">
-                {agent.maxOutputTokens.toLocaleString("en-US")}
+                {format.number(agent.maxOutputTokens)}
               </dd>
-              <dt className="text-fg-muted">Created</dt>
-              <dd className="font-mono">{formatShortDate(agent.createdAt)}</dd>
+              <dt className="text-fg-muted">{t("created")}</dt>
+              <dd className="font-mono">{format.shortDate(agent.createdAt)}</dd>
             </dl>
           </section>
 
           <section className="flex flex-col gap-3 rounded-xl border border-danger/30 bg-surface p-[18px]">
             <div>
-              <h2 className="text-base font-semibold">Danger zone</h2>
-              <p className="text-[13px] text-fg-muted">
-                Deleting an agent removes its configuration and execution
-                history.
-              </p>
+              <h2 className="text-base font-semibold">{t("dangerZone")}</h2>
+              <p className="text-[13px] text-fg-muted">{t("dangerBody")}</p>
             </div>
             <DeleteAgentButton agentId={agent.id} agentName={agent.name} />
           </section>

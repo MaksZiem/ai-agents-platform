@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, MoreThanOrEqual, Repository } from 'typeorm';
 import { startOfDay } from '../common/dates.js';
+import { errorBody, type ErrorParams } from '../common/error-body.js';
 import type { Env } from '../config/env.js';
 import { Execution } from '../executions/entities/execution.entity.js';
 import { ExecutionStatus } from '../executions/execution-status.js';
@@ -79,19 +80,25 @@ export class UsageLimits {
 
     if (recentStarts >= this.maxStartsPerMinute) {
       throw this.tooMany(
+        'RATE_LIMIT_STARTS',
         `You can start at most ${this.maxStartsPerMinute} tasks per minute. Wait a moment and try again.`,
+        { limit: this.maxStartsPerMinute },
       );
     }
 
     if (active >= this.maxConcurrentExecutions) {
       throw this.tooMany(
+        'RATE_LIMIT_CONCURRENT',
         `You already have ${active} tasks running or queued (limit ${this.maxConcurrentExecutions}). Wait for one to finish or cancel it.`,
+        { active, limit: this.maxConcurrentExecutions },
       );
     }
 
     if (tokensToday >= this.dailyTokenLimit) {
       throw this.tooMany(
+        'DAILY_TOKEN_LIMIT',
         `You have used today's token limit (${this.dailyTokenLimit.toLocaleString('en-US')} tokens). It resets at midnight.`,
+        { limit: this.dailyTokenLimit },
       );
     }
   }
@@ -114,7 +121,10 @@ export class UsageLimits {
     return null;
   }
 
-  private tooMany(message: string) {
-    return new HttpException(message, HttpStatus.TOO_MANY_REQUESTS);
+  private tooMany(code: string, message: string, params: ErrorParams) {
+    return new HttpException(
+      errorBody(HttpStatus.TOO_MANY_REQUESTS, code, message, params),
+      HttpStatus.TOO_MANY_REQUESTS,
+    );
   }
 }

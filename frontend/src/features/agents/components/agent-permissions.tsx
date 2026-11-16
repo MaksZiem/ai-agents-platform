@@ -1,6 +1,6 @@
+import { useTranslations } from "next-intl";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { savePermissions } from "@/features/agents/actions";
-import { ACTION_LABELS, RESOURCE_LABELS } from "@/features/tools/labels";
 import type { ResourcePermissions } from "@/features/agents/types";
 
 type AgentPermissionsProps = {
@@ -9,13 +9,15 @@ type AgentPermissionsProps = {
 };
 
 export function AgentPermissions({ agentId, permissions }: AgentPermissionsProps) {
+  const t = useTranslations("permissions");
+  const tTools = useTranslations("tools");
+  const tCommon = useTranslations("common");
+
   return (
     <section className="rounded-xl border border-border bg-surface">
       <div className="border-b border-border px-[18px] py-3">
-        <h2 className="text-base font-semibold">Permissions</h2>
-        <p className="text-[13px] text-fg-muted">
-          Enforced by the backend on every tool call, whatever the model decides.
-        </p>
+        <h2 className="text-base font-semibold">{t("title")}</h2>
+        <p className="text-[13px] text-fg-muted">{t("lead")}</p>
       </div>
 
       <form action={savePermissions.bind(null, agentId)}>
@@ -28,7 +30,7 @@ export function AgentPermissions({ agentId, permissions }: AgentPermissionsProps
               className="grid gap-2 px-[18px] py-3 sm:grid-cols-[160px_1fr] sm:items-center"
             >
               <span id={`permissions-${resource}`} className="text-[13px] font-medium">
-                {RESOURCE_LABELS[resource]}
+                {tTools(`resources.${resource}`)}
               </span>
               <div className="grid grid-cols-3 gap-x-5 gap-y-2 sm:grid-cols-[repeat(3,112px)]">
                 {actions.map(({ action, granted }) => (
@@ -40,7 +42,7 @@ export function AgentPermissions({ agentId, permissions }: AgentPermissionsProps
                       defaultChecked={granted}
                       className="size-4 accent-accent"
                     />
-                    {ACTION_LABELS[action]}
+                    {tTools(`actions.${action}`)}
                   </label>
                 ))}
               </div>
@@ -49,8 +51,8 @@ export function AgentPermissions({ agentId, permissions }: AgentPermissionsProps
         </div>
 
         <div className="flex justify-end border-t border-border px-[18px] py-3">
-          <SubmitButton variant="primary" pendingLabel="Saving…">
-            Save permissions
+          <SubmitButton variant="primary" pendingLabel={tCommon("saving")}>
+            {t("save")}
           </SubmitButton>
         </div>
       </form>

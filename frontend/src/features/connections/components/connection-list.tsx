@@ -1,25 +1,25 @@
 import Link from "next/link";
 import { Plug } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { buttonClasses } from "@/components/ui/button";
-import { AUTH_TYPE_LABELS } from "@/features/connections/form";
 import type { Connection } from "@/features/connections/types";
 
 const ROW_GRID =
   "grid grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_150px_200px]";
 
 export function ConnectionList({ connections }: { connections: Connection[] }) {
+  const t = useTranslations("connections");
+
   if (connections.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface px-6 py-12 text-center">
         <Plug className="size-6 text-fg-muted" strokeWidth={1.75} aria-hidden />
         <div>
-          <p className="text-sm">No connections yet</p>
-          <p className="text-[13px] text-fg-muted">
-            Connect an API so agents can call it with the httpRequest tool.
-          </p>
+          <p className="text-sm">{t("empty.title")}</p>
+          <p className="text-[13px] text-fg-muted">{t("empty.body")}</p>
         </div>
         <Link href="/connections/new" className={buttonClasses("primary")}>
-          New connection
+          {t("new")}
         </Link>
       </div>
     );
@@ -30,9 +30,9 @@ export function ConnectionList({ connections }: { connections: Connection[] }) {
       <div
         className={`${ROW_GRID} border-b border-border px-[18px] py-2.5 text-xs font-medium text-fg-muted`}
       >
-        <span>Connection</span>
-        <span className="hidden md:block">Authentication</span>
-        <span>Methods</span>
+        <span>{t("columns.connection")}</span>
+        <span className="hidden md:block">{t("columns.auth")}</span>
+        <span>{t("columns.methods")}</span>
       </div>
 
       <ul className="divide-y divide-border">
@@ -51,7 +51,7 @@ export function ConnectionList({ connections }: { connections: Connection[] }) {
                 </p>
               </div>
               <span className="hidden text-[13px] text-fg-muted md:block">
-                {AUTH_TYPE_LABELS[connection.authType]}
+                {t(`authTypes.${connection.authType}`)}
               </span>
               <span className="flex flex-wrap gap-1">
                 {connection.allowedMethods.map((method) => (

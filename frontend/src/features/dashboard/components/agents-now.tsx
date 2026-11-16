@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { AgentAvatar } from "@/features/agents/components/agent-avatar";
 import {
   AgentActivityInline,
@@ -14,6 +15,7 @@ function lastRun(agent: AgentWithActivity) {
 }
 
 export function AgentsNow({ agents }: { agents: AgentWithActivity[] }) {
+  const t = useTranslations("dashboard.agentsNow");
   const sorted = [...agents].sort(
     (a, b) =>
       STATE_ORDER[getAgentState(a.activity)] - STATE_ORDER[getAgentState(b.activity)] ||
@@ -32,27 +34,26 @@ export function AgentsNow({ agents }: { agents: AgentWithActivity[] }) {
       <div className="flex items-center justify-between border-b border-border px-[18px] py-3">
         <div>
           <h2 id="agents-now-title" className="text-base font-semibold">
-            Agents now
+            {t("title")}
           </h2>
           <p className="text-[13px] text-fg-muted">
-            {working > 0 ? `${working} working` : "All quiet"}
+            {working > 0 ? t("working", { count: working }) : t("quiet")}
           </p>
         </div>
         <Link
           href="/agents"
           className="text-[13px] text-fg-muted transition-colors hover:text-fg"
         >
-          View all
+          {t("viewAll")}
         </Link>
       </div>
 
       {shown.length === 0 ? (
         <p className="px-[18px] py-6 text-center text-[13px] text-fg-muted">
-          No agents yet.{" "}
+          {t("none")}{" "}
           <Link href="/agents/new" className="text-accent hover:underline">
-            Create one
+            {t("create")}
           </Link>
-          .
         </p>
       ) : (
         <ul className="divide-y divide-border">

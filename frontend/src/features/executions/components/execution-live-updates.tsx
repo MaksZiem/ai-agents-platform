@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { io } from "socket.io-client";
 import { getSocketToken } from "@/features/executions/socket-actions";
 
@@ -13,6 +14,7 @@ type ExecutionLiveUpdatesProps = {
 };
 
 export function ExecutionLiveUpdates({ executionId }: ExecutionLiveUpdatesProps) {
+  const t = useTranslations("executions.page");
   const router = useRouter();
   const [connected, setConnected] = useState(false);
 
@@ -53,7 +55,7 @@ export function ExecutionLiveUpdates({ executionId }: ExecutionLiveUpdatesProps)
         className="size-1.5 animate-pulse rounded-full bg-success motion-reduce:animate-none"
         aria-hidden
       />
-      Live
+      {t("live")}
     </span>
   )
 }

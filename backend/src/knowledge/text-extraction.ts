@@ -1,6 +1,7 @@
 import { extname } from 'node:path';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, HttpStatus } from '@nestjs/common';
 import { extractText, getDocumentProxy } from 'unpdf';
+import { errorBody } from '../common/error-body.js';
 
 const TEXT_EXTENSIONS = new Set(['.txt', '.md', '.markdown', '.csv', '.json']);
 
@@ -31,11 +32,22 @@ async function extractRawText(
       const { text } = await extractText(pdf, { mergePages: true });
       return text;
     } catch {
-      throw new BadRequestException('Could not read the PDF file');
+      throw new BadRequestException(
+        errorBody(
+          HttpStatus.BAD_REQUEST,
+          'PDF_UNREADABLE',
+          'Could not read the PDF file',
+        ),
+      );
     }
   }
 
   throw new BadRequestException(
-    `Unsupported file type. Supported: ${SUPPORTED_EXTENSIONS.join(', ')}`,
+    errorBody(
+      HttpStatus.BAD_REQUEST,
+      'FILE_TYPE_UNSUPPORTED',
+      `Unsupported file type. Supported: ${SUPPORTED_EXTENSIONS.join(', ')}`,
+      { types: SUPPORTED_EXTENSIONS.join(', ') },
+    ),
   );
 }

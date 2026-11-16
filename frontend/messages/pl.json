@@ -1,0 +1,735 @@
+{
+  "agentConnections": {
+    "title": "Połączenia",
+    "lead": "API, które agent może wywoływać narzędziem httpRequest. „Usuń” tylko odpina połączenie od tego agenta.",
+    "empty": "Brak podpiętych połączeń.",
+    "remove": "Usuń",
+    "removing": "Usuwanie…",
+    "removeHint": "Odepnij od tego agenta. Połączenie zostaje dostępne dla innych agentów.",
+    "none": "Nie masz jeszcze połączeń.",
+    "add": "Dodaj połączenie",
+    "allAttached": "Wszystkie połączenia są już podpięte."
+  },
+  "agentKnowledge": {
+    "title": "Wiedza",
+    "lead": "Dokumenty, które agent może czytać narzędziami readDocument i searchDocuments. „Usuń” tylko odpina dokument od tego agenta – zostaje on w Twojej bibliotece dla innych agentów.",
+    "empty": "Brak podpiętych dokumentów.",
+    "chunks": "{count, plural, one {# fragment} few {# fragmenty} many {# fragmentów} other {# fragmentu}}",
+    "remove": "Usuń",
+    "removing": "Usuwanie…",
+    "removeHint": "Odepnij od tego agenta. Dokument zostaje w Twojej bibliotece.",
+    "libraryEmpty": "Twoja biblioteka jest pusta.",
+    "upload": "Wgraj dokument",
+    "allAttached": "Wszystkie dokumenty z biblioteki są już podpięte."
+  },
+  "agents": {
+    "title": "Agenci",
+    "lead": "Skonfigurowani agenci i to, co wolno im robić.",
+    "workingNow": "{working} z {total, plural, one {# agenta} other {# agentów}} pracuje w tej chwili.",
+    "new": "Nowy agent",
+    "matchCount": "{visible} z {total, plural, one {# agenta} few {# agentów} many {# agentów} other {# agentów}}",
+    "noMatchTitle": "Żaden agent nie pasuje do „{query}”",
+    "noMatchHint": "Wyszukiwanie obejmuje nazwy, opisy i modele agentów.",
+    "clearSearch": "Wyczyść wyszukiwanie",
+    "search": {
+      "placeholder": "Szukaj agentów po nazwie, opisie lub modelu…",
+      "label": "Szukaj agentów",
+      "clear": "Wyczyść wyszukiwanie"
+    },
+    "views": {
+      "label": "Widok",
+      "grid": "Kafelki",
+      "list": "Lista"
+    },
+    "empty": {
+      "title": "Nie masz jeszcze agentów",
+      "body": "Utwórz agenta, daj mu narzędzia i uprawnienia, a potem zleć mu zadanie."
+    },
+    "status": {
+      "ACTIVE": "Aktywny",
+      "INACTIVE": "Nieaktywny"
+    },
+    "columns": {
+      "agent": "Agent",
+      "model": "Model",
+      "activity": "Aktywność",
+      "status": "Status",
+      "created": "Utworzono"
+    },
+    "activity": {
+      "starting": "Uruchamianie",
+      "needsApproval": "Wymaga akceptacji",
+      "waitingForYou": "Czeka na Twoją akceptację",
+      "idleSince": "Bezczynny · {date}",
+      "idleLastRun": "Bezczynny · ostatnio {date}",
+      "neverRun": "Jeszcze nie uruchomiony",
+      "ready": "Gotowy na pierwsze zadanie",
+      "review": "Przejrzyj",
+      "watch": "Oglądaj na żywo"
+    },
+    "card": {
+      "noDescription": "Brak opisu.",
+      "runs": "Uruchomienia",
+      "success": "Sukces",
+      "failed": "Błędy"
+    },
+    "detail": {
+      "activate": "Aktywuj",
+      "activating": "Aktywowanie…",
+      "deactivate": "Dezaktywuj",
+      "deactivating": "Dezaktywowanie…",
+      "duplicate": "Duplikuj",
+      "duplicating": "Duplikowanie…",
+      "edit": "Edytuj",
+      "instructions": "Instrukcje",
+      "history": "Historia wykonań",
+      "model": "Model",
+      "provider": "Dostawca",
+      "temperature": "Temperatura",
+      "maxOutputTokens": "Maks. tokenów odpowiedzi",
+      "created": "Utworzono",
+      "dangerZone": "Strefa zagrożenia",
+      "dangerBody": "Usunięcie agenta usuwa jego konfigurację i historię wykonań.",
+      "delete": "Usuń agenta",
+      "deleting": "Usuwanie…",
+      "deleteConfirm": "Usunąć „{name}”? Historia wykonań też zostanie usunięta."
+    },
+    "form": {
+      "newTitle": "Nowy agent",
+      "newLead": "Określ, kim jest agent, jakiego modelu używa i jak ma się zachowywać.",
+      "create": "Utwórz agenta",
+      "creating": "Tworzenie…",
+      "editTitle": "Edytuj: {name}",
+      "editLead": "Zmień tożsamość, model i instrukcje agenta.",
+      "saveChanges": "Zapisz zmiany",
+      "identity": "Tożsamość",
+      "name": "Nazwa",
+      "namePlaceholder": "Analityk finansowy",
+      "description": "Opis",
+      "descriptionPlaceholder": "Analizuje wydatki i przygotowuje raporty finansowe",
+      "model": "Model",
+      "provider": "Dostawca: Google Gemini",
+      "temperature": "Temperatura",
+      "temperatureHint": "0 precyzyjnie · 2 kreatywnie",
+      "maxOutputTokens": "Maks. tokenów odpowiedzi",
+      "instructions": "Instrukcje",
+      "instructionsLead": "Instrukcja systemowa, której agent przestrzega przy każdym zadaniu.",
+      "systemInstruction": "Instrukcja systemowa",
+      "instructionsPlaceholder": "Jesteś analitykiem finansowym.\n\nAnalizuj dane finansowe starannie.\nNigdy nie wymyślaj informacji finansowych.",
+      "saveFailed": "Nie udało się zapisać agenta. Spróbuj ponownie.",
+      "errors": {
+        "nameRequired": "Nazwa jest wymagana.",
+        "nameTooLong": "Nazwa może mieć maksymalnie 100 znaków.",
+        "descriptionTooLong": "Opis może mieć maksymalnie 500 znaków.",
+        "modelRequired": "Wybierz model.",
+        "temperatureRange": "Temperatura musi mieścić się między 0 a 2.",
+        "maxOutputTokensRange": "Podaj liczbę całkowitą od 1 do {max}.",
+        "instructionsRequired": "Instrukcje są wymagane."
+      }
+    }
+  },
+  "approvals": {
+    "title": "Akceptacje",
+    "lead": "Wrażliwe działania czekają tutaj, aż je zaakceptujesz albo odrzucisz.",
+    "pending": "Oczekujące",
+    "nothingPending": "Nic na Ciebie nie czeka.",
+    "history": "Historia",
+    "noDecisions": "Brak decyzji.",
+    "answer": "Odpowiedź: {answer}",
+    "status": {
+      "PENDING": "Oczekuje",
+      "APPROVED": "Zaakceptowano",
+      "REJECTED": "Odrzucono",
+      "CANCELLED": "Anulowano"
+    },
+    "card": {
+      "wantsToRun": "Agent chce uruchomić <code>{tool}</code>",
+      "reason": "Powód",
+      "reject": "Odrzuć",
+      "rejecting": "Odrzucanie…",
+      "approve": "Akceptuj",
+      "approving": "Akceptowanie…"
+    },
+    "question": {
+      "label": "Agent ma pytanie",
+      "sending": "Wysyłanie…",
+      "ownAnswer": "Albo wpisz własną odpowiedź…",
+      "yourAnswer": "Twoja odpowiedź…",
+      "skip": "Pomiń pytanie",
+      "skipping": "Pomijanie…",
+      "skipHint": "Agent działa dalej bez odpowiedzi i zaznacza przyjęte założenie.",
+      "send": "Wyślij odpowiedź",
+      "errors": {
+        "empty": "Wpisz odpowiedź albo pomiń pytanie.",
+        "tooLong": "Odpowiedź może mieć maksymalnie {max} znaków."
+      }
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Zaloguj się",
+      "lead": "Użyj swojego konta Agent Platform.",
+      "submit": "Zaloguj się",
+      "pending": "Logowanie…",
+      "noAccount": "Nie masz jeszcze konta?",
+      "toSignUp": "Załóż konto"
+    },
+    "signUp": {
+      "title": "Załóż konto",
+      "lead": "Skonfiguruj przestrzeń roboczą i zbuduj pierwszego agenta.",
+      "submit": "Załóż konto",
+      "pending": "Tworzenie konta…",
+      "hasAccount": "Masz już konto?",
+      "toSignIn": "Zaloguj się"
+    },
+    "fields": {
+      "name": "Imię",
+      "email": "E-mail",
+      "password": "Hasło",
+      "passwordHint": "Co najmniej {min} znaków."
+    },
+    "errors": {
+      "nameRequired": "Podaj imię.",
+      "nameTooLong": "Użyj maksymalnie {max} znaków.",
+      "emailRequired": "Podaj adres e-mail.",
+      "emailInvalid": "Podaj poprawny e-mail, np. imie@firma.pl.",
+      "passwordRequired": "Podaj hasło.",
+      "passwordLength": "Hasło musi mieć od {min} do {max} znaków.",
+      "invalidCredentials": "Nieprawidłowy e-mail lub hasło.",
+      "emailTaken": "Konto z tym adresem e-mail już istnieje."
+    }
+  },
+  "common": {
+    "language": "Język",
+    "languages": {
+      "pl": "Polski",
+      "en": "English"
+    },
+    "loading": "Ładowanie…",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "retry": "Spróbuj ponownie",
+    "save": "Zapisz",
+    "saving": "Zapisywanie…",
+    "backToDashboard": "Wróć do pulpitu",
+    "empty": "—"
+  },
+  "connections": {
+    "title": "Połączenia",
+    "lead": "API, które Twoi agenci mogą wywoływać narzędziem httpRequest. Połączenie podpinasz do agenta na jego stronie.",
+    "new": "Nowe połączenie",
+    "empty": {
+      "title": "Nie masz jeszcze połączeń",
+      "body": "Podłącz API, żeby agenci mogli je wywoływać narzędziem httpRequest."
+    },
+    "columns": {
+      "connection": "Połączenie",
+      "auth": "Uwierzytelnianie",
+      "methods": "Metody"
+    },
+    "authTypes": {
+      "none": "Bez uwierzytelniania",
+      "bearer": "Token Bearer",
+      "header": "Klucz API w nagłówku"
+    },
+    "delete": {
+      "title": "Usunąć „{name}”?",
+      "message": "Połączenie i zapisany sekret zostaną usunięte, a wszyscy agenci stracą dostęp do tego API. Tego nie da się cofnąć.",
+      "confirm": "Usuń połączenie",
+      "button": "Usuń",
+      "pending": "Usuwanie…"
+    },
+    "form": {
+      "newLead": "Daj agentom kontrolowany dostęp do API HTTP.",
+      "create": "Utwórz połączenie",
+      "creating": "Tworzenie…",
+      "saveChanges": "Zapisz zmiany",
+      "api": "API",
+      "name": "Nazwa",
+      "nameHint": "Agent odwołuje się do połączenia po tej nazwie.",
+      "description": "Opis",
+      "descriptionHint": "Napisz agentowi, do czego służy to API i które endpointy są przydatne.",
+      "descriptionPlaceholder": "CRM z klientami i transakcjami. GET /deals?status=open zwraca otwarte transakcje.",
+      "baseUrl": "Bazowy URL",
+      "baseUrlHint": "Żądania mogą trafiać tylko do ścieżek pod tym adresem. Adresy prywatne i lokalne są blokowane.",
+      "auth": "Uwierzytelnianie",
+      "authLead": "Sekret jest szyfrowany i dodawany przez backend. Agent nigdy go nie widzi.",
+      "type": "Typ",
+      "headerName": "Nazwa nagłówka",
+      "token": "Token",
+      "apiKey": "Klucz API",
+      "secretStored": "Sekret jest zapisany. Zostaw puste, żeby go zachować.",
+      "methods": "Dozwolone metody",
+      "methodsLead": "GET wykonuje się od razu. POST, PUT, PATCH i DELETE zawsze czekają na Twoją akceptację i wymagają uprawnienia Połączenia · Modyfikacja.",
+      "saveFailed": "Nie udało się zapisać połączenia. Spróbuj ponownie.",
+      "errors": {
+        "name": "Zacznij od litery; użyj małych liter, cyfr, - lub _ (maks. 64).",
+        "descriptionTooLong": "Opis może mieć maksymalnie 500 znaków.",
+        "urlProtocol": "Użyj adresu http:// lub https://.",
+        "urlInvalid": "Podaj pełny adres, np. https://api.example.com/v1.",
+        "headerName": "Podaj nazwę nagłówka, np. X-API-Key.",
+        "secretRequired": "Podaj token lub klucz.",
+        "methodsRequired": "Zezwól na co najmniej jedną metodę.",
+        "CONNECTION_NAME_TAKEN": "Połączenie o nazwie „{name}” już istnieje.",
+        "CONNECTION_HEADER_RESERVED": "Nagłówka {header} nie można użyć do uwierzytelniania."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Pulpit",
+    "lead": "Przegląd Twoich agentów i wykonań.",
+    "viewExecutions": "Zobacz wykonania",
+    "stats": {
+      "agents": "Agenci",
+      "tasksToday": "Zadania dziś",
+      "running": "W toku",
+      "waiting": "Czeka na akceptację"
+    },
+    "activity": {
+      "title": "Aktywność",
+      "lead": "Wykonania z ostatnich 14 dni",
+      "runs": "Uruchomienia",
+      "completed": "Ukończone",
+      "perDay": "Uruchomienia dziennie",
+      "noRuns": "brak uruchomień",
+      "day": "{date}: {parts}",
+      "segments": {
+        "completed": "Ukończone",
+        "failed": "Błędy",
+        "cancelled": "Anulowane",
+        "active": "W toku"
+      },
+      "segmentCount": "{count} – {segment}"
+    },
+    "usage": {
+      "title": "Zużycie",
+      "period": "Ostatnie 7 dni",
+      "tokens": "Tokeny",
+      "avgDuration": "Średni czas",
+      "llmCalls": "Wywołania LLM",
+      "retries": "Ponowienia"
+    },
+    "quota": {
+      "today": "Tokeny zużyte dziś",
+      "progress": "Wykorzystanie dziennego limitu tokenów",
+      "reached": "Dzienny limit osiągnięty. Nowe zadania ruszą po północy.",
+      "info": "Jedno zadanie może zużyć do {budget} tokenów; jednocześnie działa do {concurrent} zadań."
+    },
+    "agentsNow": {
+      "title": "Agenci teraz",
+      "working": "{count, plural, one {# pracuje} few {# pracują} many {# pracuje} other {# pracuje}}",
+      "quiet": "Wszystko spokojnie",
+      "viewAll": "Zobacz wszystkich",
+      "none": "Nie masz jeszcze agentów.",
+      "create": "Utwórz pierwszego"
+    },
+    "topTools": {
+      "title": "Najczęstsze narzędzia",
+      "lead": "Wywołania z ostatnich 7 dni",
+      "none": "Brak wywołań narzędzi.",
+      "failedShare": "{percent} błędów"
+    },
+    "attention": {
+      "title": "Wymaga Twojej uwagi",
+      "question": "Pytanie",
+      "hasQuestion": "Agent ma pytanie",
+      "sending": "Wysyłanie…",
+      "answer": "Odpowiedz",
+      "approvalRequired": "Wymaga akceptacji",
+      "run": "Uruchom <code>{tool}</code>",
+      "failed": "Błąd",
+      "failedAt": "Błąd {date}",
+      "review": "Sprawdź i ponów"
+    }
+  },
+  "errors": {
+    "title": "Coś poszło nie tak",
+    "description": "Nie udało się wczytać tej strony. Backend może być niedostępny.",
+    "errorId": "ID błędu: {id}",
+    "notFoundTitle": "Nie ma takiej strony",
+    "notFoundDescription": "Ta strona nie istnieje albo należy do innego konta.",
+    "unreachable": "Nie udało się połączyć z serwerem. Spróbuj ponownie.",
+    "validation": "Popraw dane i spróbuj ponownie.",
+    "unknown": "Coś poszło nie tak. Spróbuj ponownie za chwilę."
+  },
+  "executions": {
+    "title": "Wykonania",
+    "status": {
+      "QUEUED": "W kolejce",
+      "RUNNING": "W toku",
+      "WAITING_FOR_APPROVAL": "Czeka na akceptację",
+      "COMPLETED": "Zakończone",
+      "FAILED": "Błąd",
+      "CANCELLED": "Anulowane"
+    },
+    "filter": {
+      "label": "Filtruj po statusie",
+      "all": "Wszystkie"
+    },
+    "columns": {
+      "task": "Zadanie",
+      "agent": "Agent",
+      "status": "Status",
+      "duration": "Czas",
+      "started": "Start"
+    },
+    "delete": {
+      "title": "Usunąć to wykonanie?",
+      "message": "Jego kroki, akceptacje i utworzone pliki też zostaną usunięte. Tego nie da się cofnąć.",
+      "confirm": "Usuń wykonanie",
+      "label": "Usuń wykonanie"
+    },
+    "recent": {
+      "title": "Ostatnie wykonania",
+      "viewAll": "Zobacz wszystkie",
+      "empty": "Brak wykonań. Zleć zadanie jednemu ze swoich agentów."
+    },
+    "details": {
+      "title": "Szczegóły",
+      "agent": "Agent",
+      "provider": "Dostawca",
+      "model": "Model",
+      "created": "Utworzono"
+    },
+    "metrics": {
+      "duration": "Czas",
+      "llmCalls": "Wywołania LLM",
+      "toolCalls": "Wywołania narzędzi",
+      "retries": "Ponowienia",
+      "tokens": "Tokeny"
+    },
+    "run": {
+      "title": "Co ma zrobić {agent}?",
+      "placeholder": "Przeanalizuj nasze wydatki z Q1 i porównaj je z Q4. Znajdź nietypowe koszty i przygotuj raport.",
+      "submit": "Uruchom agenta",
+      "starting": "Uruchamianie…",
+      "inactive": "Aktywuj tego agenta, żeby zlecać mu zadania.",
+      "errors": {
+        "empty": "Opisz, co agent ma zrobić.",
+        "tooLong": "Zadanie może mieć maksymalnie {max} znaków.",
+        "agentInactive": "Ten agent jest nieaktywny. Aktywuj go, żeby zlecać zadania.",
+        "failed": "Nie udało się uruchomić wykonania. Spróbuj ponownie.",
+        "RATE_LIMIT_STARTS": "Możesz uruchomić maksymalnie {limit} zadań na minutę. Poczekaj chwilę i spróbuj ponownie.",
+        "RATE_LIMIT_CONCURRENT": "Masz już {active} zadań w toku lub w kolejce (limit {limit}). Poczekaj, aż któreś się skończy, albo je anuluj.",
+        "DAILY_TOKEN_LIMIT": "Wykorzystano dzienny limit tokenów ({limit}). Odnowi się o północy."
+      }
+    },
+    "steps": {
+      "plan": "Planowanie",
+      "final": "Wynik końcowy",
+      "toolCall": "Wywołanie narzędzia"
+    },
+    "lead": "Wszystkie zadania wykonane przez Twoich agentów, od najnowszych.",
+    "emptyAll": "Brak wykonań. Zleć zadanie jednemu ze swoich agentów.",
+    "emptyStatus": "Brak wykonań ze statusem „{status}”.",
+    "page": {
+      "delete": "Usuń",
+      "deleting": "Usuwanie…",
+      "stopTitle": "Zatrzymać to wykonanie?",
+      "stopMessage": "Agent zatrzyma się natychmiast i kolejne kroki nie zostaną uruchomione.",
+      "stop": "Zatrzymaj wykonanie",
+      "stopping": "Zatrzymywanie…",
+      "failed": "Wykonanie nie powiodło się",
+      "steps": "Kroki",
+      "live": "Na żywo"
+    },
+    "task": {
+      "title": "Zadanie",
+      "retry": "Ponów wykonanie",
+      "retryTitle": "Ponów to wykonanie",
+      "retryLead": "Uruchamia nowe wykonanie agenta {agent} z zadaniem poniżej i aktualną konfiguracją agenta. Jeśli chcesz, najpierw zmień treść zadania. To wykonanie zostaje w historii."
+    },
+    "stepStatus": {
+      "PENDING": "Oczekuje",
+      "RUNNING": "W toku",
+      "WAITING_FOR_APPROVAL": "Czeka na akceptację",
+      "COMPLETED": "Zakończony",
+      "FAILED": "Błąd",
+      "SKIPPED": "Pominięty"
+    },
+    "stepDescription": {
+      "running": "W toku…",
+      "planCreated": "Utworzono plan wykonania",
+      "finalProduced": "Przygotowano wynik końcowy"
+    },
+    "attempt": "Próba {attempt}",
+    "preparing": "Agent przygotowuje plan…",
+    "stepDetails": {
+      "step": "Krok {position}",
+      "duration": "Czas",
+      "attempt": "Próba",
+      "input": "Wejście",
+      "output": "Wyjście",
+      "noData": "Dla tego kroku nie zapisano wejścia ani wyjścia."
+    },
+    "result": {
+      "title": "Wynik",
+      "pending": "Odpowiedź pojawi się tutaj, gdy agent skończy",
+      "cancelled": "Wykonanie anulowano, zanim agent odpowiedział.",
+      "noAnswer": "Agent nie przygotował odpowiedzi.",
+      "reports": "Raporty",
+      "charts": "{count, plural, one {# wykres} few {# wykresy} many {# wykresów} other {# wykresu}}",
+      "open": "Otwórz",
+      "download": "Pobierz",
+      "preview": "Podgląd: {name}",
+      "emails": "Wysłane e-maile",
+      "sentTo": "Wysłano do {to}",
+      "calculations": "Obliczenia",
+      "name": "Nazwa",
+      "formula": "Wzór",
+      "value": "Wartość",
+      "answers": "Twoje odpowiedzi",
+      "apiWrites": "Zmiany wprowadzone przez API",
+      "sources": "Źródła"
+    }
+  },
+  "files": {
+    "title": "Pliki",
+    "lead": "Pliki wgrane przez Ciebie jako wiedza i pliki utworzone przez agentów podczas wykonań.",
+    "empty": {
+      "all": "Nie ma jeszcze plików. Wgraj dokument w sekcji Wiedza albo uruchom agenta, który tworzy raport.",
+      "uploaded": "Nie wgrałeś jeszcze żadnych plików. Zrobisz to w sekcji Wiedza.",
+      "generated": "Nie ma jeszcze plików. Tutaj pojawią się raporty tworzone przez agentów."
+    },
+    "filter": {
+      "label": "Filtruj po źródle",
+      "all": "Wszystkie",
+      "uploaded": "Wgrane przez Ciebie",
+      "generated": "Utworzone przez agentów"
+    },
+    "source": {
+      "uploaded": "Wgrany",
+      "generated": "Wygenerowany"
+    },
+    "columns": {
+      "name": "Nazwa",
+      "source": "Źródło",
+      "agent": "Agent"
+    },
+    "knowledgeOf": "Wiedza agentów: {agents}",
+    "notAttached": "Niepodpięty do żadnego agenta",
+    "download": "Pobierz {name}",
+    "delete": {
+      "title": "Usunąć „{name}”?",
+      "label": "Usuń {name}",
+      "generated": "Plik zostanie trwale usunięty i nie będzie można go już pobrać.",
+      "usedBy": "Dokument zostanie usunięty z biblioteki i od {count, plural, one {# agenta, który go używa} few {# agentów, którzy go używają} many {# agentów, którzy go używają} other {# agentów, którzy go używają}}. Żeby odpiąć go tylko od jednego agenta, użyj „Usuń” na stronie tego agenta. Tego nie da się cofnąć.",
+      "unused": "Dokument zostanie usunięty z biblioteki. Tego nie da się cofnąć.",
+      "document": "Usuń dokument",
+      "file": "Usuń plik"
+    },
+    "execution": "Pliki"
+  },
+  "format": {
+    "today": "Dziś {time}",
+    "yesterday": "Wczoraj {time}",
+    "milliseconds": "{value} ms",
+    "seconds": "{value} s",
+    "minutes": "{minutes} min {seconds} s",
+    "bytes": "{value} B",
+    "kilobytes": "{value} KB",
+    "megabytes": "{value} MB"
+  },
+  "knowledge": {
+    "title": "Wiedza",
+    "lead": "Dokumenty, które mogą czytać Twoi agenci. Podepnij je do agenta na jego stronie. Wgrane pliki widać też w sekcji Pliki.",
+    "library": "Biblioteka",
+    "empty": "Nie ma jeszcze dokumentów. Wgraj pierwszy powyżej.",
+    "notUsed": "Nieużywany przez żadnego agenta",
+    "upload": {
+      "title": "Wgraj dokument",
+      "lead": "PDF, TXT, Markdown, CSV lub JSON, do 5 MB. Tekst jest dzielony na fragmenty, które agenci mogą przeszukiwać.",
+      "field": "Dokument",
+      "submit": "Wgraj",
+      "pending": "Wgrywanie…",
+      "done": "Wgrano {name}.",
+      "errors": {
+        "noFile": "Wybierz plik do wgrania.",
+        "tooLarge": "Plik może mieć maksymalnie 5 MB.",
+        "FILE_NO_TEXT": "Plik nie zawiera tekstu.",
+        "PDF_UNREADABLE": "Nie udało się odczytać pliku PDF.",
+        "FILE_TYPE_UNSUPPORTED": "Nieobsługiwany typ pliku. Obsługiwane: {types}.",
+        "invalid": "Nie udało się wgrać tego pliku."
+      }
+    }
+  },
+  "meta": {
+    "title": "Agent Platform",
+    "description": "Twórz, uruchamiaj i nadzoruj agentów AI."
+  },
+  "nav": {
+    "label": "Nawigacja główna",
+    "dashboard": "Pulpit",
+    "agents": "Agenci",
+    "executions": "Wykonania",
+    "knowledge": "Wiedza",
+    "files": "Pliki",
+    "connections": "Połączenia",
+    "tools": "Narzędzia",
+    "approvals": "Akceptacje",
+    "settings": "Ustawienia",
+    "openMenu": "Otwórz menu",
+    "closeMenu": "Zamknij menu",
+    "signOut": "Wyloguj się"
+  },
+  "permissions": {
+    "title": "Uprawnienia",
+    "lead": "Backend egzekwuje je przy każdym wywołaniu narzędzia, niezależnie od decyzji modelu.",
+    "save": "Zapisz uprawnienia"
+  },
+  "picker": {
+    "found": "znaleziono",
+    "selectAll": "Zaznacz wszystkie",
+    "clear": "Wyczyść",
+    "noMatch": "Nic nie pasuje do „{query}”.",
+    "attaching": "Dodawanie…",
+    "documents": {
+      "open": "Dodaj dokumenty",
+      "search": "Szukaj dokumentów",
+      "count": "{count, plural, one {# dokument} few {# dokumenty} many {# dokumentów} other {# dokumentu}}",
+      "attach": "{count, plural, =0 {Dodaj} one {Dodaj # dokument} few {Dodaj # dokumenty} many {Dodaj # dokumentów} other {Dodaj # dokumentu}}"
+    },
+    "connections": {
+      "open": "Dodaj połączenia",
+      "search": "Szukaj połączeń",
+      "count": "{count, plural, one {# połączenie} few {# połączenia} many {# połączeń} other {# połączenia}}",
+      "attach": "{count, plural, =0 {Dodaj} one {Dodaj # połączenie} few {Dodaj # połączenia} many {Dodaj # połączeń} other {Dodaj # połączenia}}"
+    }
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "lead": "Twoje konto i bezpieczeństwo.",
+    "account": "Konto",
+    "name": "Imię",
+    "email": "E-mail",
+    "language": "Język interfejsu",
+    "password": {
+      "title": "Hasło",
+      "lead": "Użyj co najmniej {min} znaków. Na tym urządzeniu zostaniesz zalogowany.",
+      "current": "Obecne hasło",
+      "new": "Nowe hasło",
+      "newHint": "Co najmniej {min} znaków.",
+      "confirm": "Powtórz nowe hasło",
+      "submit": "Zmień hasło",
+      "changed": "Hasło zostało zmienione.",
+      "errors": {
+        "currentRequired": "Podaj obecne hasło.",
+        "sameAsCurrent": "Wybierz hasło inne niż obecne.",
+        "confirmRequired": "Powtórz nowe hasło.",
+        "mismatch": "Hasła się nie zgadzają.",
+        "CURRENT_PASSWORD_INCORRECT": "Obecne hasło jest nieprawidłowe."
+      }
+    }
+  },
+  "tools": {
+    "title": "Narzędzia",
+    "lead": "Wszystko, co agent może dostać pozwolenie robić. Narzędzia włączasz osobno dla każdego agenta na jego stronie; backend sprawdza uprawnienie przy każdym wywołaniu.",
+    "categoriesLabel": "Kategorie narzędzi",
+    "categories": {
+      "documents": {
+        "label": "Dokumenty",
+        "description": "Czytanie, wyszukiwanie i porównywanie plików z bazy wiedzy agenta."
+      },
+      "analysis": {
+        "label": "Analizy i raporty",
+        "description": "Dokładne obliczenia i raporty, które agent zapisuje w Plikach."
+      },
+      "web": {
+        "label": "Internet i API",
+        "description": "Wyszukiwanie w internecie, czytanie stron i wywołania podłączonych API."
+      },
+      "communication": {
+        "label": "Komunikacja",
+        "description": "Kontakt poza wykonaniem: e-mail albo pytanie do Ciebie."
+      }
+    },
+    "resources": {
+      "financial_data": "Dane finansowe",
+      "documents": "Dokumenty",
+      "reports": "Raporty",
+      "email": "E-mail",
+      "web": "Internet",
+      "connections": "Połączenia"
+    },
+    "actions": {
+      "read": "Odczyt",
+      "search": "Wyszukiwanie",
+      "modify": "Modyfikacja",
+      "delete": "Usuwanie",
+      "create": "Tworzenie",
+      "send": "Wysyłanie"
+    },
+    "permission": "{resource} · {action}",
+    "noPermission": "Bez uprawnień",
+    "waitsForAnswer": "Czeka na Twoją odpowiedź",
+    "alwaysApproval": "Zawsze wymaga akceptacji",
+    "card": {
+      "permission": "Uprawnienie",
+      "noneNeeded": "Niepotrzebne",
+      "approval": "Akceptacja",
+      "approvalAlways": "Zawsze, przy każdym wywołaniu",
+      "approvalOptional": "Opcjonalna, ustawiana dla agenta",
+      "input": "Wejście",
+      "noFields": "Brak pól",
+      "outputFields": "Pola wyjściowe",
+      "field": "Pole",
+      "type": "Typ"
+    },
+    "agent": {
+      "title": "Narzędzia",
+      "lead": "Agent może wywoływać tylko narzędzia, które tu włączysz.",
+      "enabledCount": "{enabled}/{total} włączonych",
+      "all": "Wszystkie narzędzia",
+      "enable": "Włącz {name}",
+      "needsPermission": "Wymaga uprawnienia {permission} w sekcji Uprawnienia poniżej.",
+      "approval": "Akceptacja",
+      "requireApproval": "Wymagaj akceptacji dla {name}"
+    },
+    "catalog": {
+      "askUser": {
+        "summary": "Wstrzymuje wykonanie, żeby zadać Ci pytanie.",
+        "description": "Zadaje pytanie i wstrzymuje wykonanie do czasu odpowiedzi. Agent używa go tylko wtedy, gdy zadanie jest niejednoznaczne albo brakuje mu informacji, której nie znajdzie w dokumentach ani innymi narzędziami, np. jaki okres przeanalizować albo kto ma dostać raport. Może zaproponować do 6 gotowych odpowiedzi. Pytanie można pominąć – wtedy agent działa według najlepszej oceny i zaznacza przyjęte założenie."
+      },
+      "calculate": {
+        "summary": "Dokładnie liczy sumy, średnie i zmiany procentowe.",
+        "description": "Wykonuje obliczenia dokładnie, zamiast liczyć „w głowie” modelu: sumy, różnice, proporcje, wzrosty i prognozy. Przyjmuje znalezione liczby jako zmienne i listę nazwanych obliczeń, z których każde może korzystać z wyników poprzednich. Obsługuje operatory + - * / % ^, nawiasy oraz funkcje takie jak pct, pct_change i cagr."
+      },
+      "compareDocuments": {
+        "summary": "Pokazuje, co zmieniło się między dwiema wersjami dokumentu.",
+        "description": "Porównuje linia po linii dwa dokumenty podpięte do agenta, np. dwie wersje umowy, regulaminu albo cennika. Zwraca wskaźnik podobieństwa (0–1), liczbę linii bez zmian, dodanych i usuniętych oraz listę zmian z numerami linii. Różnice w białych znakach i puste linie są pomijane."
+      },
+      "extractTable": {
+        "summary": "Zamienia tabele z plików CSV, JSON i Markdown na wiersze i kolumny.",
+        "description": "Wyciąga tabele z dokumentu podpiętego do agenta jako uporządkowane wiersze i kolumny. Działa dla plików CSV/TSV, tablic obiektów JSON i tabel Markdown; tabele w PDF-ach nie są wykrywane. Kolumny liczbowe (także z walutą, % lub separatorami tysięcy) wracają jako liczby, gotowe do obliczeń."
+      },
+      "fetchUrl": {
+        "summary": "Czyta stronę internetową albo PDF online jako zwykły tekst.",
+        "description": "Pobiera publiczną stronę (HTML, tekst, JSON lub PDF) i zwraca jej czytelną treść. Służy do czytania stron znalezionych przez webSearch albo adresów podanych w zadaniu. Adresy prywatne i z sieci lokalnej są blokowane, a długie strony są przycinane. Treść strony jest traktowana jako niezaufane dane – agent nie wykonuje znalezionych w niej poleceń."
+      },
+      "generateReport": {
+        "summary": "Tworzy raport HTML z tabelami i wykresami.",
+        "description": "Buduje końcowy raport jako samodzielny plik HTML z opcjonalnymi wykresami (słupkowymi do porównań, liniowymi do trendów) i zapisuje go do pobrania. Raport zawiera tylko fakty i liczby z wyników narzędzi, a prognozy i założenia są oznaczone. Zwraca identyfikator pliku, który sendEmail może dołączyć jako załącznik."
+      },
+      "httpRequest": {
+        "summary": "Wywołuje API z połączeń podpiętych do agenta.",
+        "description": "Wywołuje API HTTP przez połączenie skonfigurowane dla agenta: nazwa połączenia, metoda i ścieżka względem bazowego adresu. Uwierzytelnienie dodaje platforma, więc agent nigdy nie widzi kluczy ani tokenów. Żądania GET wykonują się od razu, każda inna metoda czeka na Twoją akceptację. Można użyć tylko metod dozwolonych w połączeniu."
+      },
+      "readDocument": {
+        "summary": "Czyta pełny tekst dokumentów agenta.",
+        "description": "Zwraca pełny tekst dokumentów z bazy wiedzy agenta (plików wgranych przez Ciebie i podpiętych do tego agenta). Bez wskazania dokumentu zwraca pierwsze podpięte dokumenty i listę pozostałych. Przydaje się, gdy potrzebne są wszystkie dane z pliku, np. tabela finansowa. Bardzo długie dokumenty są przycinane."
+      },
+      "searchDocuments": {
+        "summary": "Znajduje najtrafniejsze fragmenty w dokumentach agenta.",
+        "description": "Przeszukuje bazę wiedzy agenta (dokumenty podpięte do tego agenta) po słowach kluczowych. Zwraca najtrafniejsze fragmenty tekstu z nazwą dokumentu, z którego pochodzą."
+      },
+      "sendEmail": {
+        "summary": "Wysyła e-mail, opcjonalnie z wygenerowanym raportem w załączniku.",
+        "description": "Wysyła e-mail tekstowy do jednego odbiorcy. Raport utworzony w tym wykonaniu można dołączyć jako załącznik."
+      },
+      "webSearch": {
+        "summary": "Przeszukuje internet i zwraca najlepsze wyniki.",
+        "description": "Przeszukuje publiczny internet i zwraca najlepiej pasujące strony z tytułem, adresem i krótkim fragmentem. Służy do aktualnych lub publicznych informacji, których nie ma w dokumentach (wiadomości, firmy, ceny, przepisy). Agent czyta najważniejsze wyniki przez fetchUrl i podaje użyte źródła. Treści z sieci są niezaufanymi danymi, nie poleceniami."
+      }
+    }
+  }
+}

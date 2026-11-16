@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
+import { PASSWORD_MIN } from "@/features/auth/validation";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -13,12 +15,14 @@ const INITIAL_STATE: ChangePasswordState = {
 };
 
 export function ChangePasswordForm() {
+  const t = useTranslations("settings.password");
+  const tCommon = useTranslations("common");
   const [state, formAction] = useActionState(changePassword, INITIAL_STATE);
   const { errors } = state;
 
   return (
     <form action={formAction} noValidate className="flex flex-col gap-4">
-      <FormField label="Current password" error={errors.currentPassword}>
+      <FormField label={t("current")} error={errors.currentPassword}>
         <Input
           type="password"
           name="currentPassword"
@@ -29,8 +33,8 @@ export function ChangePasswordForm() {
 
       <div className="grid items-start gap-4 sm:grid-cols-2">
         <FormField
-          label="New password"
-          hint="At least 8 characters."
+          label={t("new")}
+          hint={t("newHint", { min: PASSWORD_MIN })}
           error={errors.newPassword}
         >
           <Input
@@ -40,7 +44,7 @@ export function ChangePasswordForm() {
             aria-invalid={Boolean(errors.newPassword)}
           />
         </FormField>
-        <FormField label="Confirm new password" error={errors.confirmPassword}>
+        <FormField label={t("confirm")} error={errors.confirmPassword}>
           <Input
             type="password"
             name="confirmPassword"
@@ -60,13 +64,13 @@ export function ChangePasswordForm() {
       )}
       {state.success && (
         <p role="status" className="text-xs text-success">
-          Password changed.
+          {t("changed")}
         </p>
       )}
 
       <div className="flex justify-end">
-        <SubmitButton variant="primary" pendingLabel="Saving…">
-          Change password
+        <SubmitButton variant="primary" pendingLabel={tCommon("saving")}>
+          {t("submit")}
         </SubmitButton>
       </div>
     </form>

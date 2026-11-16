@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ConfirmForm } from "@/components/ui/confirm-form";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { deleteExecution } from "@/features/executions/actions";
 import { AgentAvatar } from "@/features/agents/components/agent-avatar";
 import { ExecutionStatusBadge } from "@/features/executions/components/execution-status-badge";
 import { isActiveStatus } from "@/features/executions/labels";
-import { formatDuration, formatExecutionDate, getDurationMs } from "@/lib/format";
+import { getDurationMs, useFormat } from "@/lib/format";
 import type { ExecutionWithAgent } from "@/features/executions/types";
 
 const ROW_GRID =
@@ -18,6 +19,9 @@ type ExecutionTableProps = {
 };
 
 export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps) {
+  const t = useTranslations("executions");
+  const format = useFormat();
+
   if (executions.length === 0) {
     return (
       <p className="rounded-xl border border-border bg-surface px-6 py-12 text-center text-fg-muted">
@@ -31,11 +35,11 @@ export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps
       <div
         className={`${ROW_GRID} border-b border-border px-[18px] py-2.5 text-xs font-medium text-fg-muted`}
       >
-        <span>Task</span>
-        <span className="hidden md:block">Agent</span>
-        <span>Status</span>
-        <span className="hidden text-right md:block">Duration</span>
-        <span className="hidden text-right md:block">Started</span>
+        <span>{t("columns.task")}</span>
+        <span className="hidden md:block">{t("columns.agent")}</span>
+        <span>{t("columns.status")}</span>
+        <span className="hidden text-right md:block">{t("columns.duration")}</span>
+        <span className="hidden text-right md:block">{t("columns.started")}</span>
         <span className="hidden md:block" />
       </div>
 
@@ -71,24 +75,24 @@ export function ExecutionTable({ executions, emptyMessage }: ExecutionTableProps
                 <ExecutionStatusBadge status={execution.status} fixedWidth />
               </div>
               <span className="hidden text-right font-mono text-xs text-fg-muted md:block">
-                {durationMs === null ? "—" : formatDuration(durationMs)}
+                {durationMs === null ? "—" : format.duration(durationMs)}
               </span>
               <span className="hidden text-right font-mono text-xs text-fg-muted md:block">
-                {formatExecutionDate(execution.createdAt)}
+                {format.executionDate(execution.createdAt)}
               </span>
               <div className="relative z-10 hidden md:block">
                 {!isActiveStatus(execution.status) && (
                   <ConfirmForm
                     action={deleteExecution.bind(null, execution.id, null)}
-                    title="Delete this execution?"
-                    message="Its steps, approvals and the files it created are deleted too. This cannot be undone."
-                    confirmLabel="Delete execution"
+                    title={t("delete.title")}
+                    message={t("delete.message")}
+                    confirmLabel={t("delete.confirm")}
                   >
                     <SubmitButton
                       variant="ghost"
                       pendingLabel="…"
                       className="px-2"
-                      aria-label="Delete execution"
+                      aria-label={t("delete.label")}
                     >
                       <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
                     </SubmitButton>
