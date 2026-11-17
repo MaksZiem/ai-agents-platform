@@ -101,7 +101,6 @@ export class GeminiPlanner extends Planner {
 
     if (!content || (toolCalls.length === 0 && !text)) {
       const reason = response.candidates?.[0]?.finishReason ?? 'unknown';
-      // A malformed tool call is a random model slip; asking again usually works.
       throw new ModelCallError(
         'EMPTY_RESPONSE',
         `Model returned no answer (finish reason: ${reason})`,
@@ -140,7 +139,6 @@ export class GeminiPlanner extends Planner {
         continue;
       }
 
-      // All results of one model turn go back together in a single message.
       if (!responses) {
         responses = [];
         contents.push({ role: 'user', parts: responses });
@@ -220,7 +218,6 @@ export class GeminiPlanner extends Planner {
 
     return {
       inputTokens: metadata.promptTokenCount ?? 0,
-      // Thinking models bill their reasoning as output tokens too.
       outputTokens:
         (metadata.candidatesTokenCount ?? 0) +
         (metadata.thoughtsTokenCount ?? 0),
@@ -234,7 +231,6 @@ export class GeminiPlanner extends Planner {
       const message = `Gemini API ${error.status}${parsed.status ? ` ${parsed.status}` : ''} (${agentModel}): ${parsed.message}`;
 
       if (error.status === 429) {
-        // Per-minute limits clear quickly; a daily quota does not.
         const retryable =
           retryDelaySeconds === null ||
           retryDelaySeconds <= MAX_RATE_LIMIT_WAIT_SECONDS;
@@ -244,7 +240,6 @@ export class GeminiPlanner extends Planner {
       return new ModelCallError('MODEL_ERROR', message, error.status >= 500);
     }
 
-    // Network errors and timeouts.
     return new ModelCallError(
       'MODEL_UNAVAILABLE',
       `Gemini (${agentModel}) did not respond: ${error instanceof Error ? error.message : String(error)}`,
@@ -252,7 +247,6 @@ export class GeminiPlanner extends Planner {
     );
   }
 
-  // The SDK puts the whole JSON error body into the message.
   private parseApiError(error: ApiError): {
     message: string;
     status: string | null;

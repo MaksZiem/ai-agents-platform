@@ -12,7 +12,6 @@ import {
 import { Agent } from '../../agents/entities/agent.entity.js';
 import { KnowledgeDocument } from './knowledge-document.entity.js';
 
-// Which documents an agent can search. One document can serve many agents.
 @Entity('agent_documents')
 @Unique(['agentId', 'documentId'])
 export class AgentDocument {

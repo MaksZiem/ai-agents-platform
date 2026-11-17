@@ -74,7 +74,6 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    // 400, not 401: the session is fine, only the typed password is wrong.
     if (!(await argon2.verify(user.passwordHash, dto.currentPassword))) {
       throw new BadRequestException(
         errorBody(

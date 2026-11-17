@@ -23,8 +23,6 @@ export interface ToolPermission {
   action: ToolAction;
 }
 
-// What a tool may use besides its input. Built by the ToolExecutor for one
-// agent, so a tool can never reach another agent's data.
 export interface ToolFileInput {
   name: string;
   mimeType: string;

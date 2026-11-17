@@ -3,7 +3,6 @@ import type { Execution } from './entities/execution.entity.js';
 import { StepStatus, StepType } from './execution-step-enums.js';
 
 export interface ExecutionMetrics {
-  // null until the execution starts; counts up while it is running.
   durationMs: number | null;
   llmCalls: number;
   toolCalls: number;

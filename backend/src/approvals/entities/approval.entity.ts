@@ -50,7 +50,6 @@ export class Approval {
   @Column({ type: 'jsonb' })
   input: Record<string, unknown>;
 
-  // Why the agent wants to run the tool, in its own words.
   @Column({ type: 'text', nullable: true })
   reason: string | null;
 

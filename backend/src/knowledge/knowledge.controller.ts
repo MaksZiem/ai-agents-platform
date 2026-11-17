@@ -60,7 +60,6 @@ const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 export class KnowledgeController {
   constructor(private readonly knowledgeService: KnowledgeService) {}
 
-  // multipart/form-data with the document in the "file" field.
   @Post()
   @UseInterceptors(
     FileInterceptor('file', { limits: { fileSize: MAX_UPLOAD_BYTES } }),

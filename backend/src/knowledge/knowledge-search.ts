@@ -23,7 +23,6 @@ export interface DocumentText {
 const MIN_TERM_LENGTH = 3;
 const MAX_TERMS = 8;
 
-// Words worth searching for: lowercase, unique, without very short ones.
 export function searchTerms(query: string): string[] {
   const words = query.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
 
@@ -32,9 +31,6 @@ export function searchTerms(query: string): string[] {
   ].slice(0, MAX_TERMS);
 }
 
-// Keyword relevance: every occurrence counts, and chunks matching more
-// distinct terms rank higher. Embeddings can replace this later without
-// changing the callers.
 export function scoreChunk(content: string, terms: string[]): number {
   const text = content.toLowerCase();
   let occurrences = 0;

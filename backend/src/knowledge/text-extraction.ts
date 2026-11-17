@@ -7,7 +7,6 @@ const TEXT_EXTENSIONS = new Set(['.txt', '.md', '.markdown', '.csv', '.json']);
 
 export const SUPPORTED_EXTENSIONS = [...TEXT_EXTENSIONS, '.pdf'];
 
-// PostgreSQL text columns cannot store NUL characters.
 export async function extractDocumentText(
   fileName: string,
   buffer: Buffer,

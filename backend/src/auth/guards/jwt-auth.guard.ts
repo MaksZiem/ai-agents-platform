@@ -18,7 +18,6 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // WebSocket connections are authenticated once, in the gateway middleware.
     if (context.getType() !== 'http') {
       return true;
     }

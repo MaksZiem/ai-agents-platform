@@ -39,8 +39,6 @@ type AttemptResult<T> =
 
 interface PendingToolCall {
   call: ModelToolCall;
-  // The text the model wrote alongside its tool calls, shown as the
-  // reason on approval requests.
   reason: string | null;
 }
 
@@ -100,7 +98,6 @@ export class ExecutionRunner {
     }
   }
 
-  // Brings the execution to RUNNING. Returns false when there is nothing to do.
   private async prepare(execution: Execution): Promise<boolean> {
     switch (execution.status) {
       case ExecutionStatus.QUEUED:
@@ -110,8 +107,6 @@ export class ExecutionRunner {
       case ExecutionStatus.WAITING_FOR_APPROVAL:
         return this.resolveApproval(execution);
       case ExecutionStatus.RUNNING:
-        // BullMQ hands a job back after a worker crash. Steps that were
-        // running are marked failed and the model decides how to go on.
         this.logger.warn(`Recovering execution ${execution.id}`);
         await this.state.interruptRunningSteps(execution.id);
         return true;
@@ -169,9 +164,6 @@ export class ExecutionRunner {
     return outcome === 'continue';
   }
 
-  // The agent loop: run the tool calls of the last model turn one by one,
-  // then ask the model what to do next, until it answers in text.
-  // All state lives in the steps, so the loop can resume from any point.
   private async loop(execution: Execution): Promise<void> {
     const context = await this.loadAgentContext(execution);
 
@@ -219,7 +211,6 @@ export class ExecutionRunner {
     }
   }
 
-  // Returns true when the execution has ended.
   private async takeModelTurn(
     execution: Execution,
     steps: ExecutionStep[],
@@ -281,7 +272,6 @@ export class ExecutionRunner {
       return false;
     }
 
-    // The user may have cancelled while the model was writing the answer.
     if (!(await this.isStillRunning(execution))) {
       await this.state.finishStep(step, StepStatus.SKIPPED);
       return true;
@@ -323,8 +313,6 @@ export class ExecutionRunner {
     }
 
     if (result.kind === 'failed') {
-      // Not fatal: the model sees the error on its next turn and can
-      // fix its input, try something else or explain the problem.
       await this.state.finishStep(step, StepStatus.FAILED, {
         error: result.reason,
       });
@@ -346,7 +334,6 @@ export class ExecutionRunner {
     return 'continue';
   }
 
-  // Runs `call`, retrying retryable errors with a growing delay.
   private async withRetries<T>(
     execution: Execution,
     step: ExecutionStep,
@@ -399,7 +386,6 @@ export class ExecutionRunner {
     }
   }
 
-  // The next tool call of the last model turn that has no step yet.
   private findPendingToolCall(steps: ExecutionStep[]): PendingToolCall | null {
     const turnIndex = steps.findLastIndex(
       (step) =>

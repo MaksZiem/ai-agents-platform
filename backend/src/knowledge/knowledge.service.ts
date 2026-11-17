@@ -21,7 +21,6 @@ import {
 import { extractDocumentText } from './text-extraction.js';
 import { errorBody } from '../common/error-body.js';
 
-// Upper bound of candidate chunks loaded for ranking in a single search.
 const MAX_SEARCH_CANDIDATES = 200;
 const MAX_DOCUMENT_CHARACTERS = 30_000;
 
@@ -55,7 +54,6 @@ export class KnowledgeService {
     userId: string,
     file: UploadedDocumentFile,
   ): Promise<KnowledgeDocument> {
-    // Multer decodes file names as latin1; restore UTF-8 names like "budżet.pdf".
     const name = Buffer.from(file.originalname, 'latin1').toString('utf8');
     const text = await extractDocumentText(name, file.buffer);
     const chunks = chunkText(text);
@@ -192,8 +190,6 @@ export class KnowledgeService {
     await this.agentDocumentsRepository.remove(link);
   }
 
-  // Keyword search over the documents attached to an agent. Used by the
-  // searchDocuments tool, so it is scoped by agent, not by user.
   async search(
     agentId: string,
     query: string,
@@ -207,8 +203,6 @@ export class KnowledgeService {
     }
 
     const documentIds = In(links.map((link) => link.documentId));
-    // Terms only contain letters and digits, so there are no LIKE wildcards
-    // to escape. An array of conditions means OR.
     const chunks = await this.chunksRepository.find({
       where: terms.map((term) => ({
         documentId: documentIds,

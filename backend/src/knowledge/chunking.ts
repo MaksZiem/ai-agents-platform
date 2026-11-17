@@ -5,9 +5,6 @@ export interface ChunkOptions {
 
 const DEFAULT_OPTIONS: ChunkOptions = { size: 1_000, overlap: 150 };
 
-// Splits text into chunks of at most `size` characters, preferring to cut
-// at paragraph, line and sentence boundaries. Consecutive chunks share
-// `overlap` characters so a fact split across a boundary stays findable.
 export function chunkText(
   text: string,
   { size, overlap }: ChunkOptions = DEFAULT_OPTIONS,
@@ -70,7 +67,6 @@ function sharedLength(text: string, next: string, overlap: number): number {
   return 0;
 }
 
-// The last natural break between `min` and `max`, or `max` if there is none.
 function findBreak(text: string, min: number, max: number): number {
   for (const separator of ['\n\n', '\n', '. ', ' ']) {
     const index = text.lastIndexOf(separator, max - separator.length);
