@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -29,6 +30,7 @@ export class Connection {
   @Column()
   userId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -42,18 +44,21 @@ export class Connection {
   @Column({ type: 'varchar', length: 2048 })
   baseUrl: string;
 
+  @ApiProperty({ enum: AUTH_TYPES })
   @Column({ type: 'varchar', length: 16, default: 'none' })
   authType: AuthType;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   authHeaderName: string | null;
 
+  @ApiHideProperty()
   @Column({ type: 'text', nullable: true, select: false })
   secret: string | null;
 
   @Column({ type: 'boolean', default: false })
   hasSecret: boolean;
 
+  @ApiProperty({ enum: HTTP_METHODS, isArray: true })
   @Column({ type: 'text', array: true, default: '{GET}' })
   allowedMethods: HttpMethod[];
 

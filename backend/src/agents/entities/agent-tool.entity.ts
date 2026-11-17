@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -18,6 +19,7 @@ export class AgentTool {
   @Column()
   agentId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => Agent, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'agentId' })
   agent: Agent;

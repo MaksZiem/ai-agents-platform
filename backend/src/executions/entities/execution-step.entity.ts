@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -20,6 +21,7 @@ export class ExecutionStep {
   @Column()
   executionId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => Execution, (execution) => execution.steps, {
     onDelete: 'CASCADE',
   })
@@ -38,9 +40,19 @@ export class ExecutionStep {
   @Column({ type: 'varchar', nullable: true })
   toolName: string | null;
 
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: true,
+    nullable: true,
+  })
   @Column({ type: 'jsonb', nullable: true })
   input: Record<string, unknown> | null;
 
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: true,
+    nullable: true,
+  })
   @Column({ type: 'jsonb', nullable: true })
   output: Record<string, unknown> | null;
 

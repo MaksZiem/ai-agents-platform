@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -19,6 +20,7 @@ export class GeneratedFile {
   @Column()
   userId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -27,6 +29,7 @@ export class GeneratedFile {
   @Column()
   executionId: string;
 
+  @ApiPropertyOptional({ type: () => Execution })
   @ManyToOne(() => Execution, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'executionId' })
   execution: Execution;
@@ -40,6 +43,7 @@ export class GeneratedFile {
   @Column({ type: 'int' })
   sizeBytes: number;
 
+  @ApiHideProperty()
   @Column({ type: 'text', select: false })
   content: string;
 

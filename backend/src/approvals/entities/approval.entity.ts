@@ -1,3 +1,4 @@
+import { ApiHideProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -21,6 +22,7 @@ export class Approval {
   @Column()
   executionId: string;
 
+  @ApiPropertyOptional({ type: () => Execution })
   @ManyToOne(() => Execution, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'executionId' })
   execution: Execution;
@@ -28,6 +30,7 @@ export class Approval {
   @Column({ unique: true })
   stepId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => ExecutionStep, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'stepId' })
   step: ExecutionStep;
@@ -36,6 +39,7 @@ export class Approval {
   @Column()
   userId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;

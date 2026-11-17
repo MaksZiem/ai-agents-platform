@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -19,6 +20,7 @@ export class DocumentChunk {
   @Column()
   documentId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => KnowledgeDocument, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'documentId' })
   document: KnowledgeDocument;

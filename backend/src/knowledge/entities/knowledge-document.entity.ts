@@ -1,3 +1,4 @@
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -18,6 +19,7 @@ export class KnowledgeDocument {
   @Column()
   userId: string;
 
+  @ApiHideProperty()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -37,6 +39,7 @@ export class KnowledgeDocument {
   @Column({ type: 'int' })
   chunkCount: number;
 
+  @ApiHideProperty()
   @Column({ type: 'bytea', nullable: true, select: false })
   original: Buffer | null;
 

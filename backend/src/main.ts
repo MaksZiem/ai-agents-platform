@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module.js';
 import type { Env } from './config/env.js';
 import { SocketIoAdapter } from './realtime/socket-io.adapter.js';
+import { setupSwagger } from './common/swagger/swagger.setup.js';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -23,6 +24,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  setupSwagger(app);
 
   await app.listen(config.get('PORT', { infer: true }));
 }
