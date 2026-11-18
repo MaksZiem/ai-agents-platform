@@ -10,6 +10,7 @@ coverage/
 # Env
 .env
 .env*.local
+.env.production
 
 # OS / editor
 .DS_Store
@@ -21,3 +22,6 @@ coverage/
 
 # Local agent skills
 frontend/.agents/
+
+# Private deployment notes
+DEPLOY.md
