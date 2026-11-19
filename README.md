@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/MaksZiem/ai-agents-platform/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/MaksZiem/ai-agents-platform/ci.yml?branch=main&style=flat-square&label=CI&logo=githubactions&logoColor=white" alt="CI"></a>
   <img src="https://img.shields.io/badge/status-active-8b6cff?style=flat-square" alt="Status: active">
   <img src="https://img.shields.io/badge/NestJS-12-E0234E?style=flat-square&logo=nestjs&logoColor=white" alt="NestJS 12">
   <img src="https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16">
@@ -12,7 +13,7 @@
   <img src="https://img.shields.io/badge/BullMQ-Redis-DC382D?style=flat-square&logo=redis&logoColor=white" alt="BullMQ + Redis">
   <img src="https://img.shields.io/badge/Socket.IO-010101?style=flat-square&logo=socketdotio&logoColor=white" alt="Socket.IO">
   <img src="https://img.shields.io/badge/Gemini-function%20calling-8E75B2?style=flat-square&logo=googlegemini&logoColor=white" alt="Gemini function calling">
-  <img src="https://img.shields.io/badge/tests-141%20passing-3ccf91?style=flat-square&logo=vitest&logoColor=white" alt="141 tests">
+  <img src="https://img.shields.io/badge/tests-155%20passing-3ccf91?style=flat-square&logo=vitest&logoColor=white" alt="155 tests">
 </p>
 
 <p align="center">
@@ -156,7 +157,7 @@ sequenceDiagram
 | **AI** | Google Gemini via `@google/genai`, behind a swappable `Planner` interface |
 | **Integrations** | Resend (email) · Tavily (web search) · `unpdf` · `marked` · `diff` |
 | **Auth** | JWT in an httpOnly cookie · argon2 · short-lived socket tokens |
-| **Quality** | Vitest (141 unit tests) · oxlint · Prettier · ESLint · Swagger at `/api/docs` |
+| **Quality** | Vitest (155 unit tests) · GitHub Actions CI · oxlint · Prettier · ESLint · Swagger at `/api/docs` |
 
 ## 🚀 Quick start
 
