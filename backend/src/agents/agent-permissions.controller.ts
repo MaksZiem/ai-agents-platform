@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -27,6 +20,7 @@ import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { AgentPermissionsService } from './agent-permissions.service.js';
 import { ResourcePermissionsDto } from './dto/agent-permissions-response.dto.js';
 import { UpdateAgentPermissionsDto } from './dto/update-agent-permissions.dto.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('agents')
 @ApiBearerAuth(BEARER_AUTH)
@@ -61,7 +55,7 @@ export class AgentPermissionsController {
     type: NotFoundErrorDto,
   })
   findAll(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.agentPermissionsService.findAll(agentId, user.sub);
@@ -87,7 +81,7 @@ export class AgentPermissionsController {
     type: NotFoundErrorDto,
   })
   replace(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @Body() dto: UpdateAgentPermissionsDto,
     @CurrentUser() user: JwtPayload,
   ) {

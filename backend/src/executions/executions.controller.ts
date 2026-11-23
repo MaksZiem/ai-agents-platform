@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Param,
   ParseEnumPipe,
-  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -39,6 +38,7 @@ import {
 import { Execution } from './entities/execution.entity.js';
 import { ExecutionStatus } from './execution-status.js';
 import { ExecutionsService } from './executions.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('executions')
 @ApiBearerAuth(BEARER_AUTH)
@@ -107,7 +107,7 @@ export class ExecutionsController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.executionsService.findOne(id, user.sub);
@@ -139,7 +139,7 @@ export class ExecutionsController {
     type: ConflictErrorDto,
   })
   cancel(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.executionsService.cancel(id, user.sub);
@@ -166,7 +166,7 @@ export class ExecutionsController {
     type: ConflictErrorDto,
   })
   async remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ): Promise<void> {
     await this.executionsService.remove(id, user.sub);

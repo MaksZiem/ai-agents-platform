@@ -1,14 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorResponseDto {
   @ApiProperty({ description: 'Kod statusu HTTP', example: 404 })
   statusCode: number;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description:
       'Stały kod błędu. Frontend tłumaczy komunikat na podstawie tego pola, a nie pola message',
+    example: 'NOT_FOUND',
   })
-  code?: string;
+  code: string;
 
   @ApiProperty({
     description:
@@ -18,48 +19,33 @@ export class ErrorResponseDto {
   })
   message: string | string[];
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Wartości wstawiane do przetłumaczonego komunikatu',
     type: 'object',
     additionalProperties: { oneOf: [{ type: 'string' }, { type: 'number' }] },
     example: {},
   })
-  params?: Record<string, string | number>;
-
-  @ApiPropertyOptional({
-    description: 'Nazwa błędu HTTP (zwracana przez wbudowane wyjątki Nest)',
-    example: 'Not Found',
-  })
-  error?: string;
+  params: Record<string, string | number>;
 }
 
 function errorDto(
   name: string,
   statusCode: number,
-  error: string,
   message: string | string[],
-  code?: string,
+  code: string,
 ) {
   class Dto extends ErrorResponseDto {
     @ApiProperty({ example: statusCode })
     declare statusCode: number;
 
-    @ApiPropertyOptional({
-      example: code,
-      description: code
-        ? undefined
-        : 'Dla tego statusu zwykle nieobecny (wbudowany wyjątek Nest)',
-    })
-    declare code?: string;
+    @ApiProperty({ example: code })
+    declare code: string;
 
     @ApiProperty({
       oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }],
       example: message,
     })
     declare message: string | string[];
-
-    @ApiPropertyOptional({ example: error })
-    declare error?: string;
   }
 
   Object.defineProperty(Dto, 'name', { value: name });
@@ -69,35 +55,34 @@ function errorDto(
 export const BadRequestErrorDto = errorDto(
   'BadRequestErrorDto',
   400,
-  'Bad Request',
   ['name should not be empty', 'model must be a string'],
+  'VALIDATION_FAILED',
 );
 
 export const UnauthorizedErrorDto = errorDto(
   'UnauthorizedErrorDto',
   401,
   'Unauthorized',
-  'Unauthorized',
+  'UNAUTHORIZED',
 );
 
 export const ForbiddenErrorDto = errorDto(
   'ForbiddenErrorDto',
   403,
-  'Forbidden',
   'Forbidden resource',
+  'FORBIDDEN',
 );
 
 export const NotFoundErrorDto = errorDto(
   'NotFoundErrorDto',
   404,
-  'Not Found',
   'Agent 3f1c9c2e-8a4b-4c1d-9e2f-1a2b3c4d5e6f not found',
+  'NOT_FOUND',
 );
 
 export const ConflictErrorDto = errorDto(
   'ConflictErrorDto',
   409,
-  'Conflict',
   'Connection name is already taken',
   'CONNECTION_NAME_TAKEN',
 );
@@ -105,14 +90,13 @@ export const ConflictErrorDto = errorDto(
 export const PayloadTooLargeErrorDto = errorDto(
   'PayloadTooLargeErrorDto',
   413,
-  'Payload Too Large',
   'File too large',
+  'PAYLOAD_TOO_LARGE',
 );
 
 export const TooManyRequestsErrorDto = errorDto(
   'TooManyRequestsErrorDto',
   429,
-  'Too Many Requests',
   'Too many executions started, try again in a minute',
   'RATE_LIMIT_STARTS',
 );
@@ -120,6 +104,6 @@ export const TooManyRequestsErrorDto = errorDto(
 export const ServiceUnavailableErrorDto = errorDto(
   'ServiceUnavailableErrorDto',
   503,
-  'Service Unavailable',
   'Could not schedule execution',
+  'SERVICE_UNAVAILABLE',
 );

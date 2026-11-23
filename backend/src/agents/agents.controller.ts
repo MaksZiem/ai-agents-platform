@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -34,6 +33,7 @@ import { AgentsService } from './agents.service.js';
 import { CreateAgentDto } from './dto/create-agent.dto.js';
 import { UpdateAgentDto } from './dto/update-agent.dto.js';
 import { Agent } from './entities/agent.entity.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('agents')
 @ApiBearerAuth(BEARER_AUTH)
@@ -76,7 +76,7 @@ export class AgentsController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.agentsService.findOne(id, user.sub);
@@ -99,7 +99,7 @@ export class AgentsController {
     type: NotFoundErrorDto,
   })
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @Body() dto: UpdateAgentDto,
     @CurrentUser() user: JwtPayload,
   ) {
@@ -123,7 +123,7 @@ export class AgentsController {
     type: NotFoundErrorDto,
   })
   duplicate(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.agentsService.duplicate(id, user.sub);
@@ -142,7 +142,7 @@ export class AgentsController {
     type: NotFoundErrorDto,
   })
   remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.agentsService.remove(id, user.sub);

@@ -6,7 +6,6 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
-  ParseUUIDPipe,
   Query,
   StreamableFile,
 } from '@nestjs/common';
@@ -33,6 +32,7 @@ import {
 import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { GeneratedFile } from './entities/generated-file.entity.js';
 import { FilesService } from './files.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('files')
 @ApiBearerAuth(BEARER_AUTH)
@@ -67,7 +67,7 @@ export class FilesController {
   })
   findAll(
     @CurrentUser() user: JwtPayload,
-    @Query('executionId', new ParseUUIDPipe({ optional: true }))
+    @Query('executionId', new ParseIdPipe({ optional: true }))
     executionId?: string,
   ) {
     return this.filesService.findAll(user.sub, executionId);
@@ -82,7 +82,7 @@ export class FilesController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.filesService.findOne(id, user.sub);
@@ -101,7 +101,7 @@ export class FilesController {
     type: NotFoundErrorDto,
   })
   async download(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     const result = await this.filesService.findWithContent(id, {
@@ -130,7 +130,7 @@ export class FilesController {
     type: NotFoundErrorDto,
   })
   remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.filesService.remove(id, user.sub);

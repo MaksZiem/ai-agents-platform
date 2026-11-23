@@ -24,7 +24,9 @@ Każdy błąd ma spójny format JSON:
 \`\`\`
 - \`code\` to stały identyfikator błędu, na podstawie którego frontend wyświetla przetłumaczony komunikat (PL/EN), a \`params\` zawiera wartości do wstawienia w ten komunikat.
 - \`message\` jest po angielsku i służy do debugowania.
-- Błędy walidacji (400) zwracają w \`message\` tablicę komunikatów, po jednym na każde niepoprawne pole.
+- Błędy walidacji danych wejściowych mają kod \`VALIDATION_FAILED\` i zwracają w \`message\` tablicę komunikatów, po jednym na każde niepoprawne pole.
+- Identyfikator w ścieżce, który nie jest UUID, daje błąd 400 z kodem \`INVALID_ID\` (\`params.param\` to nazwa parametru).
+- Błędy bez własnego kodu dostają kod z nazwy statusu HTTP, np. \`NOT_FOUND\` albo \`UNAUTHORIZED\`.
 
 ## Limity
 Uruchamianie zadań jest ograniczone liczbą startów na minutę, liczbą równoległych wykonań i dziennym limitem tokenów (błąd 429 z kodem \`RATE_LIMIT_STARTS\`, \`RATE_LIMIT_CONCURRENT\` lub \`DAILY_TOKEN_LIMIT\`).

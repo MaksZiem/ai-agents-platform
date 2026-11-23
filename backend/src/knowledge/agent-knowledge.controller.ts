@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Put,
 } from '@nestjs/common';
 import {
@@ -27,6 +26,7 @@ import {
 import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { AttachedDocumentDto } from './dto/knowledge-document-response.dto.js';
 import { KnowledgeService } from './knowledge.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('knowledge')
 @ApiBearerAuth(BEARER_AUTH)
@@ -55,7 +55,7 @@ export class AgentKnowledgeController {
     type: NotFoundErrorDto,
   })
   findAll(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.knowledgeService.findAllForAgent(agentId, user.sub);
@@ -81,8 +81,8 @@ export class AgentKnowledgeController {
     type: NotFoundErrorDto,
   })
   attach(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
-    @Param('documentId', ParseUUIDPipe) documentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
+    @Param('documentId', ParseIdPipe) documentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.knowledgeService.attach(agentId, documentId, user.sub);
@@ -102,8 +102,8 @@ export class AgentKnowledgeController {
     type: NotFoundErrorDto,
   })
   detach(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
-    @Param('documentId', ParseUUIDPipe) documentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
+    @Param('documentId', ParseIdPipe) documentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.knowledgeService.detach(agentId, documentId, user.sub);

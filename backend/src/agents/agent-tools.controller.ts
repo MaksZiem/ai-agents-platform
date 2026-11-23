@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Put,
 } from '@nestjs/common';
 import {
@@ -29,6 +28,7 @@ import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { AgentToolsService } from './agent-tools.service.js';
 import { AgentToolResponseDto } from './dto/agent-tool-response.dto.js';
 import { EnableAgentToolDto } from './dto/enable-agent-tool.dto.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('agents')
 @ApiBearerAuth(BEARER_AUTH)
@@ -57,7 +57,7 @@ export class AgentToolsController {
     type: NotFoundErrorDto,
   })
   findAll(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.agentToolsService.findAll(agentId, user.sub);
@@ -83,7 +83,7 @@ export class AgentToolsController {
     type: NotFoundErrorDto,
   })
   enable(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @Param('toolName') toolName: string,
     @Body() dto: EnableAgentToolDto,
     @CurrentUser() user: JwtPayload,
@@ -105,7 +105,7 @@ export class AgentToolsController {
     type: NotFoundErrorDto,
   })
   disable(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @Param('toolName') toolName: string,
     @CurrentUser() user: JwtPayload,
   ) {

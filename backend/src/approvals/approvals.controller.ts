@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Param,
   ParseEnumPipe,
-  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -37,6 +36,7 @@ import { ApprovalStatus } from './approval-status.js';
 import { ApproveDto } from './dto/approve.dto.js';
 import { Approval } from './entities/approval.entity.js';
 import { ApprovalsService } from './approvals.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('approvals')
 @ApiBearerAuth(BEARER_AUTH)
@@ -86,7 +86,7 @@ export class ApprovalsController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.approvalsService.findOne(id, user.sub);
@@ -118,7 +118,7 @@ export class ApprovalsController {
     type: ServiceUnavailableErrorDto,
   })
   approve(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
     @Body() dto: ApproveDto,
   ) {
@@ -152,7 +152,7 @@ export class ApprovalsController {
     type: ServiceUnavailableErrorDto,
   })
   reject(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.approvalsService.decide(id, user.sub, ApprovalStatus.REJECTED);

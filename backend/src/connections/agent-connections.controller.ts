@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Put,
 } from '@nestjs/common';
 import {
@@ -27,6 +26,7 @@ import {
 import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { ConnectionsService } from './connections.service.js';
 import { AttachedConnectionDto } from './dto/attached-connection.dto.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('connections')
 @ApiBearerAuth(BEARER_AUTH)
@@ -55,7 +55,7 @@ export class AgentConnectionsController {
     type: NotFoundErrorDto,
   })
   findAll(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.connectionsService.findAllForAgent(agentId, user.sub);
@@ -80,8 +80,8 @@ export class AgentConnectionsController {
     type: NotFoundErrorDto,
   })
   attach(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
-    @Param('connectionId', ParseUUIDPipe) connectionId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
+    @Param('connectionId', ParseIdPipe) connectionId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.connectionsService.attach(agentId, connectionId, user.sub);
@@ -102,8 +102,8 @@ export class AgentConnectionsController {
     type: NotFoundErrorDto,
   })
   detach(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
-    @Param('connectionId', ParseUUIDPipe) connectionId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
+    @Param('connectionId', ParseIdPipe) connectionId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.connectionsService.detach(agentId, connectionId, user.sub);

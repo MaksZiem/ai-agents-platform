@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseUUIDPipe,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -34,6 +27,7 @@ import { BEARER_AUTH } from '../common/swagger/swagger.setup.js';
 import { CreateExecutionDto } from './dto/create-execution.dto.js';
 import { Execution } from './entities/execution.entity.js';
 import { ExecutionsService } from './executions.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('executions')
 @ApiBearerAuth(BEARER_AUTH)
@@ -79,7 +73,7 @@ export class AgentExecutionsController {
     type: ServiceUnavailableErrorDto,
   })
   create(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @Body() dto: CreateExecutionDto,
     @CurrentUser() user: JwtPayload,
   ) {
@@ -98,7 +92,7 @@ export class AgentExecutionsController {
     type: NotFoundErrorDto,
   })
   findAll(
-    @Param('agentId', ParseUUIDPipe) agentId: string,
+    @Param('agentId', ParseIdPipe) agentId: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.executionsService.findAllForAgent(agentId, user.sub);

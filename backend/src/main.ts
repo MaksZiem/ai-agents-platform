@@ -5,7 +5,9 @@ import { AppModule } from './app.module.js';
 import type { Env } from './config/env.js';
 import { SocketIoAdapter } from './realtime/socket-io.adapter.js';
 import { setupSwagger } from './common/swagger/swagger.setup.js';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
+import { createValidationPipe } from './common/pipes/validation.pipe.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,12 +21,13 @@ async function bootstrap() {
     new SocketIoAdapter(app, config.get('FRONTEND_URL', { infer: true })),
   );
   app.useGlobalPipes(
-    new ValidationPipe({
+    createValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
     }),
   );
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   setupSwagger(app);
 

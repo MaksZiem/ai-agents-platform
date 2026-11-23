@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   StreamableFile,
   UploadedFile,
@@ -47,6 +46,7 @@ import {
   KnowledgeService,
   type UploadedDocumentFile,
 } from './knowledge.service.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
@@ -129,7 +129,7 @@ export class KnowledgeController {
     type: NotFoundErrorDto,
   })
   async download(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     const { name, mimeType, content } = await this.knowledgeService.download(
@@ -159,7 +159,7 @@ export class KnowledgeController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.knowledgeService.findOne(id, user.sub);
@@ -182,7 +182,7 @@ export class KnowledgeController {
     type: NotFoundErrorDto,
   })
   remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.knowledgeService.remove(id, user.sub);

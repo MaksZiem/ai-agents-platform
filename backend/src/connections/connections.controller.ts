@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -36,6 +35,7 @@ import { ConnectionsService } from './connections.service.js';
 import { CreateConnectionDto } from './dto/create-connection.dto.js';
 import { UpdateConnectionDto } from './dto/update-connection.dto.js';
 import { Connection } from './entities/connection.entity.js';
+import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
 
 @ApiTags('connections')
 @ApiBearerAuth(BEARER_AUTH)
@@ -95,7 +95,7 @@ export class ConnectionsController {
     type: NotFoundErrorDto,
   })
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.connectionsService.findOne(id, user.sub);
@@ -126,7 +126,7 @@ export class ConnectionsController {
     type: ConflictErrorDto,
   })
   update(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @Body() dto: UpdateConnectionDto,
     @CurrentUser() user: JwtPayload,
   ) {
@@ -150,7 +150,7 @@ export class ConnectionsController {
     type: NotFoundErrorDto,
   })
   remove(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id', ParseIdPipe) id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.connectionsService.remove(id, user.sub);
