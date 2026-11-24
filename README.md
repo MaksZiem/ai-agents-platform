@@ -178,7 +178,7 @@ npm install
 npm run dev
 ```
 
-Sample files for the document tools (a cost spreadsheet and two versions of a contract) are in [`demo-data/`](demo-data).
+Sample files for the document tools (a cost spreadsheet and two versions of a contract) are in [`backend/demo-data/`](backend/demo-data). `npm run seed:demo` in `backend/` creates the demo account (`demo-login@example.com` / `password-demo`) with a Financial Analyst agent that already has them in its knowledge base.
 
 ## 📁 Project structure
 
@@ -190,9 +190,9 @@ ai-agents-platform/
 │       ├── tools/        11 typed tools with Zod schemas
 │       ├── agents/  approvals/  executions/  knowledge/  connections/
 │       ├── web/          safeFetch (SSRF guard), HTML → text
+│       ├── database/     migrations, seed-demo.ts
 │       └── realtime/     Socket.IO gateway (/executions)
 ├── frontend/             Next.js App Router UI
-├── demo-data/            files for the Financial Analyst demo
 └── portfolio/            case study (EN/PL) and screenshots
 ```
 

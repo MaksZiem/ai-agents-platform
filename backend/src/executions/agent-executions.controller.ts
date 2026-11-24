@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -28,6 +28,7 @@ import { CreateExecutionDto } from './dto/create-execution.dto.js';
 import { Execution } from './entities/execution.entity.js';
 import { ExecutionsService } from './executions.service.js';
 import { ParseIdPipe } from '../common/pipes/parse-id.pipe.js';
+import { AiLimitGuard } from '../ai-usage/ai-limit.guard.js';
 
 @ApiTags('executions')
 @ApiBearerAuth(BEARER_AUTH)
@@ -45,6 +46,7 @@ export class AgentExecutionsController {
   constructor(private readonly executionsService: ExecutionsService) {}
 
   @Post()
+  @UseGuards(AiLimitGuard)
   @ApiOperation({
     summary: 'Uruchom zadanie',
     description:
@@ -65,7 +67,7 @@ export class AgentExecutionsController {
   })
   @ApiTooManyRequestsResponse({
     description:
-      'Przekroczony limit startów na minutę, równoległych wykonań lub dziennych tokenów (kody RATE_LIMIT_STARTS, RATE_LIMIT_CONCURRENT, DAILY_TOKEN_LIMIT)',
+      'Przekroczony limit startów na minutę, równoległych wykonań, dziennych tokenów lub dziennych wywołań AI (kody RATE_LIMIT_STARTS, RATE_LIMIT_CONCURRENT, DAILY_TOKEN_LIMIT, AI_DAILY_LIMIT)',
     type: TooManyRequestsErrorDto,
   })
   @ApiServiceUnavailableResponse({

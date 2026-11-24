@@ -34,6 +34,7 @@ const envSchema = z.object({
     .int()
     .positive()
     .default(10),
+  AI_DAILY_LIMIT_PER_USER: z.coerce.number().int().positive().default(30),
   EMAIL_FROM: z
     .string()
     .min(1)

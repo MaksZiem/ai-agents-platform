@@ -14,6 +14,8 @@ import { ConnectionsService } from '../connections/connections.service.js';
 import { SafeFetchError } from '../web/safe-fetch.js';
 import { WebService } from '../web/web.service.js';
 import { ToolExecutionError } from './tool-execution.error.js';
+import { User } from '../users/entities/user.entity.js';
+import { isDemoAccount } from '../demo/demo-account.js';
 
 export interface ToolExecutionRequest {
   agentId: string;
@@ -42,6 +44,8 @@ export class ToolExecutor {
     private readonly emailService: EmailService,
     private readonly webService: WebService,
     private readonly connectionsService: ConnectionsService,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async execute({
@@ -178,6 +182,13 @@ export class ToolExecutor {
         return { id: saved.id, name: saved.name, sizeBytes: saved.sizeBytes };
       },
       sendEmail: async ({ to, subject, body, attachmentFileId }) => {
+        const owner = await this.usersRepository.findOneBy({ id: userId });
+        if (owner && isDemoAccount(owner)) {
+          throw new ToolExecutionError(
+            'PERMISSION_DENIED',
+            'Sending email is disabled on the demo account',
+          );
+        }
         const attachment = attachmentFileId
           ? await this.filesService.findWithContent(attachmentFileId, {
               executionId,

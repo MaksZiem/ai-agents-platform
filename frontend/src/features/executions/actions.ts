@@ -62,7 +62,8 @@ export async function runTask(
     if (
       error.code === "RATE_LIMIT_STARTS" ||
       error.code === "RATE_LIMIT_CONCURRENT" ||
-      error.code === "DAILY_TOKEN_LIMIT"
+      error.code === "DAILY_TOKEN_LIMIT" ||
+      error.code === "AI_DAILY_LIMIT"
     ) {
       return { error: t(error.code, error.params), task };
     }

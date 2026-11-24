@@ -7,12 +7,14 @@ import { AgentExecutionsController } from './agent-executions.controller.js';
 import { ExecutionsService } from './executions.service.js';
 import { AgentsModule } from '../agents/agents.module.js';
 import { EngineModule } from '../engine/engine.module.js';
+import { AiUsageModule } from '../ai-usage/ai-usage.module.js';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Execution, ExecutionStep]),
     AgentsModule,
     EngineModule,
+    AiUsageModule,
   ],
   controllers: [ExecutionsController, AgentExecutionsController],
   providers: [ExecutionsService],

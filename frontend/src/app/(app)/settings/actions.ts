@@ -61,6 +61,13 @@ export async function changePassword(
           : t("errors.validation");
       return { errors: {}, formError, success: false };
     }
+    if (error instanceof ApiError && error.code === "DEMO_ACCOUNT_LOCKED") {
+      return {
+        errors: {},
+        formError: tPassword("DEMO_ACCOUNT_LOCKED"),
+        success: false,
+      };
+    }
     throw error;
   }
 

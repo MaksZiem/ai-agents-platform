@@ -24,6 +24,7 @@ import { GeminiPlanner } from './gemini-planner.service.js';
 import { Planner } from './planner.js';
 import { UsageLimits } from './usage-limits.service.js';
 import { ToolExecutor } from './tool-executor.service.js';
+import { User } from '../users/entities/user.entity.js';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ToolExecutor } from './tool-executor.service.js';
       Execution,
       ExecutionStep,
       Approval,
+      User,
     ]),
     BullModule.registerQueue({ name: EXECUTIONS_QUEUE }),
     ToolsModule,

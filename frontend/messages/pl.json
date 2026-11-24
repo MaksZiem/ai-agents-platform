@@ -411,7 +411,8 @@
         "failed": "Nie udało się uruchomić wykonania. Spróbuj ponownie.",
         "RATE_LIMIT_STARTS": "Możesz uruchomić maksymalnie {limit} zadań na minutę. Poczekaj chwilę i spróbuj ponownie.",
         "RATE_LIMIT_CONCURRENT": "Masz już {active} zadań w toku lub w kolejce (limit {limit}). Poczekaj, aż któreś się skończy, albo je anuluj.",
-        "DAILY_TOKEN_LIMIT": "Wykorzystano dzienny limit tokenów ({limit}). Odnowi się o północy."
+        "DAILY_TOKEN_LIMIT": "Wykorzystano dzienny limit tokenów ({limit}). Odnowi się o północy.",
+        "AI_DAILY_LIMIT": "Wykorzystano dzienny limit funkcji AI ({limit} zadań). Spróbuj ponownie jutro."
       }
     },
     "steps": {
@@ -617,7 +618,8 @@
         "sameAsCurrent": "Wybierz hasło inne niż obecne.",
         "confirmRequired": "Powtórz nowe hasło.",
         "mismatch": "Hasła się nie zgadzają.",
-        "CURRENT_PASSWORD_INCORRECT": "Obecne hasło jest nieprawidłowe."
+        "CURRENT_PASSWORD_INCORRECT": "Obecne hasło jest nieprawidłowe.",
+        "DEMO_ACCOUNT_LOCKED": "Na koncie demo nie można zmienić hasła."
       }
     }
   },

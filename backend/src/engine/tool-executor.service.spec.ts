@@ -11,6 +11,7 @@ import type { WebService } from '../web/web.service.js';
 import { defineTool, type ToolDefinition } from '../tools/tool-definition.js';
 import { ToolExecutionError } from './tool-execution.error.js';
 import { ToolExecutor } from './tool-executor.service.js';
+import type { User } from '../users/entities/user.entity.js';
 
 const echoTool = defineTool({
   name: 'echo',
@@ -55,6 +56,7 @@ function createExecutor({
     {} as EmailService,
     {} as WebService,
     {} as ConnectionsService,
+    {} as Repository<User>,
   );
 }
 

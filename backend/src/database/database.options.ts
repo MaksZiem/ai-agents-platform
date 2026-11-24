@@ -13,6 +13,7 @@ import { KnowledgeDocument } from '../knowledge/entities/knowledge-document.enti
 import { GeneratedFile } from '../files/entities/generated-file.entity.js';
 import { AgentConnection } from '../connections/entities/agent-connection.entity.js';
 import { Connection } from '../connections/entities/connection.entity.js';
+import { AiUsage } from '../ai-usage/ai-usage.entity.js';
 
 export function createDataSourceOptions(url: string): DataSourceOptions {
   return {
@@ -32,6 +33,7 @@ export function createDataSourceOptions(url: string): DataSourceOptions {
       GeneratedFile,
       Connection,
       AgentConnection,
+      AiUsage,
     ],
     migrations: [join(import.meta.dirname, 'migrations', '*.js')],
     synchronize: false,

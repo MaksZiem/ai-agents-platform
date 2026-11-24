@@ -411,7 +411,8 @@
         "failed": "Could not start the execution. Try again.",
         "RATE_LIMIT_STARTS": "You can start at most {limit} tasks per minute. Wait a moment and try again.",
         "RATE_LIMIT_CONCURRENT": "You already have {active} tasks running or queued (limit {limit}). Wait for one to finish or cancel it.",
-        "DAILY_TOKEN_LIMIT": "You have used today's token limit ({limit} tokens). It resets at midnight."
+        "DAILY_TOKEN_LIMIT": "You have used today's token limit ({limit} tokens). It resets at midnight.",
+        "AI_DAILY_LIMIT": "You've used today's AI limit ({limit} tasks). Try again tomorrow."
       }
     },
     "steps": {
@@ -617,7 +618,8 @@
         "sameAsCurrent": "Choose a password different from the current one.",
         "confirmRequired": "Repeat the new password.",
         "mismatch": "The passwords do not match.",
-        "CURRENT_PASSWORD_INCORRECT": "Current password is incorrect."
+        "CURRENT_PASSWORD_INCORRECT": "Current password is incorrect.",
+        "DEMO_ACCOUNT_LOCKED": "The demo account password can't be changed."
       }
     }
   },

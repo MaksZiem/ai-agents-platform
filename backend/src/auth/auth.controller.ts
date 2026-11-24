@@ -35,6 +35,7 @@ import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import type { JwtPayload } from './jwt-payload.js';
+import { demoAccountLocked, isDemoAccount } from '../demo/demo-account.js';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -110,6 +111,9 @@ export class AuthController {
     @Body() dto: ChangePasswordDto,
     @CurrentUser() user: JwtPayload,
   ) {
+    if (isDemoAccount(user)) {
+      throw demoAccountLocked('The demo account password cannot be changed');
+    }
     return this.authService.changePassword(user.sub, dto);
   }
 
